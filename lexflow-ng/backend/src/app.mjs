@@ -38,7 +38,7 @@ export async function buildApp({config, db, authenticate}) {
     applications:config.gates.applications,verification:config.gates.verification,
     directory:config.gates.directory,payments:false,custody_dispatch:false,client_matter_storage:false
   }}));
-  app.get('/v1/directory',async request=>{gated(config,'directory');return db.listPublic(parseFilters(request.query));});
+  app.get('/v1/directory',async request=>{gated(config,'directory');return db.listPublic(parseFilters(Object.fromEntries(Object.entries(request.query))));});
   app.post('/v1/applications', {config:{rateLimit:{max:5,timeWindow:'1 hour'}}},async(request,reply)=>{
     gated(config,'applications');const actor=await withAuth(request);const data=parseApplication(request.body);
     const record=await db.apply(actor.subject,data);reply.code(201);return record;
