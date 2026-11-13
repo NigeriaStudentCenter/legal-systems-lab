@@ -1,0 +1,1430 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#08121f"><meta name="description" content="Learner workbook and practical assessment portfolio for the Legal Systems Lab."><title>Practical Workbook | Legal Systems Lab</title><style>
+:root{--bg:#08121f;--bg2:#0e1e2c;--panel:#122535;--panel2:#182e40;--gold:#e9bf67;--gold2:#bd8a3d;--mint:#7ce0c6;--white:#f4f6f6;--muted:#a1b2c0;--border:rgba(196,221,233,.16);--shadow:0 22px 65px rgba(0,0,0,.27);--radius:18px;--font:'DM Sans',system-ui,sans-serif;--head:'Manrope',system-ui,sans-serif}
+*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;font-family:var(--font);font-size:15px;line-height:1.65;color:var(--white);background:radial-gradient(ellipse at 78% -8%,#1e3844 0%,transparent 35%),var(--bg)}a{color:var(--mint);text-decoration:none}a:hover{text-decoration:underline}button,input,textarea,select{font:inherit}button{cursor:pointer}button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible{outline:3px solid var(--mint);outline-offset:3px}h1,h2,h3,h4{font-family:var(--head);line-height:1.19;letter-spacing:-.035em}h1{font-size:clamp(2.6rem,5.4vw,5.6rem);margin:0 0 18px;font-weight:800}h2{font-size:clamp(1.8rem,3.1vw,2.85rem);margin:0 0 16px;font-weight:800}h3{font-size:1.28rem;margin:0 0 10px}p{margin:0 0 16px}small,.small{font-size:.84rem}strong{font-weight:700}::selection{background:#e9bf67;color:#08121f}
+.app-header{position:sticky;top:0;z-index:50;background:rgba(8,18,31,.92);backdrop-filter:blur(16px);border-bottom:1px solid var(--border)}.header-inner{max-width:1440px;margin:auto;display:flex;align-items:center;justify-content:space-between;gap:18px;padding:16px 28px}.brand{display:flex;align-items:center;gap:12px;color:white;white-space:nowrap;text-decoration:none!important}.brandmark{width:45px;height:45px;border:1px solid rgba(233,191,103,.6);border-radius:13px;display:grid;place-items:center;background:linear-gradient(135deg,#1b3a3f,#162232);font-family:Georgia,serif;font-size:26px;color:var(--gold)}.brand-name{line-height:1.17;font-family:var(--head);font-size:.88rem;font-weight:800}.brand-name span{display:block;color:var(--muted);font-size:.7rem;letter-spacing:.06em;font-weight:600}.top-nav{display:flex;align-items:center;gap:10px;flex-wrap:wrap}.top-nav a,.top-nav button{border:0;color:#d8e3e8;border-radius:10px;padding:9px 13px;background:transparent;font-weight:700;font-size:.86rem}.top-nav a:hover,.top-nav button:hover,.top-nav .active{background:var(--panel);color:var(--gold);text-decoration:none}.top-nav .nav-highlight{border:1px solid var(--gold2);color:var(--gold)}
+.page{max-width:1440px;padding:0 28px 100px;margin:auto}.hero{display:grid;grid-template-columns:1.1fr .9fr;gap:38px;align-items:center;min-height:560px;padding:70px 0 55px}.eyebrow{color:var(--gold);letter-spacing:.16em;font-size:.72rem;text-transform:uppercase;font-weight:800;margin-bottom:17px}.hero p.lead{font-size:1.15rem;color:#c0d1da;max-width:640px}.hero .intro-kicker{font-size:1rem;color:#dae6eb;max-width:560px}.hero-actions{display:flex;flex-wrap:wrap;gap:12px;margin-top:26px}.btn{display:inline-flex;align-items:center;justify-content:center;gap:9px;padding:12px 19px;border-radius:10px;border:1px solid var(--border);background:var(--panel2);color:var(--white);font-weight:800;font-size:.9rem;transition:transform .15s,background .15s;text-decoration:none!important}.btn:hover{transform:translateY(-1px);background:#254359}.btn.primary{background:var(--gold);color:#122030;border-color:var(--gold)}.btn.primary:hover{background:#ffd68a}.btn.secondary{border-color:rgba(233,191,103,.36);color:var(--gold);background:transparent}.btn.slim{padding:8px 12px;font-size:.83rem}.btn.danger{background:#421f2b}.btn:disabled{opacity:.48;cursor:not-allowed;transform:none}.hero-art{position:relative;min-height:430px;border:1px solid var(--border);border-radius:28px;background:radial-gradient(circle at center,#25475a 0%,#142a3b 42%,#0c1c2b 75%);overflow:hidden;display:grid;place-items:center;box-shadow:var(--shadow)}.orbit{position:absolute;border:1px solid rgba(233,191,103,.25);border-radius:50%;animation:orbitPulse 8s infinite alternate ease-in-out}.orbit.o1{width:220px;height:220px}.orbit.o2{width:350px;height:350px;animation-delay:-3s}.orbit.o3{width:490px;height:490px;animation-delay:-5s}.art-core{width:140px;height:140px;border-radius:30px;transform:rotate(-8deg);display:grid;place-items:center;background:linear-gradient(140deg,#e9bf67,#a97b40);color:#0f2230;box-shadow:0 0 80px #e9bf673d;z-index:2}.art-core svg{width:84px;height:84px}.art-tag{position:absolute;z-index:3;background:rgba(14,29,44,.91);border:1px solid rgba(124,224,198,.33);border-radius:12px;padding:12px 15px;font-size:.78rem;font-weight:800;letter-spacing:.02em;box-shadow:0 12px 25px #0006}.art-tag:nth-child(5){top:16%;left:5%}.art-tag:nth-child(6){top:22%;right:4%}.art-tag:nth-child(7){bottom:14%;left:9%}.art-tag:nth-child(8){bottom:20%;right:6%}.art-dot{width:8px;height:8px;display:inline-block;border-radius:50%;background:var(--mint);margin-right:6px}.metrics{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin:8px 0 60px}.metric{border:1px solid var(--border);border-radius:16px;padding:20px 22px;background:#102334a6}.metric b{display:block;font:800 1.9rem var(--head);color:var(--gold)}.metric span{font-size:.83rem;color:var(--muted)}.section{margin:62px 0}.section-head{display:flex;justify-content:space-between;align-items:flex-end;gap:16px;margin-bottom:22px}.section-head p{max-width:700px;color:var(--muted)}.tag{display:inline-flex;align-items:center;gap:6px;border-radius:99px;border:1px solid rgba(233,191,103,.28);padding:5px 10px;color:var(--gold);background:rgba(233,191,103,.055);font-size:.72rem;font-weight:800;letter-spacing:.035em}.muted{color:var(--muted)}.gold{color:var(--gold)}.mint{color:var(--mint)}.accent{background:linear-gradient(96deg,var(--gold),#fff1c5);background-clip:text;-webkit-background-clip:text;color:transparent}.course-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}.module-card{background:linear-gradient(160deg,#152c3d,#0f202f);border:1px solid var(--border);padding:24px;border-radius:20px;display:flex;flex-direction:column;min-height:276px;transition:transform .18s,border-color .18s;text-decoration:none!important;color:var(--white)}.module-card:hover{border-color:var(--gold2);transform:translateY(-3px)}.mod-top{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:28px}.mod-number{font:800 2.2rem var(--head);letter-spacing:-.07em;color:rgba(233,191,103,.8)}.module-card h3{font-size:1.23rem}.module-card p{font-size:.91rem;color:var(--muted);flex:1}.card-bottom{display:flex;justify-content:space-between;align-items:center;color:var(--mint);font-size:.79rem;font-weight:800;padding-top:13px;border-top:1px solid var(--border)}.week-filters{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:20px}.filter-btn{border:1px solid var(--border);border-radius:999px;padding:8px 14px;background:transparent;color:var(--muted);font-weight:800}.filter-btn.active{background:var(--gold);border-color:var(--gold);color:#16232f}.feature-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}.feature{border:1px solid var(--border);border-radius:16px;padding:24px;background:var(--bg2)}.feature .ficon{font-size:1.7rem;margin-bottom:14px}.feature h3{font-size:1.1rem}.feature p{color:var(--muted);font-size:.9rem}.notice{border:1px solid rgba(233,191,103,.28);border-left:3px solid var(--gold);background:rgba(233,191,103,.055);padding:17px 20px;border-radius:10px;color:#e6e3d7}.notice p:last-child{margin-bottom:0}.footer{padding:35px 0;border-top:1px solid var(--border);color:var(--muted);font-size:.82rem}.footer a{margin-right:14px}.split{display:grid;grid-template-columns:1fr 1fr;gap:18px}.soft-panel{padding:22px;border:1px solid var(--border);border-radius:16px;background:#132535}.soft-panel h3{color:var(--gold)}.process-track{display:flex;flex-wrap:wrap;gap:7px;align-items:center;margin:20px 0}.track-step{flex:1;min-width:110px;border:1px solid var(--border);background:#11293a;padding:12px;border-radius:10px;text-align:center;font-size:.77rem;font-weight:800}.track-arrow{color:var(--mint);font-weight:800}
+.module-layout{display:grid;grid-template-columns:248px minmax(0,1fr);gap:31px;align-items:start;margin-top:36px}.module-side{position:sticky;top:92px;max-height:calc(100vh - 100px);overflow:auto;border:1px solid var(--border);border-radius:16px;background:#102232;padding:16px}.side-heading{font-size:.72rem;color:var(--gold);letter-spacing:.11em;font-weight:800;text-transform:uppercase;margin:6px 0 14px}.side-link{width:100%;text-align:left;border:1px solid transparent;color:#b8cbd6;background:transparent;border-radius:9px;padding:11px 10px;font-size:.84rem;line-height:1.3;display:flex;align-items:center;gap:9px}.side-link:hover{background:#1c3749}.side-link.selected{color:#fff;background:#244557;border-color:#2e6070}.side-link .dot{display:inline-grid;place-items:center;border-radius:50%;background:#2b4455;color:var(--muted);width:22px;min-width:22px;height:22px;font-size:.69rem}.side-link.done .dot{background:#286253;color:#cefff0}.side-separator{margin:12px 0;border:0;border-top:1px solid var(--border)}.module-main{min-width:0}.module-header{padding:36px;background:linear-gradient(140deg,#16364a,#102333);border:1px solid var(--border);border-radius:22px;margin-bottom:22px;position:relative;overflow:hidden}.module-header:after{content:'';position:absolute;right:-80px;top:-110px;width:310px;height:310px;border:1px solid #e9bf6740;border-radius:50%}.module-header h1{font-size:clamp(2.3rem,4vw,3.7rem);margin-bottom:10px}.module-header p{color:#d0e1e8;max-width:700px}.meta-line{display:flex;flex-wrap:wrap;gap:10px;margin-bottom:18px}.meta-line .tag{background:#0f2938}.progress-outer{height:8px;border-radius:99px;background:#254050;overflow:hidden;margin:12px 0}.progress-inner{height:100%;background:linear-gradient(90deg,var(--gold),var(--mint));transition:width .25s}.content-panel{padding:32px;border:1px solid var(--border);border-radius:20px;background:#102333;margin-bottom:18px}.content-panel h2{font-size:1.75rem}.content-panel p{color:#d0dce3}.content-panel li{margin:7px 0;color:#d0dce3}.panel-title{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:16px}.pill{font-size:.72rem;font-weight:800;padding:5px 11px;border-radius:999px;background:#244452;color:#baf2e4;border:1px solid #3b776d}.lesson-body p{font-size:1rem;line-height:1.82;margin:0 0 20px}.lesson-controls{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-top:25px;border-top:1px solid var(--border);padding-top:22px}.lesson-tabs{display:flex;gap:7px;flex-wrap:wrap}.lesson-tabs button{border:1px solid var(--border);color:#adbfca;background:#122c3e;border-radius:9px;padding:7px 11px}.lesson-tabs button.active{background:var(--gold);color:#172433;border-color:var(--gold);font-weight:800}.case-box{background:linear-gradient(145deg,#293b3d,#1b3036);border:1px solid #527d72;border-radius:16px;padding:25px}.case-box h3{font-size:1.4rem}.case-box blockquote{margin:15px 0;border-left:3px solid var(--mint);padding-left:15px;color:#e1f3f0}.reveal{display:none;border:1px solid #356653;border-radius:12px;padding:18px;margin-top:15px;background:rgba(27,90,66,.2);color:#d4eee4}.reveal.visible{display:block}.lab-steps{counter-reset:lab;list-style:none;padding:0}.lab-steps li{counter-increment:lab;position:relative;padding-left:38px;margin:15px 0}.lab-steps li:before{content:counter(lab);position:absolute;left:0;top:0;width:26px;height:26px;border-radius:50%;background:#284e58;color:var(--mint);display:grid;place-items:center;font-weight:800;font-size:.8rem}.video-wrap{background:#0b1c2a;border-radius:16px;border:1px solid var(--border);overflow:hidden}.video-poster{min-height:170px;padding:30px;background:linear-gradient(110deg,#153e4a,#1c283c);display:flex;align-items:center;gap:20px}.video-play{border:0;border-radius:50%;background:var(--gold);color:#11212b;width:58px;height:58px;font-size:22px;flex-shrink:0}.video-wrap iframe{display:block;width:100%;aspect-ratio:16/9;border:0}.video-post{padding:14px 20px;font-size:.81rem;color:var(--muted)}.quiz-q{padding:20px 0;border-bottom:1px solid var(--border)}.quiz-q:last-child{border:0}.quiz-q strong{display:block;margin-bottom:12px}.choice{display:flex;gap:10px;align-items:flex-start;cursor:pointer;padding:11px;border-radius:8px;border:1px solid var(--border);margin:8px 0;background:#152d3d;color:#d3e0e6}.choice:hover{border-color:#467a7d}.choice input{accent-color:var(--gold);margin-top:5px}.quiz-result{margin-top:15px;padding:16px;border-radius:10px;background:#183b36;border:1px solid #356a5c}.source-list{padding:0;list-style:none}.source-list li{margin-bottom:11px}.source-link{display:block;color:var(--mint);font-weight:700}.source-link small{display:block;color:var(--muted);font-weight:400}.demo{border-radius:15px;padding:22px;background:radial-gradient(circle at top right,#1e4653,#0d2335 70%);border:1px solid rgba(124,224,198,.2);min-height:180px}.demo h4{margin-top:0;color:var(--gold);font-size:1rem}.demo-controls{display:flex;flex-wrap:wrap;align-items:end;gap:12px}.demo-controls label{display:flex;flex:1;min-width:170px;flex-direction:column;gap:5px;font-size:.82rem;color:var(--muted)}.demo input,.demo select,.demo textarea{width:100%;padding:10px 12px;border:1px solid #406070;border-radius:8px;background:#0b202e;color:white}.demo input[type=range]{padding:0;accent-color:var(--gold)}.demo input[type=checkbox]{width:auto}.demo-output{margin-top:16px;padding:16px;border-radius:11px;background:#102b3a;border:1px solid #356070;color:#ecf2ed}.mini-flow{display:flex;flex-wrap:wrap;gap:8px;margin:14px 0}.mini-flow span{padding:10px 12px;border:1px solid #426575;border-radius:9px;background:#152f42;font-size:.79rem;font-weight:800}.mini-flow span.active{background:#326b65;border-color:var(--mint)}.demo .inline-check{flex-direction:row;align-items:center}.two-col{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.workbook-hero{padding:45px 0 20px}.workbook-shell{display:grid;grid-template-columns:270px minmax(0,1fr);gap:26px;align-items:start}.wb-nav{position:sticky;top:94px;background:#102334;padding:17px;border:1px solid var(--border);border-radius:15px;max-height:calc(100vh - 100px);overflow:auto}.wb-nav button{display:block;text-align:left;border:0;border-radius:9px;color:#d1e0e8;background:transparent;width:100%;padding:10px;font-size:.81rem}.wb-nav button:hover,.wb-nav button.active{background:#264658;color:white}.wb-field{margin-bottom:20px}.wb-field label{display:block;color:#e3dabb;font-size:.95rem;font-weight:800;margin-bottom:8px}.wb-field textarea{display:block;resize:vertical;width:100%;min-height:115px;background:#091c2a;border:1px solid #3d5966;border-radius:10px;color:white;padding:14px;line-height:1.7}.wb-field .prompt{font-size:.88rem;color:#b3c7d1;margin-bottom:10px}.wb-field .autosave{color:var(--muted);font-size:.72rem}.wb-bar{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;padding:15px 0}.wb-raw{white-space:pre-wrap;color:#cce0e8}.field-label{display:block;font-weight:800;margin:12px 0 5px}.sr-only{position:absolute;width:1px;height:1px;margin:-1px;border:0;clip:rect(0,0,0,0);overflow:hidden;padding:0}.reading-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:13px}.read-card{border:1px solid var(--border);border-radius:12px;padding:19px;background:#102536}.read-card h4{font-size:.98rem;margin:0 0 7px}.read-card p{font-size:.83rem;color:var(--muted)}.course-completion{padding:30px;border:1px solid #826942;border-radius:14px;background:linear-gradient(135deg,#28352f,#112431)}
+.tutor-toggle{position:fixed;z-index:70;right:22px;bottom:20px;border:1px solid var(--gold);background:var(--gold);color:#10222d;font-weight:900;border-radius:999px;padding:13px 20px;box-shadow:0 12px 35px #0008}.tutor-drawer{position:fixed;right:20px;bottom:80px;z-index:70;width:min(415px,calc(100vw - 24px));height:min(630px,calc(100dvh - 100px));background:#102536;border:1px solid #557167;border-radius:20px;box-shadow:0 25px 90px #000b;display:none;flex-direction:column;overflow:hidden}.tutor-drawer.open{display:flex}.tutor-head{padding:18px 19px;display:flex;justify-content:space-between;align-items:center;background:linear-gradient(110deg,#274d4c,#16313e)}.tutor-head h3{margin:0;font-size:1.1rem}.tutor-head button{border:0;background:transparent;color:white;font-size:1.4rem}.tutor-log{flex:1;padding:18px;overflow:auto}.tutor-msg{margin-bottom:13px;max-width:94%;padding:12px 15px;border-radius:14px;background:#1d3a4b;color:#e2eef1;white-space:pre-wrap;font-size:.88rem;line-height:1.6}.tutor-msg.user{margin-left:auto;background:#405039;color:#fff}.tutor-suggestions{padding:9px 14px;display:flex;gap:6px;overflow:auto}.tutor-suggestions button{white-space:nowrap;border:1px solid #577c79;background:#153c44;color:var(--mint);border-radius:20px;padding:6px 10px;font-size:.76rem}.tutor-form{padding:13px;display:flex;gap:8px;border-top:1px solid var(--border)}.tutor-form textarea{flex:1;resize:none;border-radius:9px;padding:10px 12px;min-height:48px;max-height:105px;color:white;background:#091d2c;border:1px solid #40616c}.tutor-form button{padding:0 13px;border:0;border-radius:9px;color:#10212d;background:var(--gold);font-weight:800}.tutor-footer{padding:7px 12px;text-align:center;color:#b4c5d0;font-size:.68rem;border-top:1px solid var(--border)}.toast{position:fixed;bottom:84px;left:20px;background:#345146;color:white;padding:12px 16px;border:1px solid var(--mint);border-radius:10px;z-index:100;box-shadow:var(--shadow)}
+@keyframes orbitPulse{from{transform:scale(.93);opacity:.55}to{transform:scale(1.06);opacity:1}}@keyframes sweep{0%{transform:translateX(-110%)}100%{transform:translateX(130%)}}.animated-line{position:relative;overflow:hidden;height:7px;background:#244354;border-radius:20px}.animated-line:after{content:'';position:absolute;top:0;left:0;height:100%;width:48%;background:var(--gold);border-radius:20px;animation:sweep 4s linear infinite}.demo-node{animation:nodeFloat 3s ease-in-out infinite alternate}@keyframes nodeFloat{to{transform:translateY(-5px)}}
+@media(max-width:1100px){.course-grid{grid-template-columns:repeat(2,1fr)}.hero{gap:20px}.module-layout{grid-template-columns:200px 1fr}.reading-grid{grid-template-columns:1fr}}
+@media(max-width:760px){.header-inner{padding:12px 15px}.brand-name{font-size:.69rem}.brand-name span{font-size:.61rem}.brandmark{width:36px;height:36px}.top-nav{gap:2px}.top-nav a,.top-nav button{padding:6px 7px;font-size:.72rem}.top-nav .nav-highlight{display:none}.page{padding:0 16px 86px}.hero{grid-template-columns:1fr;padding:48px 0 22px;gap:25px;min-height:auto}.hero-art{min-height:330px}.metrics{grid-template-columns:repeat(2,1fr);margin:10px 0 40px}.metric{padding:15px}.section{margin:42px 0}.section-head{display:block}.course-grid,.feature-grid,.split,.two-col{grid-template-columns:1fr}.module-card{min-height:235px}.module-layout,.workbook-shell{display:block;margin-top:18px}.module-side,.wb-nav{position:static;max-height:260px;margin-bottom:16px}.module-header,.content-panel{padding:22px}.module-header:after{display:none}.module-header h1{font-size:2.3rem}.reading-grid{grid-template-columns:1fr}.tutor-drawer{right:12px;bottom:72px}.tutor-toggle{right:12px;bottom:13px}.lesson-controls{display:grid}.video-poster{padding:18px}.art-tag{font-size:.68rem}}
+@media print{body{background:white;color:black}.app-header,.top-nav,.tutor-toggle,.tutor-drawer,.lesson-controls,.module-side,.wb-nav,.no-print,.btn{display:none!important}.page{max-width:100%;padding:0}.workbook-shell,.module-layout{display:block}.content-panel{break-inside:avoid;color:black;background:white;border:1px solid #bbb}.content-panel h2,.content-panel p,.wb-field label,.wb-field .prompt,.wb-field textarea{color:black}.wb-field textarea{border:1px solid #999;background:white;min-height:90px}.footer{color:black}.notice{background:#eee;color:black}}
+@media(prefers-reduced-motion:reduce){*,*:before,*:after{animation:none!important;scroll-behavior:auto!important;transition:none!important}}
+@media(max-width:760px){.header-inner{flex-direction:column;align-items:stretch;gap:7px}.top-nav{flex-wrap:nowrap;overflow-x:auto;overflow-y:hidden;white-space:nowrap;scrollbar-width:thin;padding-bottom:2px}.top-nav a,.top-nav button{flex:0 0 auto;white-space:nowrap}.top-nav .nav-highlight{display:inline-flex}.brand{align-self:flex-start}.tutor-toggle{font-size:.81rem;padding:10px 13px}}
+
+</style></head>
+<body>
+<header class="app-header"><div class="header-inner"><a href="standalone-course.html" class="brand"><div class="brandmark">§</div><div class="brand-name">LEGAL SYSTEMS LAB<span>LEARNER PRACTICAL WORKBOOK</span></div></a><nav class="top-nav" aria-label="Primary"><a href="standalone-course.html">Classroom</a><a href="standalone-course.html#curriculum">Curriculum</a><a class="active" href="standalone-workbook.html">Workbook</a><a href="standalone-clinic.html">Case Clinic</a><a href="standalone-readiness.html">Start Here</a><a href="standalone-capstone.html">Capstone</a><button class="nav-highlight" id="export-btn">Export workbook ↓</button></nav></div></header>
+<main class="page" id="workbook-app"><noscript><p>Enable JavaScript to use this workbook.</p></noscript></main>
+<script>
+window.LEGAL_COURSE = {
+  "updated": "13 November 2026",
+  "brand": "British School of Outdoor Education",
+  "programme": "Legal Systems Lab — AI, Legal Technology & Operations",
+  "modules": [
+    {
+      "id": "ai-law",
+      "n": "01",
+      "week": 1,
+      "category": "CORE SESSION",
+      "hours": 9,
+      "title": "AI & Law",
+      "subtitle": "Legal analytics, evidence, research and professional judgement",
+      "eyebrow": "Think like a lawyer; test like a scientist",
+      "outcomes": [
+        "Distinguish search, classification, prediction and generative AI in a legal workflow",
+        "Verify AI-assisted legal propositions against primary law and evidence",
+        "Build a small legal analytics dashboard without confusing correlation and causation",
+        "Design an accountable review protocol for an AI-assisted matter"
+      ],
+      "lessons": [
+        {
+          "title": "1. What AI can actually do in law",
+          "paragraphs": [
+            "Legal technology is not one tool. Search indexes documents; rule engines apply specified conditions; machine learning classifies patterns from examples; generative models predict fluent text or other content. The choice of technology determines the errors you must look for. A deadline calculator can be rule-based and auditable; a summary model can omit an exception; a predictive model can overfit past disputes.",
+            "Use a task decomposition: input → output → decision owner → permitted data → known failure → human control. In a contract review, the output might be a clause extract, not a legal conclusion. The lawyer decides what the clause means for this client, checks the current law and negotiates the position.",
+            "A useful baseline is the time, cost, accuracy and accessibility of the existing human process. A new tool must be evaluated against that baseline, not against an impressive demo."
+          ]
+        },
+        {
+          "title": "2. Research: from plausible text to defensible authority",
+          "paragraphs": [
+            "A generative answer is a starting hypothesis. Its citation may be invented, mismatched, overruled or from the wrong jurisdiction. Verify the existence of every case or statute using an authoritative database; open the source; confirm the relevant passage and procedural posture; update the law; then decide whether it supports the proposition.",
+            "Apply the SOURCE protocol: Specify the question and jurisdiction, Obtain primary authority, Understand the holding and facts, Review currency and treatment, Cite the exact passage, Escalate uncertainty. Secondary commentary is useful for orientation but does not substitute for the applicable source.",
+            "Real example: the SRA’s August 2026 misuse-of-AI warning highlights false citations and confidential information entered into public tools. It references Ayinde v Haringey LBC [2025] EWHC 1383 (Admin). The important lesson is the checking duty, not the assumption that every AI-produced legal sentence is wrong."
+          ]
+        },
+        {
+          "title": "3. Legal analytics: the denominators matter",
+          "paragraphs": [
+            "Suppose a team handled 120 matters: 96 completed, 18 still open and 6 withdrawn. A report stating “80% success” would be misleading if it treats every completed matter as a legal win. Define the outcome, period and denominator first. Case mix, court, lawyer, complexity and missing cases can change apparent win rates.",
+            "For process measures, use cycle time (end date minus intake date), first-response time, rework percentage, cost per completed matter, client comprehension and escalation rate. Track distributions rather than averages alone: a four-day mean may hide a long tail of 40-day delays.",
+            "Predictive analytics can help resource planning, but a forecast is not a determination of rights. Validate performance on held-out data, examine subgroup performance, and communicate uncertainty in plain language."
+          ]
+        },
+        {
+          "title": "4. A safe AI-assisted legal workflow",
+          "paragraphs": [
+            "Start with permission: what information may enter this system and for which purpose? Add data-minimisation, access controls, approved tools and confidential-document handling. Anonymising a client name is not enough when the facts can re-identify them.",
+            "Separate generation from verification: the first pass extracts issues; a source-aware checker confirms references; a qualified professional determines the advice; and a supervisor signs off on client or court outputs. Record the system version, scope, sample tests, error categories and corrections.",
+            "The ABA Formal Opinion 512 and the Law Society of England and Wales practice note stress competence, confidentiality, supervision and responsibility for AI-assisted legal work. Requirements differ by professional role and jurisdiction."
+          ]
+        }
+      ],
+      "case": {
+        "label": "REAL REPORTED EXAMPLE",
+        "title": "An AI-assisted brief with unreliable authorities",
+        "facts": "The SRA’s 17 August 2026 warning discusses risks of invented case citations in court work and points to Ayinde v Haringey LBC [2025] EWHC 1383 (Admin). Use this published concern as the basis for a safe filing workflow.",
+        "challenge": "Your fictional supervisor receives a draft with three cases, one unexplained quotation and no source copies. What must happen before the draft can be filed?",
+        "model": "Stop filing, retrieve all source judgments, verify holdings, quotations, dates and subsequent treatment, document changes and arrange qualified review. Never use a second chatbot as the only verification method."
+      },
+      "lab": {
+        "title": "Citation verification and analytics audit",
+        "time": "70–90 min",
+        "brief": "Using a fictional research memo and matter dataset, create a source verification ledger and a one-page dashboard.",
+        "steps": [
+          "Draft a 6-column ledger: proposition, cited authority, authoritative link, pinpoint passage, currency check, reviewer/sign-off.",
+          "Identify three ways an apparently impressive 80% success statistic might mislead the client.",
+          "Specify five indicators that measure service quality, not merely output volume.",
+          "Write a go/no-go checklist for publishing an AI-assisted court document."
+        ],
+        "deliverable": "Verified-research SOP + legal analytics scorecard + 200-word risk memo",
+        "rubric": "Accuracy 40% · explainability 20% · human oversight 25% · client communication 15%"
+      },
+      "demo": "verify",
+      "video": {
+        "id": "HTASafUWg8A",
+        "title": "CodeX FutureLaw 2026 — Beyond Efficiency",
+        "by": "Stanford Law School"
+      },
+      "refs": [
+        "sra",
+        "lawsociety",
+        "aba",
+        "nist"
+      ],
+      "quiz": [
+        {
+          "prompt": "An AI tool gives a convincing quotation and case number. What is the correct next step?",
+          "choices": [
+            "Cite it if two chatbots agree",
+            "Locate and verify the primary judgment and passage",
+            "Assume it is current if published recently"
+          ],
+          "answer": 1,
+          "why": "A persuasive AI answer is not verified authority. Check the actual primary source and its current status."
+        },
+        {
+          "prompt": "A model predicts a 78% likelihood of settlement. Which explanation is defensible?",
+          "choices": [
+            "The case will settle",
+            "The prediction is a validated estimate with limits; legal judgement remains human",
+            "Courts must follow the model"
+          ],
+          "answer": 1,
+          "why": "Forecasts are uncertain and may suffer sampling and distribution shifts."
+        },
+        {
+          "prompt": "Which is an appropriate first use of generative AI in a confidential matter?",
+          "choices": [
+            "Upload the whole client file to a public chatbot",
+            "Use approved tools and permitted, minimised inputs with human verification",
+            "Delegate final advice and sign-off to the model"
+          ],
+          "answer": 1,
+          "why": "Permission, data minimisation, supervision and verification are essential."
+        }
+      ],
+      "tutor": {
+        "hint": "Identify the exact legal task, the applicable jurisdiction and the source or evidence required for a defensible answer.",
+        "example": "A rental dispute summary can be generated for triage, but the actual tenancy terms, current statute and court procedure still need verification.",
+        "question": "What original source would you check before relying on an AI-generated legal proposition?"
+      }
+    },
+    {
+      "id": "automation",
+      "n": "02",
+      "week": 1,
+      "category": "CORE SESSION",
+      "hours": 8,
+      "title": "Legal Process Automation",
+      "subtitle": "Process mapping, document workflows, RPA and safe exception handling",
+      "eyebrow": "Automate the repeatable; escalate the consequential",
+      "outcomes": [
+        "Map an end-to-end legal service with hand-offs and delays",
+        "Choose rules, RPA or AI according to the task",
+        "Build a contract-intake decision workflow with error handling",
+        "Test automation with normal, boundary and adversarial cases"
+      ],
+      "lessons": [
+        {
+          "title": "1. Map the work before buying the software",
+          "paragraphs": [
+            "A process is a sequence of triggers, people, decisions, information and outputs. Draw the current-state (AS-IS) workflow with swimlanes for client, intake team, solicitor and operations. Include waiting time, duplicate data entry, exceptions and rework rather than drawing only the happy path.",
+            "In a small practice, an intake email may wait two days before conflict checks. In a large in-house team, the delay may come from unclear business approvals. Map real bottlenecks through observation and counts, then design a future-state (TO-BE) workflow.",
+            "Distinguish task time from elapsed time: a four-minute conflicts check may be embedded within a six-day turnaround. Changing the check itself will not fix delayed assignment."
+          ]
+        },
+        {
+          "title": "2. Choose the right technology",
+          "paragraphs": [
+            "Deterministic rules are ideal for stable questions with clear conditions: “Is the agreement over the approval threshold?” RPA can transfer fields between systems where APIs are unavailable, but can break when screens change. Generative AI is useful for unstructured reading or drafting, but its output must not silently determine legal rights.",
+            "A robust pattern is extract → validate → route → human approve → issue → log. Use a hard stop for ambiguous parties, missing consent, unresolved conflict checks, abnormal amounts and vulnerable customers. A legal chatbot should signpost general information and refer complex questions to a qualified person."
+          ]
+        },
+        {
+          "title": "3. Model a contract-intake workflow",
+          "paragraphs": [
+            "A fictional company receives an NDA request. Intake captures counterparty, governing law, purpose, term, confidentiality definition and personal-data access. Low-risk standard forms can be prepared automatically; high-value, unusual remedies, overseas data transfer or missing information require review.",
+            "Design explicit statuses: RECEIVED, INCOMPLETE, CONFLICT-CHECK, REVIEW, APPROVAL, READY-TO-SEND, CLOSED. Every transition has a named owner and timestamp. Never create a document that looks final when mandatory checks have not occurred."
+          ]
+        },
+        {
+          "title": "4. Test, supervise and recover",
+          "paragraphs": [
+            "Build a test table of expected outcomes: normal input, missing document, near-threshold value, conflicting party names, malicious instructions inside an uploaded PDF, inaccessible language and repeat submissions. Measure false approvals and false escalations separately. A wrong approval can be much more serious than a slow queue.",
+            "Introduce release gates, human override, audit trails, rollback, a complaint path and periodic retesting. For legal services, the software’s success criterion is not simply “time saved”; it is demonstrably reliable and fair service."
+          ]
+        }
+      ],
+      "case": {
+        "label": "FICTIONAL OPERATIONS CASE",
+        "title": "The £45,000 contract that skipped a check",
+        "facts": "A fictitious charity receives a draft service agreement for £45,000. Its standard terms apply up to £25,000, but the workflow incorrectly treats a missing amount as £0.",
+        "challenge": "Find the unsafe logic. Design a rule that rejects missing amounts and escalates amounts exceeding the approval threshold.",
+        "model": "Missing values must be INCOMPLETE, never zero. Only complete, authorised and eligible matters enter the standard-template path; other matters go to a named reviewer."
+      },
+      "lab": {
+        "title": "Build an auditable intake workflow",
+        "time": "60–90 min",
+        "brief": "Design both AS-IS and TO-BE process maps for a fictional firm receiving 200 matters per month.",
+        "steps": [
+          "List six inputs, four decision gates, two exception types and all hand-off owners.",
+          "Define exact rules for amounts below, equal to and above £25,000.",
+          "Create five UAT tests including one malicious document instruction and one incomplete form.",
+          "Specify stop/rollback and client communication procedures."
+        ],
+        "deliverable": "Swimlane diagram + rules table + 5-test acceptance sheet",
+        "rubric": "Process understanding 30% · safe branching 30% · test coverage 25% · accessibility 15%"
+      },
+      "demo": "workflow",
+      "video": {
+        "id": "QUKLTse6x3E",
+        "title": "Practical Applications for AI in Law Firms",
+        "by": "State Bar of Texas (2025)"
+      },
+      "refs": [
+        "lawsociety",
+        "aba",
+        "stanford"
+      ],
+      "quiz": [
+        {
+          "prompt": "What should happen when a required contract value is blank?",
+          "choices": [
+            "Treat it as zero",
+            "Route to incomplete-information review",
+            "Auto-approve for efficiency"
+          ],
+          "answer": 1,
+          "why": "Missing data is not the same as a zero value."
+        },
+        {
+          "prompt": "Where is a rules engine preferable to generative AI?",
+          "choices": [
+            "Applying a published approval threshold",
+            "Understanding a nuanced witness account",
+            "Inventing a compromise settlement"
+          ],
+          "answer": 0,
+          "why": "Stable, explicit thresholds are best handled deterministically."
+        },
+        {
+          "prompt": "A workflow saves 40% processing time but sometimes bypasses conflict checks. Is it successful?",
+          "choices": [
+            "Yes, speed is the only criterion",
+            "No; a control failure can outweigh the efficiency gains",
+            "Only if it is cheaper than staff"
+          ],
+          "answer": 1,
+          "why": "Compliance and quality controls must be hard constraints."
+        }
+      ],
+      "tutor": {
+        "hint": "Start with the trigger and the responsible person. What information is required, and what happens if it is missing?",
+        "example": "An NDA workflow can prefill a template once the counterparty and purpose are confirmed, but unusual liability terms should escalate to a solicitor.",
+        "question": "Where would you insert a human approval gate, and how would you test it?"
+      }
+    },
+    {
+      "id": "ops",
+      "n": "03",
+      "week": 2,
+      "category": "CORE SESSION",
+      "hours": 9,
+      "title": "Legal Operations",
+      "subtitle": "Business models, pricing, KPIs, productisation and service design",
+      "eyebrow": "Make legal work measurable, sustainable and human",
+      "outcomes": [
+        "Define cycle time, utilisation, realisation and margin accurately",
+        "Compare hourly, fixed-fee and value-based arrangements",
+        "Design a repeatable, scoped legal service with escalation criteria",
+        "Use operational evidence to prioritise improvements"
+      ],
+      "lessons": [
+        {
+          "title": "1. Legal operations is a system, not an app",
+          "paragraphs": [
+            "Legal operations combines financial management, service delivery, knowledge management, technology, vendor management and strategic planning. CLOC’s Core 12 framework gives teams a vocabulary for the functions. A solo practice may have one person handling all 12; an enterprise legal department may have dedicated teams.",
+            "Begin with the legal service journey: demand enters, priority is assessed, resources are assigned, advice or documentation is delivered, quality is checked and outcomes are reviewed. Track the experience of the person seeking help, not merely the number of closed tickets."
+          ]
+        },
+        {
+          "title": "2. Economics of a legal matter",
+          "paragraphs": [
+            "Differentiate fee, cost, profit and cash flow. A fixed fee may benefit the client through predictable pricing, but it exposes the provider to poor scoping and rework. Hourly billing can discourage efficiency or obscure total cost; it remains appropriate for uncertain workloads when communicated transparently.",
+            "Example: a service earns £900. Estimated labour is 3 hours at an internal cost of £110 per hour; review is 1 hour at £170; other direct costs £80. Direct contribution is £900 − £330 − £170 − £80 = £320 before overhead and tax. If rework adds two reviewer hours, contribution falls below zero.",
+            "Assess capacity, conflict checks, client needs, supervision, quality and accessible service before pushing volume. Pricing must remain reasonable and consistent with applicable professional rules."
+          ]
+        },
+        {
+          "title": "3. Understand the measures",
+          "paragraphs": [
+            "Cycle time = elapsed time from defined start to finish. First-time-right = outputs accepted without rework ÷ all submitted outputs. Cost per matter = attributable cost ÷ matters closed in period, but benchmark by matter type. Utilisation = worked chargeable hours ÷ available hours; realisation can mean billed or collected value as a proportion of standard value, so always define it.",
+            "Quality is not inferred from throughput alone. Pair speed and cost with client understanding, error rate, complaint rate, fairness and the proportion of matters correctly escalated."
+          ]
+        },
+        {
+          "title": "4. Productise without commoditising judgement",
+          "paragraphs": [
+            "Productisation means making a repeatable part of a service easier to describe, deliver and price. For a standard company formation information pack, scope the inputs, outputs, turnaround, review level, exclusions, fees and hand-over. This is not permission to deliver personalised reserved legal work without suitable authorisation.",
+            "Run a compact Ops-a-Thon: choose one repeatable bottleneck, map it, prototype a template or dashboard, test with three roles and measure whether it improves quality and predictability. Name a service owner and a change-control process."
+          ]
+        }
+      ],
+      "case": {
+        "label": "FICTIONAL BUSINESS CASE",
+        "title": "Fixed-fee service with invisible rework",
+        "facts": "A small firm offers a fictional standard document pack for £900. Direct delivery costs £580 before overhead; a demanding exception requires two extra hours of senior review at £170/hour.",
+        "challenge": "Calculate the original £320 contribution and the revised −£20 contribution. Should the firm simply remove review?",
+        "model": "No. Redesign eligibility, complexity triage, transparent scope and exception pricing. Quality and professional obligations cannot be removed to restore a margin."
+      },
+      "lab": {
+        "title": "Price and productise a legal service",
+        "time": "75–90 min",
+        "brief": "Create an operational business case for a fixed-fee standard-contract review service.",
+        "steps": [
+          "Define scope and exclusions: what the service does and does not cover.",
+          "Build three scenarios (standard, complex, high-risk) with time, direct costs and proposed fees.",
+          "Choose six KPIs including quality, access and margin.",
+          "Design a one-page service blueprint and client-facing description in plain English."
+        ],
+        "deliverable": "Service specification + pricing calculator + operating scorecard",
+        "rubric": "Commercial accuracy 30% · service design 30% · controls 25% · communication 15%"
+      },
+      "demo": "pricing",
+      "video": {
+        "id": "t4pmGO7E9SI",
+        "title": "CodeX FutureLaw 2025 — Histories of Legal Tech",
+        "by": "Stanford Law School"
+      },
+      "refs": [
+        "cloc",
+        "lawsociety",
+        "stanford"
+      ],
+      "quiz": [
+        {
+          "prompt": "Which measure best reveals delayed service despite quick staff work?",
+          "choices": [
+            "End-to-end cycle time",
+            "Number of emails sent",
+            "Number of software licences"
+          ],
+          "answer": 0,
+          "why": "Elapsed cycle time exposes waiting and hand-off delays."
+        },
+        {
+          "prompt": "A £900 service costs £580 directly. What is its contribution before overhead?",
+          "choices": [
+            "£320",
+            "£580",
+            "£900"
+          ],
+          "answer": 0,
+          "why": "Contribution = revenue minus direct attributable costs."
+        },
+        {
+          "prompt": "What is a good exception policy for a fixed-fee service?",
+          "choices": [
+            "Handle all matters identically",
+            "Publish scope, eligibility and a pathway for complex work",
+            "Automatically reject every unusual client"
+          ],
+          "answer": 1,
+          "why": "Clear scope plus safe escalation balances predictability and fairness."
+        }
+      ],
+      "tutor": {
+        "hint": "Separate revenue, internal cost, overhead and quality. Ask which activities are repeatable and which require professional judgement.",
+        "example": "A fixed-fee review can include a defined document length and one round of edits; unusual cross-border issues trigger a transparent review process.",
+        "question": "Which operational KPI might improve while client outcomes actually worsen?"
+      }
+    },
+    {
+      "id": "disputes",
+      "n": "04",
+      "week": 2,
+      "category": "CORE SESSION",
+      "hours": 8,
+      "title": "Legal Tech in Dispute Resolution",
+      "subtitle": "Online dispute resolution, digital evidence, fairness and access to justice",
+      "eyebrow": "Technology should improve due process, not bypass it",
+      "outcomes": [
+        "Design an accessible ODR journey and lawful escalation options",
+        "Evaluate digital evidence integrity, provenance and disclosure",
+        "Explain the difference between negotiation, mediation, arbitration and adjudication",
+        "Identify bias, language, disability, connectivity and procedural fairness risks"
+      ],
+      "lessons": [
+        {
+          "title": "1. Justice beyond the courtroom",
+          "paragraphs": [
+            "Digital systems can help people understand options, prepare documents, exchange information and settle low-value disputes. A typical online dispute resolution (ODR) path includes intake, eligibility, negotiation, assisted settlement and referral if unresolved. UNCITRAL’s 2016 Technical Notes describe non-binding design ideas for certain cross-border low-value transactions, not a mandatory global court process.",
+            "A good ODR interface offers accessible language, clear rights, a human contact route, records of consent and an explanation of when a matter must go to a formal tribunal or court. It must not present an automated recommendation as a binding judicial decision."
+          ]
+        },
+        {
+          "title": "2. Choose the dispute mechanism",
+          "paragraphs": [
+            "Negotiation leaves the decision with the parties. Mediation adds a neutral facilitator but does not usually determine the outcome. Arbitration can result in a binding award where a valid agreement and law permit. Courts exercise public judicial authority. Distinguish binding effect, confidentiality, cost, enforceability, time limits and review routes for each jurisdiction.",
+            "For cross-border consumer disputes, identify the contracting parties, consumer protections, forum, governing law, language and whether any arbitration term is enforceable. Never assume a standard internet platform automatically has jurisdiction."
+          ]
+        },
+        {
+          "title": "3. Handle electronic evidence",
+          "paragraphs": [
+            "A screenshot may be useful but is not the whole record: consider who captured it, when, which device, whether the source is preserved and whether metadata exists. Generate a chronology that separates fact from allegation and links each event to a document or witness.",
+            "Artificially created or altered images, transcripts and audio introduce authenticity questions. A secure workflow preserves originals, logs handling, records uncertainty and allows independent review. Disclose AI assistance where required and never fabricate or change evidence."
+          ]
+        },
+        {
+          "title": "4. Fairness-by-design",
+          "paragraphs": [
+            "Consider the party who has no smartphone, limited English, impaired vision or low digital literacy. Provide alternate channels, readable notices, extensions where law allows and routes to advice. An algorithmic settlement suggestion may encode past power imbalances; give each party clear reasons and genuine choice.",
+            "Measure successful comprehension and sustainable resolution, not just “number of disputes closed.” A forced quick settlement can reduce the case queue while making access to justice worse."
+          ]
+        }
+      ],
+      "case": {
+        "label": "FICTIONAL CROSS-BORDER DISPUTE",
+        "title": "An online marketplace refund disagreement",
+        "facts": "A buyer in one country paid £420 to a seller in another. Delivery was late and the device was damaged. Both speak different first languages. Platform terms mention arbitration.",
+        "challenge": "Design an intake, translation, evidence and escalation pathway without asserting which national consumer law applies.",
+        "model": "Clarify contract, jurisdiction and applicable law; preserve delivery and payment records; offer accessible negotiation; explain any mediation/arbitration option and right to independent advice; retain court/tribunal routes where available."
+      },
+      "lab": {
+        "title": "Design an ODR prototype and evidence chain",
+        "time": "75–90 min",
+        "brief": "Build a 5-screen ODR storyboard for the fictional buyer-seller conflict.",
+        "steps": [
+          "Map intake, confirmation, evidence upload, negotiation and human escalation.",
+          "List minimum evidence metadata and a secure preservation protocol.",
+          "Design plain-language notices about neutrality, time limits and enforceability.",
+          "Test the journey with three user personas: low bandwidth, screen reader and limited language proficiency."
+        ],
+        "deliverable": "ODR storyboard + chain-of-custody table + fairness test sheet",
+        "rubric": "Due process 30% · evidence safety 25% · accessibility 30% · jurisdiction awareness 15%"
+      },
+      "demo": "odr",
+      "video": {
+        "id": "HTASafUWg8A",
+        "title": "CodeX FutureLaw 2026 — Beyond Efficiency",
+        "by": "Stanford Law School"
+      },
+      "refs": [
+        "uncitral",
+        "wjp",
+        "judiciary",
+        "stanford"
+      ],
+      "quiz": [
+        {
+          "prompt": "What makes UNCITRAL’s ODR Technical Notes different from a binding national law?",
+          "choices": [
+            "They are descriptive and non-binding",
+            "They replace court procedure worldwide",
+            "They force every consumer dispute into arbitration"
+          ],
+          "answer": 0,
+          "why": "The Technical Notes are non-binding guidance, not a universal compulsory process."
+        },
+        {
+          "prompt": "Which is best practice for electronic evidence?",
+          "choices": [
+            "Edit the original file to enhance clarity",
+            "Preserve originals, record source and maintain an audit trail",
+            "Rely on a screenshot without context"
+          ],
+          "answer": 1,
+          "why": "Provenance, integrity and traceability are critical."
+        },
+        {
+          "prompt": "Who should decide a judicial dispute?",
+          "choices": [
+            "An unsupervised chatbot",
+            "An appropriate court or authorised adjudicator",
+            "Whichever tool is faster"
+          ],
+          "answer": 1,
+          "why": "Judicial decision-making cannot be transferred to an unaccountable model."
+        }
+      ],
+      "tutor": {
+        "hint": "List the people, possible dispute stages and safeguards. Is the suggested outcome voluntary, binding or judicial?",
+        "example": "A refund portal may facilitate negotiation and produce a settlement record, but it must clarify rights and preserve lawful escalation paths.",
+        "question": "What could make a digital dispute platform inaccessible to one party?"
+      }
+    },
+    {
+      "id": "imagination",
+      "n": "05",
+      "week": 1,
+      "category": "SUPPLEMENTAL LECTURE",
+      "hours": 6,
+      "title": "Augmented Imagination in the Age of AI",
+      "subtitle": "Systems thinking, visual explanation and human-centred legal design",
+      "eyebrow": "Use imagination to improve systems, not manufacture certainty",
+      "outcomes": [
+        "Translate complex legal journeys into visual explanations",
+        "Interview users without suggesting answers or extracting sensitive data",
+        "Explore unintended consequences using system maps",
+        "Prototype accessible, human-centred service improvements"
+      ],
+      "lessons": [
+        {
+          "title": "1. Move from document-thinking to people-thinking",
+          "paragraphs": [
+            "A legal service is experienced through uncertainty, delay, language and power differences—not just the legal document. Interview users about what they tried, what they feared and where they became stuck. Map their steps from “problem recognised” to “resolution understood.”",
+            "Legal design combines substantive legal accuracy with plain language, clear visual hierarchy and tested comprehension. A beautiful interface that misunderstands a deadline is harmful; a legally correct document that no one can use may also fail."
+          ]
+        },
+        {
+          "title": "2. Think in systems and feedback loops",
+          "paragraphs": [
+            "A new automated portal may reduce staff calls at first. But if its answers are unclear, appeals and repeat contacts can increase. Map actors and feedback loops across the client, legal aid, court, regulator and service provider. Look for incentives that reward speed at the expense of substantive outcomes.",
+            "Ask “Who gains, who bears risk, what assumption could fail, and what will we measure?” Use counterfactuals: what would happen without the tool, with a human alternative, or for a user without digital access?"
+          ]
+        },
+        {
+          "title": "3. Visual legal communication",
+          "paragraphs": [
+            "Transform a 1,000-word notice into a short explanation that states what happened, what action is available, what deadline applies, what evidence is required and where to get authorised help. Clearly label which rights and deadlines require jurisdiction-specific checking.",
+            "Use a decision map with choices and consequences, not misleading “AI says you will win” scores. Test comprehension by asking someone to explain the next step in their own words."
+          ]
+        },
+        {
+          "title": "4. Augmented rather than delegated judgement",
+          "paragraphs": [
+            "AI can generate alternative user journeys, identify plain-language variants and propose diagram layouts. Human reviewers verify law, listen to affected people and choose a version. Record what was changed and why.",
+            "Strong legal innovation does not merely remove people from the process; it gives them more control, fairer options and clearer understanding."
+          ]
+        }
+      ],
+      "case": {
+        "label": "FICTIONAL USER EXPERIENCE CASE",
+        "title": "A tenant cannot understand the notice",
+        "facts": "A fictional tenant receives a six-page notice filled with statutory references and unclear instructions. They miss a chance to obtain advice because the next step is buried in a footnote.",
+        "challenge": "Create a two-minute explanation in plain English without inventing statutory rights or deadlines.",
+        "model": "Keep the original legal text available; state that local law and deadlines must be checked; lead with the immediate action, potential consequences and contacts for qualified advice."
+      },
+      "lab": {
+        "title": "Redesign a legal notice for comprehension",
+        "time": "50–75 min",
+        "brief": "Prototype a one-page visual legal journey for a fictional tenant or small business owner.",
+        "steps": [
+          "Create a journey map covering problem, information, options and referrals.",
+          "Rewrite one complex paragraph into a plain-language explanation.",
+          "Draw a 3-choice decision tree with visible human-help options.",
+          "Write three usability tests that check understanding rather than preference."
+        ],
+        "deliverable": "Before/after notice + visual map + user comprehension protocol",
+        "rubric": "Legal fidelity 35% · accessibility 30% · empathy 20% · measurement 15%"
+      },
+      "demo": "design",
+      "video": {
+        "id": "t4pmGO7E9SI",
+        "title": "CodeX FutureLaw 2025 — Histories of Legal Tech",
+        "by": "Stanford Law School"
+      },
+      "refs": [
+        "stanford",
+        "wjp",
+        "oxford"
+      ],
+      "quiz": [
+        {
+          "prompt": "A legal notice is fully correct but users miss the required step. What is the main design issue?",
+          "choices": [
+            "Comprehension and usability",
+            "Its word count alone",
+            "The colour of its logo"
+          ],
+          "answer": 0,
+          "why": "Legal information must be usable as well as accurate."
+        },
+        {
+          "prompt": "Which test measures whether a redesigned notice works?",
+          "choices": [
+            "Ask users whether they like the colours",
+            "Ask users to explain the next action in their own words",
+            "Measure how many AI tokens were used"
+          ],
+          "answer": 1,
+          "why": "Comprehension testing reveals whether people understand their options."
+        },
+        {
+          "prompt": "What is a risk of optimizing a portal solely for fewer calls?",
+          "choices": [
+            "It might mask unmet need or reduce access",
+            "It always improves legal outcomes",
+            "It makes due process automatic"
+          ],
+          "answer": 0,
+          "why": "A lower call volume can reflect confusion or exclusion."
+        }
+      ],
+      "tutor": {
+        "hint": "Describe the legal user, their goal, friction and the safest next action. Then test comprehension.",
+        "example": "A consumer complaint page might use a clear process map and plain English, but still link to the full legal rules and independent support.",
+        "question": "How could you discover whether a redesigned notice genuinely improves understanding?"
+      }
+    },
+    {
+      "id": "silicon-valley",
+      "n": "06",
+      "week": 2,
+      "category": "SUPPLEMENTAL LECTURE",
+      "hours": 7,
+      "title": "Legal Tech: The View from Silicon Valley",
+      "subtitle": "Technology stacks, retrieval, evaluation, procurement and venture economics",
+      "eyebrow": "Treat demos as hypotheses, not evidence of reliability",
+      "outcomes": [
+        "Explain the difference between retrieval, generation and rule execution",
+        "Create a procurement risk checklist for a legal AI supplier",
+        "Design a gold-standard test set and evaluate false positives/negatives",
+        "Prepare a limited, low-risk proof-of-concept with exit criteria"
+      ],
+      "lessons": [
+        {
+          "title": "1. Map the legal-tech stack",
+          "paragraphs": [
+            "Typical components include document storage, identity and permissions, legal research sources, case or matter management, workflow orchestration, analytics, retrieval, language models and an audit interface. A retrieval-augmented generation (RAG) workflow searches a defined corpus and gives selected passages to a model; it may improve traceability but still can misquote, omit or misuse evidence.",
+            "Ask what the system is permitted to retrieve. A search index that mixes privileged and public documents without permissions can expose information even when the generation model behaves correctly."
+          ]
+        },
+        {
+          "title": "2. Evaluate before scaling",
+          "paragraphs": [
+            "Build a test set of fictional tasks with reviewed expected answers: ordinary, ambiguous, multilingual, conflicting sources, missing authority and injected instructions. Use separate measures for retrieval quality, factual correctness, citation fidelity, refusal quality and harmful false approvals.",
+            "For document classification, precision asks how many flagged items are truly relevant; recall asks how many truly relevant items were found. High recall may be important for discovery, but reviewers still need appropriate precision to manage workload. The right trade-off depends on consequence, law and review design."
+          ]
+        },
+        {
+          "title": "3. Vendor due diligence and data rights",
+          "paragraphs": [
+            "Ask suppliers about data residency, training use, sub-processors, retention, permission controls, breach notice, incident management, auditability, prompt-injection defences, model updates, termination and export. Insist on a clear responsibility matrix: what vendor handles, what the firm handles and who retains legal accountability.",
+            "Avoid supplying client data for trials without approval, proper contracts, security review and a lawful basis for processing. Sanitised synthetic test data can demonstrate workflows without creating a confidentiality incident."
+          ]
+        },
+        {
+          "title": "4. Business-model discipline",
+          "paragraphs": [
+            "Many tools advertise minutes saved. Build a fuller business case: licence costs + setup + training + review + error response + governance versus measurable benefit. Include adoption, changed workflows and the costs of switching platforms.",
+            "Pilot narrowly: an approved team, a low-risk task, a fixed timebox, a stop threshold and a human fallback. Expansion requires evidence, not a vendor sales slide."
+          ]
+        }
+      ],
+      "case": {
+        "label": "FICTIONAL PROCUREMENT CASE",
+        "title": "A legal chatbot with no answer trace",
+        "facts": "A vendor advertises 95% accuracy on contract questions but provides no evaluation methodology and refuses to explain its handling of uploaded documents.",
+        "challenge": "Decide whether to run a production pilot involving confidential material. Draft five due-diligence questions.",
+        "model": "No production client data until permission, contracts, security and evaluation are adequate. Ask about test population, accuracy definition, retention/training, permissions, support, versioning and audit."
+      },
+      "lab": {
+        "title": "Red-team a legal AI vendor proposal",
+        "time": "60–90 min",
+        "brief": "Prepare a procurement scorecard using a fictional vendor pitch.",
+        "steps": [
+          "Build a test set of ten synthetic legal research and clause-extraction questions.",
+          "Classify errors as citation, omission, invented fact, permission leak, bias or unsafe escalation.",
+          "Draft ten critical supplier questions and six go/no-go procurement gates.",
+          "Write an executive recommendation in 250 words with a conditional pilot plan."
+        ],
+        "deliverable": "Test matrix + vendor scorecard + pilot gate memo",
+        "rubric": "Evidence of testing 35% · governance 35% · practical feasibility 20% · clarity 10%"
+      },
+      "demo": "stack",
+      "video": {
+        "id": "vRYRbfteo_o",
+        "title": "AI Procurement and Vendor Selection for Law Firms",
+        "by": "State Bar of Texas (2025)"
+      },
+      "refs": [
+        "nist",
+        "lawsociety",
+        "stanford",
+        "aba"
+      ],
+      "quiz": [
+        {
+          "prompt": "What does retrieval-augmented generation guarantee?",
+          "choices": [
+            "Legally correct citations every time",
+            "Nothing automatically; retrieved text and conclusions still require verification",
+            "That privileged data cannot leak"
+          ],
+          "answer": 1,
+          "why": "Retrieval improves source access but does not eliminate reasoning and permission risks."
+        },
+        {
+          "prompt": "Which is an appropriate pilot dataset?",
+          "choices": [
+            "Unapproved live client files",
+            "Reviewed synthetic or properly authorised material",
+            "A colleague’s private inbox"
+          ],
+          "answer": 1,
+          "why": "Use permitted data, ideally synthetic cases, during early testing."
+        },
+        {
+          "prompt": "A vendor claims 95% accuracy. What should you ask first?",
+          "choices": [
+            "Which logo package they use",
+            "How accuracy was defined and tested on a representative set",
+            "Whether the model writes long answers"
+          ],
+          "answer": 1,
+          "why": "Metrics are not meaningful without a well-defined test and denominator."
+        }
+      ],
+      "tutor": {
+        "hint": "Start with user need, the dataset, the failure modes and who approves a release. A product demonstration is not proof of reliability.",
+        "example": "A contract clause extractor should be evaluated on invented, missing, cross-referenced and contradictory clauses with audited expectations.",
+        "question": "What test would reveal that a tool is inventing a missing clause rather than reporting uncertainty?"
+      }
+    },
+    {
+      "id": "eu-ai-act",
+      "n": "07",
+      "week": 2,
+      "category": "SUPPLEMENTAL LECTURE",
+      "hours": 8,
+      "title": "European AI Regulations",
+      "subtitle": "EU AI Act, data protection, risk classification and governance",
+      "eyebrow": "Identify the law, the role, the use and the date",
+      "outcomes": [
+        "Identify AI Act roles and likely risk categories without guessing",
+        "Explain the consolidated EU AI Act milestones as of November 2026",
+        "Distinguish AI Act obligations from privacy and professional duties",
+        "Draft a documented, jurisdiction-specific governance action plan"
+      ],
+      "lessons": [
+        {
+          "title": "1. What the EU AI Act does—and does not do",
+          "paragraphs": [
+            "Regulation (EU) 2024/1689 creates a harmonised, risk-based EU framework for AI. It does not replace the GDPR, professional rules, consumer protection or procedural law. A single system can trigger several legal regimes at once. First define the system, its intended use, the provider or deployer, who is affected and territorial applicability.",
+            "Risk classification is use-specific. A general drafting assistant used for grammar is not identical to a system intended to assess people for jobs, education or particular public functions. Avoid classifying a vendor’s entire product from its marketing description alone."
+          ]
+        },
+        {
+          "title": "2. The updated application timeline, checked in November 2026",
+          "paragraphs": [
+            "The AI Act entered into force on 1 August 2024. Definitions, AI literacy duties and most prohibited practices applied from 2 February 2025. Governance and general-purpose AI obligations applied from 2 August 2025. Many other rules—including certain transparency requirements—applied from 2 August 2026.",
+            "Following the 2026 AI Omnibus amendments, the EU Commission’s consolidated timeline sets 2 December 2027 for Annex III high-risk systems and 2 August 2028 for high-risk systems in Annex I regulated products. Certain additional prohibitions and transition rules have a 2 December 2026 date. Check the latest consolidated text before taking a compliance action; dates and transitional rules are material."
+          ]
+        },
+        {
+          "title": "3. Apply a role-and-use analysis",
+          "paragraphs": [
+            "Distinguish the provider who develops or places a system on the market, the deployer who uses it under their authority, importers, distributors and general-purpose AI model providers as relevant. Collect a description of intended purpose, training/data sources, human oversight, instructions, logs and post-market monitoring responsibilities.",
+            "High-risk systems can trigger documentation, risk management, data-governance, transparency, oversight and conformity requirements when their provisions apply. Some deployments may also require fundamental-rights impact assessments; data protection impact assessment duties arise under data protection law when their separate thresholds are met."
+          ]
+        },
+        {
+          "title": "4. Classify a practical use case",
+          "paragraphs": [
+            "Compare two prototypes: a law firm’s internal grammar assistant and a public body’s automated tool intended to support an adjudicative or eligibility decision. The second is much more sensitive because rights, fairness and due process may be affected. Read Annex III exclusions, role rules and timelines before reaching a final category.",
+            "A defensible compliance matrix records the law, article, role, intended use, risk justification, effective date, evidence and accountable reviewer. Flag ambiguity rather than awarding a misleading “compliant” badge."
+          ]
+        }
+      ],
+      "case": {
+        "label": "FICTIONAL EU COMPLIANCE CASE",
+        "title": "Two AI tools, very different stakes",
+        "facts": "An EU-facing legal services provider uses Tool A to improve grammar in draft internal emails. A government department proposes Tool B to rank evidence for eligibility decisions.",
+        "challenge": "Compare likely risks and regulatory questions without declaring an outcome under a provision you have not checked.",
+        "model": "Separate intended use, role, territorial nexus, Annex III analysis, human decision control, transparency, personal data and when the obligations apply. Escalate the public-sector decision-support use."
+      },
+      "lab": {
+        "title": "Draft an EU AI Act classification memo",
+        "time": "75–90 min",
+        "brief": "Prepare a one-page analysis for Tool A and Tool B using the consolidated official AI Act text.",
+        "steps": [
+          "Identify intended purpose, stakeholders, provider/deployer role and territorial reach.",
+          "Review prohibitions, high-risk definitions, Annex III and Article 50 transparency triggers.",
+          "Record the 2025, 2026, December 2027 and August 2028 application milestones accurately.",
+          "Make a control table: human oversight, evaluation, documentation, data security and escalation."
+        ],
+        "deliverable": "Role/use/timeline matrix + provisional classification memo + evidence links",
+        "rubric": "Legal sources 40% · role-based analysis 25% · dates 20% · cautious conclusion 15%"
+      },
+      "demo": "regulation",
+      "video": {
+        "id": "0jA4biabn1Y",
+        "title": "Using AI content in the EU?",
+        "by": "European Parliament (August 2026)"
+      },
+      "refs": [
+        "eu-timeline",
+        "eu-article",
+        "lawsociety",
+        "nist"
+      ],
+      "quiz": [
+        {
+          "prompt": "As of November 2026, when do the revised Annex III high-risk requirements generally start to apply?",
+          "choices": [
+            "2 December 2027",
+            "2 August 2024",
+            "2 February 2025"
+          ],
+          "answer": 0,
+          "why": "The 2026 AI Omnibus amendment shifted Annex III high-risk rules to 2 December 2027; check the precise provision and transitions."
+        },
+        {
+          "prompt": "Which is the best starting point for classification?",
+          "choices": [
+            "The vendor’s marketing slogan",
+            "The system’s intended use, role, territory and legal text",
+            "The colour of the interface"
+          ],
+          "answer": 1,
+          "why": "Classification is based on the legal definition and actual intended purpose."
+        },
+        {
+          "prompt": "Does AI Act compliance replace privacy and professional obligations?",
+          "choices": [
+            "Yes, completely",
+            "No; other legal regimes remain relevant",
+            "Only for small law firms"
+          ],
+          "answer": 1,
+          "why": "AI Act, data protection and professional duties can all apply."
+        }
+      ],
+      "tutor": {
+        "hint": "Ask who uses the system, what it does to people, where it is offered, and which legal provisions and dates apply.",
+        "example": "Internal grammar support differs materially from a tool intended to influence a court or government eligibility decision.",
+        "question": "Which four facts must you collect before deciding whether an AI Act obligation applies?"
+      }
+    },
+    {
+      "id": "markets",
+      "n": "08",
+      "week": 3,
+      "category": "SUPPLEMENTAL LECTURE",
+      "hours": 7,
+      "title": "Legal Markets & Regulation",
+      "subtitle": "Legal-service models, consumer protection, professional boundaries and access",
+      "eyebrow": "Innovation must fit the jurisdiction and protect the public",
+      "outcomes": [
+        "Compare law firm, in-house, alternative provider and legal aid service models",
+        "Identify questions about reserved activities and unauthorised practice",
+        "Build an access-to-justice impact and consumer transparency checklist",
+        "Assess technology business models without assuming regulatory permission"
+      ],
+      "lessons": [
+        {
+          "title": "1. Map the legal services market",
+          "paragraphs": [
+            "Legal help is delivered by regulated firms, individual practitioners, in-house teams, legal aid organisations, public institutions and technology-enabled service providers. Services range from general information through administrative help to tailored advice, advocacy and representation. The regulatory boundary varies across jurisdictions and activities.",
+            "Business-to-business legal technology may provide tools to licensed professionals; consumer-facing systems may interact directly with unrepresented people. These choices change the risks relating to competence, reliance, scope, marketing and redress."
+          ]
+        },
+        {
+          "title": "2. Regulation is jurisdiction-specific",
+          "paragraphs": [
+            "In England and Wales, reserved legal activities and regulatory status are governed by specific law and professional regimes. The United States regulates the practice of law largely at state level, so exceptions and ownership restrictions vary. In the EU, domestic professional regimes interact with EU-level frameworks. Never market a course prototype as authorised legal advice in every country.",
+            "Create a jurisdiction table: activity, proposed provider, required authorisation, supervision, insurance, data handling, consumer rights, complaints and signposting. Send unresolved issues to qualified local counsel or the appropriate regulator."
+          ]
+        },
+        {
+          "title": "3. Consider the public benefit and the excluded user",
+          "paragraphs": [
+            "A digital form can lower costs while increasing exclusion if it assumes English, digital access and perfect literacy. User consent and freedom to select an alternative channel matter, especially where stakes are high. Evaluate cost, convenience, fairness, remedy and comprehension together.",
+            "Use the World Justice Project’s people-centred approach to ask whether the person resolved their legal problem, rather than merely whether a provider closed a case."
+          ]
+        },
+        {
+          "title": "4. Design a responsible service model",
+          "paragraphs": [
+            "For a fictional small-business legal document service, define the information it may publish, whether personalised advice is in scope, how the user identifies the service provider, pricing, limitations, referral thresholds and complaint handling. Test the marketing copy for exaggerated accuracy promises.",
+            "Commercial differentiation can come from reliable service, better intake, clear communication, multilingual access and transparent scope—not from bypassing professional rules or disguising risk."
+          ]
+        }
+      ],
+      "case": {
+        "label": "FICTIONAL MARKET ENTRY CASE",
+        "title": "A low-cost chatbot for small businesses",
+        "facts": "An entrepreneur proposes a chatbot that advertises “instant legal advice for every country” and charges a monthly subscription. It collects sensitive business disputes but has no local legal reviewers.",
+        "challenge": "Identify regulatory and consumer-protection questions and redesign the service description.",
+        "model": "Avoid blanket legal-advice claims; distinguish information from regulated services, specify jurisdiction and limits, offer referrals, protect data, confirm local authorisation before personalised advice and provide redress."
+      },
+      "lab": {
+        "title": "Market entry and access-to-justice assessment",
+        "time": "60–75 min",
+        "brief": "Assess the fictional chatbot for UK, one US state and one non-US jurisdiction of your choice, researching local law separately.",
+        "steps": [
+          "Identify the type of activity the service actually undertakes.",
+          "List regulatory questions before offering any tailored advice or representation.",
+          "Write consumer-facing limitations and a route to a human adviser.",
+          "Evaluate five accessibility and consumer-outcome indicators."
+        ],
+        "deliverable": "Comparative regulatory checklist + responsible service brief + impact measures",
+        "rubric": "Jurisdiction specificity 35% · consumer safety 30% · access 20% · honest positioning 15%"
+      },
+      "demo": "market",
+      "video": {
+        "id": "HTASafUWg8A",
+        "title": "CodeX FutureLaw 2026 — Beyond Efficiency",
+        "by": "Stanford Law School"
+      },
+      "refs": [
+        "sra",
+        "lawsociety",
+        "wjp",
+        "stanford",
+        "uncitral"
+      ],
+      "quiz": [
+        {
+          "prompt": "Is a legal-tech company licensed to provide tailored legal advice everywhere because it operates online?",
+          "choices": [
+            "Yes",
+            "No; legal service boundaries depend on the activity and jurisdiction",
+            "Yes, if the website has a disclaimer"
+          ],
+          "answer": 1,
+          "why": "Online delivery does not eliminate local regulation."
+        },
+        {
+          "prompt": "What is a useful access-to-justice outcome?",
+          "choices": [
+            "Number of button clicks",
+            "Whether users understood options and resolved problems fairly",
+            "Number of automated refusals"
+          ],
+          "answer": 1,
+          "why": "Evaluate the person’s outcome, not only digital activity."
+        },
+        {
+          "prompt": "What should a direct-to-consumer legal service disclose?",
+          "choices": [
+            "Its scope, limits, provider, pricing and escalation",
+            "Only a confident success rate",
+            "Nothing until checkout"
+          ],
+          "answer": 0,
+          "why": "Clear scope and transparent information support responsible service."
+        }
+      ],
+      "tutor": {
+        "hint": "Start with the exact activity and where it is offered. Is it information, administration, legal advice, representation or a reserved activity?",
+        "example": "A company registry checklist may be general information; representing clients in a jurisdiction can involve separate authorisation rules.",
+        "question": "What would you change in the claim “legal advice for everyone, everywhere” to make it defensible?"
+      }
+    },
+    {
+      "id": "copyright",
+      "n": "09",
+      "week": 3,
+      "category": "SUPPLEMENTAL LECTURE",
+      "hours": 8,
+      "title": "Generative AI & Copyright Law",
+      "subtitle": "Human authorship, AI training, output risk, licensing and provenance",
+      "eyebrow": "Separate who created it, what was used and what is copied",
+      "outcomes": [
+        "Distinguish copyrightability of outputs from infringement by inputs or outputs",
+        "Analyse training and text/data mining issues by jurisdiction",
+        "Audit an AI-generated creative deliverable for rights and attribution risks",
+        "Draft basic responsible procurement and licensing questions"
+      ],
+      "lessons": [
+        {
+          "title": "1. Copyrightability is not the same as ownership",
+          "paragraphs": [
+            "Copyright ordinarily protects qualifying original expression, but the role of human authorship, computer-generated works and ownership varies by jurisdiction. In January 2025, the U.S. Copyright Office concluded that protection for AI-assisted outputs depends on sufficient human-determined expressive elements; prompts alone generally do not establish authorship under the Office’s analysis.",
+            "Record the human creative choices: selection, arrangement, editing, composition and revisions. The legal result may differ for different portions of a work, and a contract cannot grant a right that the grantor does not own."
+          ]
+        },
+        {
+          "title": "2. Training data and exceptions",
+          "paragraphs": [
+            "Separate the stages: collection, training, fine-tuning, retrieval and output. The legal treatment of copying can differ at each step. In the US, fair use is context-specific and contested; in the EU, text and data mining exceptions have conditions and potential reservations of rights. Do not treat either concept as a universal exemption.",
+            "AI training litigation and policy are developing. The U.S. Copyright Office’s Part 3 pre-publication report from May 2025 discusses training-related questions; read it as policy analysis, not as a final ruling on any lawsuit."
+          ]
+        },
+        {
+          "title": "3. When outputs may infringe",
+          "paragraphs": [
+            "A model may output material that resembles a protected work. Risk depends on substantial similarity and applicable rules, not simply whether AI was used. A business should check likeness, provenance, licences, embedded assets, use restrictions and claims of originality before publishing customer-facing work.",
+            "Avoid prompts that request near-copies of specific recent works, copyrighted logos or a living artist’s protected material. Check source materials and document human review. Contractual warranties from an AI vendor are useful but do not replace clearance analysis."
+          ]
+        },
+        {
+          "title": "4. Draft better IP terms",
+          "paragraphs": [
+            "A legal-tech contract should address allowed inputs, confidentiality, training use, permitted output uses, third-party rights, ownership claims, audit, deletion, indemnities, liability limits and dispute resolution. The parties should distinguish proprietary source documents, AI outputs and humans’ later edits.",
+            "For educational examples, use synthetic documents, your own materials or properly licensed sources. Include a provenance ledger that lists who supplied content and under which permission."
+          ]
+        }
+      ],
+      "case": {
+        "label": "REAL POLICY + FICTIONAL COMMERCIAL CASE",
+        "title": "Who owns the AI-assisted advertising design?",
+        "facts": "A fictional agency creates an advertisement using a generative model and several original human edits. The client asks for exclusive global copyright and an infringement warranty.",
+        "challenge": "Which claims require scrutiny before promising sole ownership or no third-party infringement?",
+        "model": "Identify jurisdictions; audit human expression, third-party inputs and licences; clarify the grantor’s rights; negotiate realistic warranties, exclusions, permissions and remedy procedures."
+      },
+      "lab": {
+        "title": "Copyright and provenance clearance file",
+        "time": "70–90 min",
+        "brief": "Assess a fictional AI-assisted advertising campaign before launch.",
+        "steps": [
+          "List every input and output, who supplied it and its licensing status.",
+          "Separate authorship, ownership, infringement and contract questions.",
+          "Prepare a 2-column US/EU comparative issue map with primary sources.",
+          "Draft six proposed contract protections and a stop/publish decision."
+        ],
+        "deliverable": "Provenance ledger + legal issues matrix + short clearance memo",
+        "rubric": "Issue separation 35% · sourcing 30% · practical safeguards 25% · clarity 10%"
+      },
+      "demo": "copyright",
+      "video": {
+        "id": "enjfkUuy4QY",
+        "title": "Generative AI & Copyright — Prof. Pamela Samuelson",
+        "by": "Allen Institute for AI (Ai2), 2023; foundational talk"
+      },
+      "refs": [
+        "copyright",
+        "copyright3",
+        "eu-article",
+        "lawsociety"
+      ],
+      "quiz": [
+        {
+          "prompt": "Does an impressive prompt always establish copyright authorship in the US?",
+          "choices": [
+            "Yes",
+            "No; sufficient human-determined expressive elements are crucial",
+            "Yes, if it is a paid model"
+          ],
+          "answer": 1,
+          "why": "The US Copyright Office’s 2025 Part 2 report discusses the need for human authorship."
+        },
+        {
+          "prompt": "Is AI training fair use automatically in every US case?",
+          "choices": [
+            "Yes",
+            "No; it is a context-specific legal analysis",
+            "Yes, if the training dataset was online"
+          ],
+          "answer": 1,
+          "why": "Fair-use claims depend on particular facts and law; active disputes remain complex."
+        },
+        {
+          "prompt": "Before providing an exclusive-rights warranty, what should you do?",
+          "choices": [
+            "Assume all AI output belongs to the customer",
+            "Check human contributions, inputs, licences and applicable law",
+            "Copy another agency’s warranty"
+          ],
+          "answer": 1,
+          "why": "Rights and warranties require a documented provenance and legal analysis."
+        }
+      ],
+      "tutor": {
+        "hint": "Separate four questions: whether there is copyright, who owns it, whether source copying is lawful, and whether the output infringes.",
+        "example": "A human-designed poster with AI-generated background may contain protectable human creative arrangement while particular generated elements require separate analysis.",
+        "question": "What evidence would help show which expressive choices were made by a human?"
+      }
+    },
+    {
+      "id": "pre-hackathon",
+      "n": "10",
+      "week": 3,
+      "category": "PRE-HACKATHON WORKSHOPS",
+      "hours": 8,
+      "title": "Prototype Studio & Pre-Hackathon",
+      "subtitle": "Problem discovery, hypothesis testing, usability and legal safeguards",
+      "eyebrow": "Problem first. Evidence second. Prototype third.",
+      "outcomes": [
+        "Write a specific, testable legal service problem statement",
+        "Convert an identified bottleneck into safe user stories and acceptance criteria",
+        "Create a low-fidelity but functional prototype",
+        "Run usability, accessibility and risk tests before pitching"
+      ],
+      "lessons": [
+        {
+          "title": "1. Workshop A: find a defensible problem",
+          "paragraphs": [
+            "Start with a person and an observed problem, not “build an AI chatbot.” A strong problem statement describes who struggles, where in the process, how often, what harm occurs and what evidence supports the claim. Example: “Unrepresented claimants cannot tell which documents a tribunal requires, so filings are incomplete and hearings are delayed.”",
+            "Separate an observation from an assumption. Interview at least three distinct stakeholders using synthetic or authorised examples. Ask them to describe a recent workflow; do not steer them toward your proposed technology."
+          ]
+        },
+        {
+          "title": "2. Create an improvement hypothesis",
+          "paragraphs": [
+            "Use the format: For [user] who [problem], we will test [intervention], expecting [measurable result], provided [safety condition]. Example: a plain-language intake checklist may reduce missing attachments without giving legal advice.",
+            "Select three outcome measures: task completion, comprehension and correct escalation. Include a baseline and a failure threshold. A 100% completion rate that misdirects people to the wrong tribunal fails the safety condition."
+          ]
+        },
+        {
+          "title": "3. Workshop B: build a proof of concept",
+          "paragraphs": [
+            "Prototype the riskiest assumption first. Use a storyboard, paper mock-up, rules-driven decision tree, offline dashboard or verified document template. A prototype does not need access to client records, payment systems or courts to test its concept.",
+            "Give the prototype a clear boundary: not legal advice, synthetic data only, no automated case decisions, reviewed sources and a human fallback. Design for screen readers and small screens before visual polish."
+          ]
+        },
+        {
+          "title": "4. Run structured red-team and user tests",
+          "paragraphs": [
+            "Write tasks, expected outputs and observation notes. Include a contradictory-input case, a missing-authority case, a disability scenario, a privacy attack and a “what if the system is wrong?” test. Give each issue a severity and named owner.",
+            "Iterate: describe → build → inspect → test → revise. Record one improvement from a real user test and one feature you deliberately rejected for safety."
+          ]
+        }
+      ],
+      "case": {
+        "label": "CAPSTONE PREPARATION CASE",
+        "title": "The missed documents in a community legal clinic",
+        "facts": "A fictional clinic has a 35% rate of incomplete intake packets and a long queue. Staff want a chatbot. Users report that the instructions are confusing.",
+        "challenge": "Is a chatbot the minimum viable solution? Compare a plain-language form, an appointment pre-check and a chatbot.",
+        "model": "Choose based on observed user need and test results. The simplest accessible checklist may outperform a high-risk chatbot; escalate nuanced legal questions."
+      },
+      "lab": {
+        "title": "Design a research-backed prototype brief",
+        "time": "120 min",
+        "brief": "Prepare your team for the 48-hour hackathon using one of the four challenge tracks.",
+        "steps": [
+          "Conduct three role-based interviews using supplied fictional stakeholder descriptions.",
+          "Define a problem, baseline, hypothesis, success condition and stop condition.",
+          "Create 3–5 screens or an interactive decision tree and a 10-test plan.",
+          "Assign team roles: legal accuracy, user research, prototype, evaluation and pitch."
+        ],
+        "deliverable": "Problem brief + user stories + low-fidelity prototype + risk register + test plan",
+        "rubric": "Problem evidence 25% · prototype 25% · safeguarding 30% · team organisation 20%"
+      },
+      "demo": "studio",
+      "video": {
+        "id": "0oeD2Wf25wY",
+        "title": "Mastering AI Risk — NIST Framework Explained",
+        "by": "IBM Technology (2025)"
+      },
+      "refs": [
+        "stanford",
+        "nist",
+        "wjp",
+        "lawsociety"
+      ],
+      "quiz": [
+        {
+          "prompt": "Which is the strongest problem statement?",
+          "choices": [
+            "We need an AI assistant because AI is exciting",
+            "Many incomplete intake packets cause delays; test a clear checklist to reduce omissions",
+            "We need to eliminate all legal staff"
+          ],
+          "answer": 1,
+          "why": "A problem statement should identify a user, observed problem and measurable outcome."
+        },
+        {
+          "prompt": "What kind of data is best for an early legal-tech prototype?",
+          "choices": [
+            "Client data without consent",
+            "Synthetic, properly permitted and representative examples",
+            "A publicly exposed case management export"
+          ],
+          "answer": 1,
+          "why": "Synthetic data limits avoidable privacy and confidentiality risk."
+        },
+        {
+          "prompt": "Which result warrants stopping a pilot?",
+          "choices": [
+            "A participant dislikes the colour scheme",
+            "The workflow wrongly directs users away from a lawful review route",
+            "A prototype needs one more iteration"
+          ],
+          "answer": 1,
+          "why": "Failures affecting rights or lawful recourse are serious safety defects."
+        }
+      ],
+      "tutor": {
+        "hint": "State the affected user, observed evidence, proposed intervention, outcome metric and a hard safety limit.",
+        "example": "Instead of “AI dispute lawyer,” test a clear, accessible dispute-evidence checklist with human referral.",
+        "question": "What evidence could convince you that your initial product idea is wrong?"
+      }
+    },
+    {
+      "id": "hackathon",
+      "n": "11",
+      "week": 3,
+      "category": "48-HOUR LEGAL HACKATHON",
+      "hours": 48,
+      "title": "48-Hour Legal Innovation Hackathon",
+      "subtitle": "Build, test, justify and pitch an ethical legal technology solution",
+      "eyebrow": "Demonstrate impact, not just a polished slide deck",
+      "outcomes": [
+        "Deliver a functional or testable prototype with a clear user journey",
+        "Document a legal and AI risk review with named mitigations",
+        "Run usability and failure-mode tests using synthetic information",
+        "Present impact, limitations, safeguards and next steps to a review panel"
+      ],
+      "lessons": [
+        {
+          "title": "1. Choose one of four challenge tracks",
+          "paragraphs": [
+            "Track A: legal aid intake and accessibility; Track B: contract review and approval workflow; Track C: dispute resolution and evidence organisation; Track D: law-firm operations and cost predictability. Teams may select a different problem if a mentor approves the legal and data boundaries.",
+            "Write a five-sentence project charter: target user, unmet need, current process, proposed change and why it is safer or more effective than alternatives."
+          ]
+        },
+        {
+          "title": "2. Hours 0–12: discover and scope",
+          "paragraphs": [
+            "Review stakeholders and available evidence; map the AS-IS flow; define the user story and legal boundaries; select one measurable outcome and one safety gate. Prepare synthetic examples and get a reviewer to sign off on what the prototype may and may not do.",
+            "Decision checkpoint: stop or reduce scope if the tool would require confidential data or could make consequential decisions without authorisation and controls."
+          ]
+        },
+        {
+          "title": "3. Hours 12–30: prototype and test",
+          "paragraphs": [
+            "Build one complete path, not ten unfinished features. A decision tree, form, knowledge-base interface or pricing dashboard can count as a prototype if a user can perform a meaningful task. Record expected answers, observed outcomes, failure types and improvements.",
+            "Test at least 10 scenarios, including boundary values, missing information, alternative access, malicious instructions and uncertain legal questions. Inspect every cited primary source used in advice-like content."
+          ]
+        },
+        {
+          "title": "4. Hours 30–48: revise, demonstrate and pitch",
+          "paragraphs": [
+            "Conduct a brief accessibility review, fix the highest-severity defects, prepare a cost-and-sustainability note and complete the ethics checklist. In a six-minute pitch, show the before/after journey, live prototype, measured test results, residual risks, human accountability and next experiment.",
+            "Submit an honest limitations section. Reviewers should reward safe problem-solving and reliable evidence rather than ambitious unsupported automation."
+          ]
+        }
+      ],
+      "case": {
+        "label": "TEAM CAPSTONE SCENARIO",
+        "title": "Justice Access Challenge — fictional pilot",
+        "facts": "A fictional community advice organisation handles 300 enquiries monthly; 30% are missing essential documents, average response is 9 days and some users cannot access online forms. The team has 48 hours and synthetic cases only.",
+        "challenge": "Build a solution that improves comprehension and reduces incomplete cases without replacing qualified legal advice.",
+        "model": "An accessible intake checklist with language options, document prompts, a human channel, verified public guidance and a clear referral path would be a strong candidate; measure it against the baseline."
+      },
+      "lab": {
+        "title": "Final prototype and evidence-based pitch",
+        "time": "48 hours",
+        "brief": "Create a responsible legal-tech prototype as a team and submit the full evidence pack.",
+        "steps": [
+          "0–12h: define user problem, baseline, safeguards and role allocations.",
+          "12–30h: build one working path and test at least 10 synthetic scenarios.",
+          "30–40h: fix critical flaws, document accessibility and professional review.",
+          "40–48h: package prototype, 6-slide pitch, live demo, impact metrics, risk register and individual reflection."
+        ],
+        "deliverable": "Working prototype + 6-slide pitch + ten-case test report + governance plan + personal contribution log",
+        "rubric": "Problem and service impact 20% · practical prototype 25% · legal and AI safeguards 25% · evidence/testing 20% · communication/teamwork 10%"
+      },
+      "demo": "hackathon",
+      "video": {
+        "id": "HTASafUWg8A",
+        "title": "CodeX FutureLaw 2026 — Beyond Efficiency",
+        "by": "Stanford Law School"
+      },
+      "refs": [
+        "stanford",
+        "nist",
+        "sra",
+        "wjp"
+      ],
+      "quiz": [
+        {
+          "prompt": "Which would be an unacceptable hackathon demo?",
+          "choices": [
+            "A synthetic-data intake decision tree",
+            "A tool using live confidential client data without approval",
+            "A tested plain-language process map"
+          ],
+          "answer": 1,
+          "why": "Using unapproved client data creates immediate confidentiality and governance problems."
+        },
+        {
+          "prompt": "What belongs in a responsible pitch?",
+          "choices": [
+            "Benefits only",
+            "User problem, tested results, safeguards and limitations",
+            "A guarantee that AI never fails"
+          ],
+          "answer": 1,
+          "why": "A credible project acknowledges risks and test limitations."
+        },
+        {
+          "prompt": "Which project is stronger?",
+          "choices": [
+            "A flashy system with no user tests",
+            "A smaller, working, accessible system with evidence and escalation",
+            "A cloned legal services website"
+          ],
+          "answer": 1,
+          "why": "Practical, tested and responsible design is the goal."
+        }
+      ],
+      "tutor": {
+        "hint": "Focus on one user journey, one measurable improvement and explicit safety constraints. The demo should demonstrate behaviour, not promises.",
+        "example": "An evidence checklist with a review hand-off and a ten-case test report may be stronger than an untested end-to-end legal chatbot.",
+        "question": "Which failure would cause you to pause launch immediately?"
+      }
+    }
+  ],
+  "sources": {
+    "bucerius": {
+      "title": "Bucerius 2027 course outline — structural reference only",
+      "url": "https://www.law-school.de/international/education/bucerius-summer-programs/legal-technology-and-operations/academics",
+      "type": "Reference curriculum"
+    },
+    "sra": {
+      "title": "SRA Misuse of AI — Warning Notice (17 August 2026)",
+      "url": "https://www.sra.org.uk/solicitors/guidance/misuse-ai/",
+      "type": "UK regulator"
+    },
+    "lawsociety": {
+      "title": "Law Society: Using artificial intelligence in legal practice (21 October 2026)",
+      "url": "https://www.lawsociety.org.uk/topics/ai-and-lawtech/using-artificial-intelligence-in-legal-practice",
+      "type": "UK professional guidance"
+    },
+    "aba": {
+      "title": "ABA Formal Opinion 512: Generative AI Tools (29 July 2024)",
+      "url": "https://www.americanbar.org/content/dam/aba/administrative/professional_responsibility/ethics-opinions/aba-formal-opinion-512.pdf",
+      "type": "US professional ethics"
+    },
+    "nist": {
+      "title": "NIST AI RMF Generative AI Profile (July 2024)",
+      "url": "https://www.nist.gov/publications/artificial-intelligence-risk-management-framework-generative-artificial-intelligence",
+      "type": "Risk management framework"
+    },
+    "cloc": {
+      "title": "CLOC Core 12 Legal Operations Competencies",
+      "url": "https://cloc.org/cloc-core-12/",
+      "type": "Operations framework"
+    },
+    "uncitral": {
+      "title": "UNCITRAL Technical Notes on Online Dispute Resolution (2016)",
+      "url": "https://uncitral.un.org/en/texts/onlinedispute/explanatorytexts/technical_notes",
+      "type": "UN guidance"
+    },
+    "wjp": {
+      "title": "World Justice Project: Access to Justice",
+      "url": "https://worldjusticeproject.org/access-to-justice",
+      "type": "Access research"
+    },
+    "judiciary": {
+      "title": "Courts and Tribunals Judiciary: AI Guidance (October 2025)",
+      "url": "https://www.judiciary.uk/guidance-and-resources/artificial-intelligence-ai-judicial-guidance-october-2025/",
+      "type": "Judicial guidance"
+    },
+    "eu-timeline": {
+      "title": "European Commission: EU AI Act implementation timeline (2026 consolidated)",
+      "url": "https://ai-act-service-desk.ec.europa.eu/en/ai-act/eu-ai-act-implementation-timeline",
+      "type": "Official EU timeline"
+    },
+    "eu-article": {
+      "title": "EU AI Act Article 113: consolidated application dates",
+      "url": "https://ai-act-service-desk.ec.europa.eu/en/ai-act/article-113?full=1",
+      "type": "Official EU legal text"
+    },
+    "copyright": {
+      "title": "U.S. Copyright Office AI Report Part 2: Copyrightability (January 2025)",
+      "url": "https://www.copyright.gov/newsnet/2025/1060.html",
+      "type": "US copyright policy"
+    },
+    "copyright3": {
+      "title": "U.S. Copyright Office AI Report Part 3: Training (May 2025 pre-publication)",
+      "url": "https://www.copyright.gov/ai/Copyright-and-Artificial-Intelligence-Part-3-Generative-AI-Training-Report-Pre-Publication-Version.pdf",
+      "type": "US policy report"
+    },
+    "stanford": {
+      "title": "Stanford Legal Design Lab — Access to Justice and Service Design",
+      "url": "https://law.stanford.edu/legal-design-lab/",
+      "type": "Academic practice"
+    },
+    "oxford": {
+      "title": "Oxford/UNESCO: AI, Justice and the Rule of Law course (2026)",
+      "url": "https://www.law.ox.ac.uk/content/news/faculty-law-co-creates-new-online-course-ai-justice-and-rule-law",
+      "type": "Research and education"
+    }
+  },
+  "virtualTrips": [
+    {
+      "title": "Innovation lab / legal design",
+      "why": "Compare a human-centred access-to-justice project to a legal firm workflow.",
+      "url": "https://law.stanford.edu/legal-design-lab/",
+      "task": "Identify the user, the actual problem and how impact was tested."
+    },
+    {
+      "title": "Computational law research centre",
+      "why": "Examine how computer science, analytics and law intersect.",
+      "url": "https://law.stanford.edu/codex-the-stanford-center-for-legal-informatics/",
+      "task": "Find an application that augments, rather than replaces, professional judgement."
+    },
+    {
+      "title": "Legal operations maturity scan",
+      "why": "Explore a framework used by in-house legal teams.",
+      "url": "https://cloc.org/cloc-core-12/",
+      "task": "Score a fictional firm in three operational competencies and justify priorities."
+    },
+    {
+      "title": "Professional responsibility field visit",
+      "why": "Read current regulator expectations and practice controls.",
+      "url": "https://www.sra.org.uk/solicitors/guidance/misuse-ai/",
+      "task": "Document three controls a law firm needs before allowing AI-assisted drafting."
+    }
+  ]
+};
+
+</script><script>
+(()=>{'use strict';
+const C=window.LEGAL_COURSE,mods=C.modules,KEY='bsoe_legal_lab_workbook_v1',app=document.getElementById('workbook-app');let state=read(),current=new URLSearchParams(location.search).get('m')||mods[0].id;if(current!=='fieldtrips'&&!mods.some(m=>m.id===current))current=mods[0].id;
+function read(){try{return JSON.parse(localStorage.getItem(KEY))||{version:1,answers:{},fieldTrips:{},selfChecks:{}}}catch(e){return{version:1,answers:{},fieldTrips:{},selfChecks:{}}}}
+function save(){try{localStorage.setItem(KEY,JSON.stringify(state))}catch(e){warn('Local save may be unavailable. Export a backup.') }}
+function esc(v){return String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+function value(k){return state.answers[k]||''}
+function warn(t){let a=document.getElementById('wb-status');if(a)a.textContent=t}
+function count(){return Object.values(state.answers).filter(x=>String(x).trim().length>0).length}
+function qset(m){return[
+['Case issue spotting','Read the case facts in your course, then analyse: '+m.case.challenge],
+...[...m.lab.steps].map((s,i)=>['Practical task '+(i+1),s]),
+['Decision and explanation','Prepare your conclusion: evidence, applicable law or guidance, human reviewer, uncertainties and risk controls.'],
+['Source and citation ledger','Record every primary legal authority, date, pinpoint passage, jurisdiction, verified URL and any unresolved point. Use only genuine sources.'],
+['Reflection and improvement','What surprised you? What failed in your first approach? What would you change after feedback?']
+]}
+function fieldCount(){return Object.values(state.fieldTrips).filter(x=>String(x).trim()).length}
+function render(){const m=mods.find(x=>x.id===current)||mods[0];app.innerHTML=`<section class="workbook-hero"><div class="eyebrow">Private learner portfolio · independent course</div><h1 style="font-size:clamp(2.2rem,5vw,3.6rem)">My legal innovation <span class="accent">workbook.</span></h1><p class="lead muted">This is where you do the work: legal issue spotting, verified research, workflow design, financial analysis, copyright and regulatory memos, testing and reflection. Your answers save in your browser when storage is available—no name, login or upload required.</p><div class="wb-bar"><span class="tag" id="wb-counter">${count()} written responses saved · ${fieldCount()} field studies</span><div class="hero-actions" style="margin:0"><button class="btn slim primary" id="export-json">Export backup (.json)</button><button class="btn slim secondary" id="export-markdown">Export readable (.md)</button><button class="btn slim" id="import-json">Import backup</button><button class="btn slim" id="print-wb">Print current unit</button><input class="sr-only" type="file" id="file-input" accept="application/json,.json" aria-label="Import workbook JSON"></div></div><p class="small muted" id="wb-status">Your answers are stored only in this browser on this device. Clear browser data and work may be lost. Export regularly. Never enter personal or confidential client information.</p></section><div class="workbook-shell"><aside class="wb-nav"><div class="side-heading">Choose your work package</div>${mods.map(x=>`<button data-id="${x.id}" class="${current===x.id?'active':''}">${x.n} · ${esc(x.title)}</button>`).join('')}<hr class="side-separator"><button data-id="fieldtrips" class="${current==='fieldtrips'?'active':''}">↗ Virtual field-study log</button><a class="btn slim secondary" style="display:block;margin-top:12px;text-align:center" href="standalone-course.html#module/${m.id}">Return to classroom ↗</a><a class="btn slim secondary" style="display:block;margin-top:9px;text-align:center" href="standalone-clinic.html?case=false-authority">Advanced Case Clinic ↗</a><a class="btn slim secondary" style="display:block;margin-top:9px;text-align:center" href="standalone-capstone.html">Capstone Studio ↗</a></aside><div class="wb-right" id="workbook-right"></div></div><section class="section"><div class="notice"><strong>Safe learning and assessment:</strong> all facts in practice worksheets are fictional unless clearly described as reported, and no sample response is legal advice. The workbook is self-assessment and evidence gathering, not an automatically issued academic or practising qualification.</div></section><footer class="footer">British School of Outdoor Education · Legal Systems Lab · November 2026. Not affiliated with the reference provider or with cited institutions. No account, telemetry or student-data collection is implemented in this workbook.</footer>`;renderRight();bind();}
+function renderRight(){const r=document.getElementById('workbook-right');if(current==='fieldtrips'){r.innerHTML=`<div class="content-panel"><div class="eyebrow">Virtual professional fieldwork</div><h2>Evidence and observation log</h2><p>Read each organisation’s own site. Record a genuine source link and compare service design, business model, safeguards and access to justice.</p>${C.virtualTrips.map((t,i)=>`<div class="wb-field"><label for="trip-${i}">${i+1}. ${esc(t.title)}</label><p class="prompt">${esc(t.task)} <a href="${esc(t.url)}" target="_blank" rel="noopener noreferrer">Official source ↗</a></p><textarea id="trip-${i}" data-trip="${i}" placeholder="Observation, evidence link, evaluation and improvement idea…">${esc(state.fieldTrips[i]||'')}</textarea></div>`).join('')}<button class="btn primary" id="next-unit">Back to first unit →</button></div>`;r.querySelectorAll('[data-trip]').forEach(t=>t.addEventListener('input',()=>{state.fieldTrips[t.dataset.trip]=t.value;save();updateCount()}));document.getElementById('next-unit').onclick=()=>select(mods[0].id);return}const m=mods.find(x=>x.id===current),q=qset(m);r.innerHTML=`<div class="content-panel"><div class="meta-line"><span class="tag">WEEK ${m.week}</span><span class="tag">UNIT ${m.n}</span><span class="tag">${esc(m.category)}</span></div><h2>${esc(m.title)}</h2><p class="muted">${esc(m.subtitle)}</p><div class="notice"><strong>Case study:</strong> ${esc(m.case.title)}<p>${esc(m.case.facts)}</p><strong>Deliverable:</strong> ${esc(m.lab.deliverable)}<p><strong>Rubric:</strong> ${esc(m.lab.rubric)}</p></div><div style="height:20px"></div>${q.map(([title,prompt],i)=>`<div class="wb-field"><label for="ans-${i}">${i+1}. ${esc(title)}</label><p class="prompt">${esc(prompt)}</p><textarea id="ans-${i}" data-answer="${i}" placeholder="Write your response, steps, evidence and reasoning here…">${esc(value(current+'__'+i))}</textarea><div class="autosave">Autosaves locally as you type. Use fictional or approved data only.</div></div>`).join('')}<div class="soft-panel"><h3>Self-review before submission</h3><p class="muted">These ticks are reflective checks, not grades. Assessors should review the real portfolio and prototype.</p>${['I verified relevant primary sources and checked their current status.','I separated facts, inference and uncertainty.','I used synthetic/authorised data and identified confidentiality risks.','I included meaningful human oversight and escalation.','I tested accessibility, alternatives and user comprehension.'].map((s,i)=>`<label class="choice"><input type="checkbox" data-check="${i}" ${state.selfChecks[current+'__'+i]?'checked':''}><span>${esc(s)}</span></label>`).join('')}</div><div class="wb-bar"><button class="btn slim secondary" id="prev-unit">← Previous</button><a class="btn slim" href="standalone-course.html#module/${m.id}">Return to lesson ↗</a><button class="btn slim primary" id="next-unit">Next work package →</button></div></div>`;r.querySelectorAll('[data-answer]').forEach(t=>t.addEventListener('input',()=>{state.answers[current+'__'+t.dataset.answer]=t.value;save();updateCount();warn('Saved locally · '+new Date().toLocaleTimeString())}));r.querySelectorAll('[data-check]').forEach(t=>t.addEventListener('change',()=>{state.selfChecks[current+'__'+t.dataset.check]=t.checked;save()}));let idx=mods.findIndex(x=>x.id===current);document.getElementById('next-unit').onclick=()=>select(idx===mods.length-1?'fieldtrips':mods[idx+1].id);document.getElementById('prev-unit').onclick=()=>select(idx<=0?mods[0].id:mods[idx-1].id)}
+function updateCount(){let b=document.getElementById('wb-counter');if(b)b.textContent=count()+' written responses saved · '+fieldCount()+' field studies'}
+function select(id){current=id;try{history.replaceState({},'',location.pathname+(id==='fieldtrips'?'?m=fieldtrips':'?m='+id))}catch(e){}render();window.scrollTo({top:0,behavior:'smooth'})}
+function bind(){document.querySelectorAll('[data-id]').forEach(t=>t.addEventListener('click',()=>select(t.dataset.id)));['export-json','export-btn'].forEach(id=>{const b=document.getElementById(id);if(b)b.onclick=exportJson});document.getElementById('export-markdown').onclick=exportMd;document.getElementById('import-json').onclick=()=>document.getElementById('file-input').click();document.getElementById('file-input').addEventListener('change',importJson);document.getElementById('print-wb').onclick=()=>window.print()}
+function download(data,name,type){let blob=new Blob([data],{type}),url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download=name;document.body.append(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),1500)}
+function exportJson(){let exportData={_format:'BSOE-Legal-Systems-Lab-Workbook-v1',exported:new Date().toISOString(),...state};download(JSON.stringify(exportData,null,2),'legal-systems-lab-workbook-backup.json','application/json');warn('Workbook backup exported. Keep it somewhere safe.')}
+function exportMd(){let parts=['# Legal Systems Lab — Learner Workbook','Research checked: '+C.updated,'Independent, non-accredited professional learning. Do not enter personal/client data.',''];for(let m of mods){parts.push('## '+m.n+' — '+m.title,'Case: '+m.case.title,'Rubric: '+m.lab.rubric,'');qset(m).forEach(([title,prompt],i)=>parts.push('### '+title,prompt,'',value(m.id+'__'+i)||'[No response yet]',''))}parts.push('## Virtual field-study observations');C.virtualTrips.forEach((t,i)=>parts.push('### '+t.title,t.url,state.fieldTrips[i]||'[No observation yet]',''));download(parts.join('\n'),'legal-systems-lab-workbook.md','text/markdown;charset=utf-8');warn('Readable portfolio exported. Review citations and remove any private information before sharing.')}
+function importJson(e){const f=e.target.files[0];if(!f)return;if(f.size>2_000_000){warn('File too large. Please use a valid workbook backup under 2 MB.');return}const reader=new FileReader();reader.onload=()=>{try{let d=JSON.parse(reader.result);if(d._format!=='BSOE-Legal-Systems-Lab-Workbook-v1'||typeof d.answers!=='object'||Array.isArray(d.answers)||!d.fieldTrips)throw new Error('Invalid workbook backup format');state={version:1,answers:d.answers,fieldTrips:d.fieldTrips,selfChecks:d.selfChecks||{}};save();render();warn('Workbook imported from local backup.')}catch(err){warn('Import rejected: '+err.message)}};reader.readAsText(f);e.target.value=''}
+render();})();
+
+</script></body></html>
