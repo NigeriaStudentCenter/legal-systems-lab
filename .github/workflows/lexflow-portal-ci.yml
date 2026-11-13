@@ -28,3 +28,15 @@ jobs:
       - run: npm run build
       - run: test -s dist/portal.js
       - run: npm audit --omit=dev --audit-level=high
+      - name: Upload compiled staging portal for review only
+        uses: actions/upload-artifact@v4
+        with:
+          name: lexflow-portal-staging
+          path: |
+            lexflow-ng/portal/dist/portal.js
+            lexflow-ng/portal/register.html
+            lexflow-ng/portal/status.html
+            lexflow-ng/portal/review.html
+            lexflow-ng/portal/portal.css
+            lexflow-ng/portal/config.js
+          retention-days: 14
