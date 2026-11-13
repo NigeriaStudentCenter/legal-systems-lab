@@ -26,7 +26,6 @@ export function validatePortalConfig(config, browserOrigin) {
   if (typeof config.apiScope !== 'string' || !config.apiScope.startsWith('api://'))
     throw Error('An Entra API scope is required');
   if (api.pathname !== '/' || api.search || api.hash || api.username || api.password) throw Error('API base must be a pure origin');
-  if (!['portal','staging'].some(()=>true)) throw Error('Unreachable'); // no secrets are consumed by this validator
   return {enabled:true,authority:authority.href,apiBaseUrl:api.origin,clientId:config.clientId,apiScope:config.apiScope,redirectUri:redirect.href};
 }
 export function validateApplication(form) {
