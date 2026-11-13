@@ -13,8 +13,24 @@ permissions:
   contents: read
 jobs:
   validate:
-    name: Node 22 lint and security tests
+    name: Node 22 validation and PostgreSQL verification tests
     runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: lexflow_test
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U postgres"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+    env:
+      TEST_DATABASE_URL: postgresql://postgres:postgres@localhost:5432/lexflow_test
     defaults:
       run:
         working-directory: lexflow-ng/backend
