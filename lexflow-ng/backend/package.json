@@ -1,0 +1,22 @@
+{
+  "name": "@bsoe/lexflow-ng-api",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "start": "node src/main.mjs",
+    "check": "node --check src/app.mjs && node --check src/db.mjs && node --check src/domain.mjs && node --check src/auth.mjs && node --check src/config.mjs && node --check src/main.mjs",
+    "test": "node --test test/*.test.mjs"
+  },
+  "dependencies": {
+    "fastify": "^5.6.0",
+    "@fastify/cors": "^11.0.0",
+    "@fastify/helmet": "^13.0.0",
+    "@fastify/rate-limit": "^11.0.0",
+    "jose": "^6.0.0",
+    "pg": "^8.16.0"
+  }
+}
