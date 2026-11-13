@@ -15,7 +15,7 @@ export const practiceAreas = Object.freeze([
   'Business & CAC','Employment','Dispute resolution','Technology & IP'
 ]);
 export const languages = Object.freeze(['English','Hausa','Yoruba','Igbo','Pidgin','Other']);
-const isPlain = x => Boolean(x) && typeof x === 'object' && !Array.isArray(x) && Object.getPrototypeOf(x) === Object.prototype;
+const isPlain = x => Boolean(x) && typeof x === 'object' && !Array.isArray(x) && (Object.getPrototypeOf(x) === Object.prototype || Object.getPrototypeOf(x) === null);
 const fail = x => { throw new InputError(x); };
 const unique = items => [...new Set(items)];
 
