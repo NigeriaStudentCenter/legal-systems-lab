@@ -11,7 +11,9 @@ A companion prototype for graduates and future verified Nigerian legal practitio
 
 **Prototype only:** No real lawyer verification, enquiries, bookings, urgent dispatch, legal advice, client storage, court sync, AI service, payments or escrow. Use fictional data only. Graduation from BSOE does not authorise independent legal practice. Public listing and revenue models require Nigerian legal and ethics review.
 
-When Pages is deployed from `main` / `/(root)`, the *expected* path is `https://nigeriastudentcenter.github.io/legal-systems-lab/lexflow-ng/`; the public Pages deployment has not been verified here.
+### Live links
+- **Marketplace:** [https://nigeriastudentcenter.github.io/legal-systems-lab/lexflow-ng/](https://nigeriastudentcenter.github.io/legal-systems-lab/lexflow-ng/)
+- **Lawyer app:** [https://nigeriastudentcenter.github.io/legal-systems-lab/lexflow-ng/workspace.html](https://nigeriastudentcenter.github.io/legal-systems-lab/lexflow-ng/workspace.html)
 
 
 An independent training course from the British School of Outdoor Education (BSOE). The website contains 11 modules, 44 lessons, a 12-question readiness assessment, a practical workbook, six fictional case-clinic matters, and a 48-hour capstone studio.
