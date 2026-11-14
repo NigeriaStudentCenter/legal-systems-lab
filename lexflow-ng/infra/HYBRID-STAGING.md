@@ -1,6 +1,6 @@
 # LexFlow NG — hybrid staging as deployed (14 Nov 2026)
 
-**Synthetic data only.** All four `ENABLE_*` gates are off. No identity provider is connected, so nobody can sign in. This replaces `bootstrap.bicep` + `containerapp.bicep` for staging; those remain the starting point for a private, dedicated environment before any real professional data.
+**Synthetic data only.** All four `ENABLE_*` gates are off, so sign-in exists but every business endpoint still refuses requests. This replaces `bootstrap.bicep` + `containerapp.bicep` for staging; those remain the starting point for a private, dedicated environment before any real professional data.
 
 ## Why hybrid
 The subscription is a Visual Studio Enterprise subscription with a spending cap and roughly $12 a month of unused credit. The fully dedicated template costs about $22 a month (PostgreSQL server about $16, container registry $5) and would have tripped the cap, which disables every service in the subscription. The hybrid costs close to nothing.
@@ -26,7 +26,21 @@ GitHub: environment `lexflow-staging` (required reviewer, branches `main`, `prod
 - **Public HTTPS ingress** so `/healthz` and `/readyz` can be tested. No WAF or gateway.
 - **Key Vault public endpoint**, RBAC-only. No private endpoint.
 - **Public image on GitHub's registry** instead of a private Azure registry. The source is already public.
-- **Placeholder OIDC settings**: issuer and JWKS point at the organisation's workforce Entra tenant and the audience is `api://lexflow-staging-not-yet-registered`. No token will validate until a Microsoft Entra External ID tenant and app registrations exist (checklist step 2, not done).
+## Sign-in (checklist step 2, staging only)
+Microsoft Entra External ID tenant **LexFlow NG Staging** (`lexflowngstaging.onmicrosoft.com`, tenant ID `5ddfd479-a3cb-4ff7-bdd8-9d745c4309b7`, Europe data location, linked to `lexflow-staging-rg`, free tier billed per monthly active user).
+
+| Item | Value |
+|---|---|
+| Authority | `https://lexflowngstaging.ciamlogin.com/` |
+| Issuer | `https://5ddfd479-a3cb-4ff7-bdd8-9d745c4309b7.ciamlogin.com/5ddfd479-a3cb-4ff7-bdd8-9d745c4309b7/v2.0` |
+| JWKS | `https://lexflowngstaging.ciamlogin.com/5ddfd479-a3cb-4ff7-bdd8-9d745c4309b7/discovery/v2.0/keys` |
+| API app (audience) | `e0db88c1-c50d-48ff-985d-df0a01a222d4` |
+| API scope | `api://e0db88c1-c50d-48ff-985d-df0a01a222d4/access_as_user` |
+| Portal app (SPA client ID) | `c0ec48d2-b103-4f62-950a-e3d6c65bb55d` |
+| Redirect URIs | `https://legal.bsoedu.org/lexflow-ng/portal/{register,status,review}.html` |
+| User flow | "LexFlow staging sign-up and sign-in", email and password, self-service sign-up allowed |
+
+None of these values is secret. `portal/config.js` is still `enabled: false` and has **not** been filled in: doing so on the public site would open sign-up to anyone. No test users exist, no MFA or conditional access is configured, and a real token has not yet been validated end to end against the API.
 
 ## Operating it
 - New image: push to `azure-staging-hybrid` under `lexflow-ng/backend/`; copy the digest from the run summary into `staging-hybrid.parameters.json`.
@@ -35,4 +49,4 @@ GitHub: environment `lexflow-staging` (required reviewer, branches `main`, `prod
 - Remove everything: delete `lexflow-staging-rg`, then `DROP DATABASE lexflow_staging; DROP ROLE lexflow_staging_api;`.
 
 ## Still open before real use
-Checklist steps 2, 5, 6 and 7, every row of `backend/RELEASE-GATES.md`, and a move to a pay-as-you-go subscription with a private database (Visual Studio credits are licensed for development and test only).
+Checklist steps 5, 6 and 7, MFA and test users in the sign-in tenant, every row of `backend/RELEASE-GATES.md`, and a move to a pay-as-you-go subscription with a private database (Visual Studio credits are licensed for development and test only).
