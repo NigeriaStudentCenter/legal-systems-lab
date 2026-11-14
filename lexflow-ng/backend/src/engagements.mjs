@@ -116,7 +116,12 @@ export function makeEngagementDb({pool, transaction, audit, principal, requireRo
       });
     },
     async myEngagements(subject) {
-      const actor = await principal(pool, subject);
+      // A newly authenticated client may not have an app_users row until their first
+      // enquiry. Return an empty dashboard without creating an account implicitly.
+      const registered = await pool.query('SELECT id, is_active FROM app_users WHERE oidc_subject=$1',[subject]);
+      if (!registered.rows[0]) return [];
+      if (!registered.rows[0].is_active) throw new InputError('Account inactive',403);
+      const actor = registered.rows[0];
       const r = await pool.query(`SELECT e.id,e.service_category,e.status,e.created_at,e.responded_at,e.closed_at,
         a.id AS application_id,a.full_name AS lawyer_name,a.city AS lawyer_city,a.state AS lawyer_state,
         CASE WHEN a.user_id=$1 THEN 'lawyer' ELSE 'client' END AS my_role,
