@@ -5,6 +5,13 @@ on:
     paths:
       - 'lexflow-ng/ops/staging-client-portal-readonly.*'
       - 'lexflow-ng/ops/staging-client-portal-browser.test.mjs'
+      - 'lexflow-ng/portal/src/engagements.mjs'
+      - 'lexflow-ng/portal/client.html'
+      - 'lexflow-ng/portal/lawyer.html'
+      - 'lexflow-ng/portal/src/engagements.mjs'
+      - 'lexflow-ng/portal/client.html'
+      - 'lexflow-ng/portal/lawyer.html'
+      - 'lexflow-ng/ops/staging-client-portal-browser.test.mjs'
       - '.github/workflows/lexflow-azure-portal-closed-gate.yml'
       - '.github/workflows/lexflow-portal-closed-gate-ci.yml'
   pull_request:
