@@ -62,3 +62,15 @@ test('rejects insecure ingress, duplicate environment variables and extra contai
   const extra=fixture();extra.properties.template.containers.push({name:'malicious',image});
   assert.throws(()=>validateExistingApp(extra),/topology/);
 });
+test('accepts the empty value Azure CLI echoes beside a secretRef, still rejects any real value',()=>{
+  for(const empty of ['',null]){
+    const data=fixture();
+    data.properties.template.containers[0].env.find(x=>x.name==='DATABASE_URL').value=empty;
+    assert.equal(validateExistingApp(data).ok,true);
+  }
+  for(const leaked of [' ','x','postgresql://user:pw@host/db']){
+    const data=fixture();
+    data.properties.template.containers[0].env.find(x=>x.name==='DATABASE_URL').value=leaked;
+    assert.throws(()=>validateExistingApp(data),/database connection/);
+  }
+});
