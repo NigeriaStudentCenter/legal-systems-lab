@@ -4,8 +4,8 @@
   "version": "0.1.0",
   "type": "module",
   "scripts": {
-    "build": "esbuild src/main.mjs --bundle --format=esm --platform=browser --target=es2022 --minify --outfile=dist/portal.js && esbuild src/engagements.mjs --bundle --format=esm --platform=browser --target=es2022 --minify --outfile=dist/engagements.js",
-    "check": "node --check src/main.mjs && node --check src/runtime.mjs && node --check src/engagements.mjs && node --check src/engagements-runtime.mjs",
+    "build": "esbuild src/main.mjs --bundle --format=esm --platform=browser --target=es2022 --minify --outfile=dist/portal.js && esbuild src/engagements.mjs --bundle --format=esm --platform=browser --target=es2022 --minify --outfile=dist/engagements.js && esbuild src/identity-check.mjs --bundle --format=esm --platform=browser --target=es2022 --minify --outfile=dist/identity-check.js",
+    "check": "node --check src/main.mjs && node --check src/runtime.mjs && node --check src/engagements.mjs && node --check src/engagements-runtime.mjs && node --check src/identity-check.mjs",
     "test": "node --test test/*.test.mjs"
   },
   "dependencies": {

@@ -43,7 +43,8 @@ export function readConfig(env = process.env) {
       verification: bool(env, 'ENABLE_VERIFICATION'),
       publication: bool(env, 'ENABLE_PUBLICATION'),
       directory: bool(env, 'ENABLE_DIRECTORY'),
-      engagements: bool(env, 'ENABLE_ENGAGEMENTS')
+      engagements: bool(env, 'ENABLE_ENGAGEMENTS'),
+      authDiagnostic: bool(env, 'ENABLE_AUTH_DIAGNOSTIC')
     }
   };
   // No path in the GitHub Pages origin: the browser's Origin header carries only scheme + host.
