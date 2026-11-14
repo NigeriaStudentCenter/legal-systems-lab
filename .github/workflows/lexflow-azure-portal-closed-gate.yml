@@ -26,6 +26,15 @@ jobs:
       - name: Install synthetic browser test dependencies
         working-directory: lexflow-ng/backend
         run: npm install --ignore-scripts --no-audit --no-fund
+      - name: Install client portal browser dependencies
+        working-directory: lexflow-ng/portal
+        run: npm install --ignore-scripts --no-audit --no-fund
+      - name: Validate actual portal bundle and its Microsoft Entra import
+        working-directory: lexflow-ng/portal
+        run: |
+          npm run check
+          npm run build
+          test -s dist/engagements.js
       - name: Install Chromium browser for real read-only rendering
         working-directory: lexflow-ng/backend
         run: npx playwright install --with-deps chromium
