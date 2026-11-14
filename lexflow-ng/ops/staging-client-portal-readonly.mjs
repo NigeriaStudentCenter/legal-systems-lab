@@ -130,11 +130,25 @@ export async function verifyClosedPortalBrowser(baseInput,{
       await page.goto(previewOrigin+'/lexflow-ng/portal/'+name,{
         waitUntil:'domcontentloaded',timeout:15000
       });
-      await page.waitForFunction(
-        ()=>(document.querySelector('#engagementSystemStatus')?.textContent||'')
-          .includes('Staging client–lawyer workflows are disabled'),
-        {timeout:20000}
-      );
+      try {
+        await page.waitForFunction(
+          ()=>(document.querySelector('#engagementSystemStatus')?.textContent||'')
+            .includes('Staging client–lawyer workflows are disabled'),
+          null,
+          {timeout:20000}
+        );
+      }catch{
+        const status=await page.locator('#engagementSystemStatus').textContent().catch(()=>'(missing)');
+        const scriptReady=await page.evaluate(()=>({
+          configLoaded:typeof window.LEXFLOW_PORTAL==='object',
+          bundleLoaded:!!document.querySelector('script[src$="dist/engagements.js"]'),
+          documentReady:document.readyState
+        })).catch(()=>({evaluationFailed:true}));
+        throw Error(name+': closed-gate state never appeared. Status='+
+          JSON.stringify(String(status).slice(0,350))+
+          '; browser='+JSON.stringify(scriptReady)+
+          '; javascriptErrors='+JSON.stringify(errors.slice(0,4)));
+      }
       expect(await page.locator('#engagementSignIn').isDisabled(),
         name+': sign-in unexpectedly enabled while business gates are closed');
       expect(await page.locator(name==='client.html'?'#clientEnquiryFields':'#invoiceFields').isDisabled(),
