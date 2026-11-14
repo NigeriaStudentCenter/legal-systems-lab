@@ -14,8 +14,8 @@
 
 ## How to execute
 1. Open https://github.com/NigeriaStudentCenter/legal-systems-lab/actions/workflows/lexflow-approved-staging-release.yml
-2. Select Run workflow on `main`.
-3. Inspect the pinned commit, image build results, Azure scope and pending environment approval. Only an authorised owner should approve `lexflow-staging`.
+2. Select Run workflow on `main`, then type the exact confirmation **`DEPLOY_SYNTHETIC_STAGING`**. The validation job refuses other branches and any other confirmation value.
+3. Inspect the pinned commit, image build results and Azure scope. Confirm in GitHub Settings → Environments that `lexflow-staging` has required human reviewers. A named environment alone does not prove reviewer enforcement. Only an authorised owner should approve its deployment.
 4. Confirm the deployment and smoke test steps are green. Check the run summary and the protected Azure staging Container App revision.
 5. Keep all feature flags disabled. Do not enter personal, professional or client case information.
 6. Separately arrange a protected browser preview and a real Entra **synthetic test account**. The actual sign-in acceptance needs another deliberate, short and approved test window for `ENABLE_AUTH_DIAGNOSTIC=true`, followed by immediate closure and read-only re-verification.
