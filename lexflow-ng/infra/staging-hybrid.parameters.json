@@ -1,0 +1,13 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "prefix": { "value": "lexflowstg" },
+    "vaultName": { "value": "lexflowstg-kv-f88b66" },
+    "image": { "value": "ghcr.io/nigeriastudentcenter/lexflow-ng-api@sha256:2f4dbbd0d7da1691fb6a6834d166f361b13efa6c95f968276ae78c69bad8edd2" },
+    "oidcIssuer": { "value": "https://login.microsoftonline.com/76691188-9b9d-47ee-bb5a-2afec52f4d5e/v2.0" },
+    "oidcAudience": { "value": "api://lexflow-staging-not-yet-registered" },
+    "oidcJwksUri": { "value": "https://login.microsoftonline.com/76691188-9b9d-47ee-bb5a-2afec52f4d5e/discovery/v2.0/keys" },
+    "browserOrigin": { "value": "https://legal.bsoedu.org" }
+  }
+}

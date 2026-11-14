@@ -1,7 +1,7 @@
 name: LexFlow Azure infrastructure validation
 on:
   push:
-    branches: [production-foundation]
+    branches: [production-foundation, azure-staging-hybrid]
     paths:
       - 'lexflow-ng/infra/**'
       - '.github/workflows/lexflow-infra-check.yml'
@@ -25,6 +25,7 @@ jobs:
         run: |
           /tmp/bicep build lexflow-ng/infra/bootstrap.bicep --outfile /tmp/lexflow-bootstrap.json
           /tmp/bicep build lexflow-ng/infra/containerapp.bicep --outfile /tmp/lexflow-api.json
+          /tmp/bicep build lexflow-ng/infra/staging-hybrid.bicep --outfile /tmp/lexflow-hybrid.json
       - name: Verify blocked release settings
         run: |
           grep -q "publicNetworkAccess:'Disabled'" lexflow-ng/infra/bootstrap.bicep

@@ -12,7 +12,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          ref: production-foundation
+          ref: ${{ github.ref }}
       - name: Azure identity federation
         uses: azure/login@v2
         with:
@@ -22,21 +22,16 @@ jobs:
       - name: Evaluate staging changes only
         shell: bash
         env:
-          PG_PASSWORD: ${{ secrets.LEXFLOW_STAGING_PG_ADMIN_PASSWORD }}
           RESOURCE_GROUP: ${{ vars.LEXFLOW_STAGING_RESOURCE_GROUP }}
-          PREFIX: ${{ vars.LEXFLOW_STAGING_PREFIX }}
-          PG_ADMIN: ${{ vars.LEXFLOW_STAGING_PG_ADMIN }}
         run: |
           set -euo pipefail
-          test -n "$PG_PASSWORD"
           test -n "$RESOURCE_GROUP"
-          test -n "$PREFIX"
-          test -n "$PG_ADMIN"
-          az bicep build --file lexflow-ng/infra/bootstrap.bicep --outfile /tmp/lexflow-staging-arm.json
+          # Hybrid staging: the database lives on a shared server and is not declared
+          # in this template, so no database password is needed here.
           az deployment group what-if \
             --resource-group "$RESOURCE_GROUP" \
-            --template-file /tmp/lexflow-staging-arm.json \
-            --parameters prefix="$PREFIX" postgresAdmin="$PG_ADMIN" postgresAdminPassword="$PG_PASSWORD" \
+            --template-file lexflow-ng/infra/staging-hybrid.bicep \
+            --parameters @lexflow-ng/infra/staging-hybrid.parameters.json \
             --result-format ResourceIdOnly
       - name: Note
         run: echo "No Azure resources were created by this plan-only workflow."
