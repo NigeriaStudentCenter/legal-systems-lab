@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,nofollow"><meta name="referrer" content="no-referrer">
+<title>LexFlow NG — Staging identity acceptance</title>
+<link rel="stylesheet" href="portal.css"></head>
+<body data-page="identity-check">
+<header class="site-header"><a class="brand" href="../index.html">LexFlow <span>NG</span></a></header>
+<main class="shell">
+<div class="eyebrow">STAGING ONLY · AUTHENTICATION ACCEPTANCE</div>
+<h1>Check secure sign-in</h1>
+<p class="lead">This diagnostic checks whether the approved Microsoft Entra staging login can obtain a valid access token for LexFlow's API. It never submits a client matter, lawyer application, invoice or payment.</p>
+<div class="callout warning"><strong>Access is disabled until approved.</strong> Test with a designated synthetic staging account only. Do not enter real client information. Never share access tokens or passwords in screenshots, messages or reports.</div>
+<div id="identityCheckStatus" role="status" aria-live="polite" class="callout">Checking staging configuration…</div>
+<div class="panel">
+<h2>Authentication only</h2>
+<div class="actions"><button id="identityTestLogin" class="btn" disabled>Sign in and test API</button><button id="identityTestLogout" class="btn outline" disabled>Sign out</button></div>
+<p id="identityTestResult" role="status" aria-live="polite">The sign-in test has not run.</p>
+</div>
+<div class="panel">
+<h2>Pass criteria</h2>
+<ol>
+<li>Entra returns to this approved browser origin, with a valid delegated access token.</li>
+<li>The Azure API responds 200 from the identity diagnostic endpoint and returns no names or user IDs.</li>
+<li>Unsigned or invalid tokens are rejected.</li>
+<li>Business services continue to show disabled in API metadata.</li>
+</ol>
+<p>Only the operator can temporarily activate the staging diagnostic route. The default is disabled; restore it to disabled immediately after approval testing.</p>
+</div></main>
+<footer>LexFlow NG · Closed staging identity test only · No legal advice or payments</footer>
+<script src="config.js"></script>
+<script type="module" src="dist/identity-check.js"></script></body></html>
