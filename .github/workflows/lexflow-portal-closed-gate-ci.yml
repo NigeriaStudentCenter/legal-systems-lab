@@ -1,0 +1,35 @@
+name: LexFlow portal closed-gate acceptance safety checks
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'lexflow-ng/ops/staging-client-portal-readonly.*'
+      - '.github/workflows/lexflow-azure-portal-closed-gate.yml'
+      - '.github/workflows/lexflow-portal-closed-gate-ci.yml'
+  pull_request:
+    paths:
+      - 'lexflow-ng/ops/staging-client-portal-readonly.*'
+      - '.github/workflows/lexflow-azure-portal-closed-gate.yml'
+      - '.github/workflows/lexflow-portal-closed-gate-ci.yml'
+permissions:
+  contents: read
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Safe read-only code syntax and negative tests
+        run: |
+          node --check lexflow-ng/ops/staging-client-portal-readonly.mjs
+          node --test lexflow-ng/ops/staging-client-portal-readonly.test.mjs
+      - name: Confirm no Azure mutation, no live user tokens
+        shell: bash
+        run: |
+          set -euo pipefail
+          grep -Fq 'workflow_dispatch:' .github/workflows/lexflow-azure-portal-closed-gate.yml
+          grep -Fq 'environment: lexflow-staging' .github/workflows/lexflow-azure-portal-closed-gate.yml
+          if grep -Eq 'az containerapp update|az deployment group create|--set-env-vars|test-user-password' .github/workflows/lexflow-azure-portal-closed-gate.yml; then exit 1; fi
+          grep -Fq 'enabled: false' lexflow-ng/portal/config.js

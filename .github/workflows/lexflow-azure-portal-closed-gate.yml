@@ -1,0 +1,59 @@
+name: LexFlow Azure client and lawyer closed-gate acceptance
+on:
+  workflow_dispatch:
+permissions:
+  contents: read
+  id-token: write
+concurrency:
+  group: lexflow-azure-closed-gate-browser
+  cancel-in-progress: false
+jobs:
+  inspect:
+    if: github.ref == 'refs/heads/main'
+    name: Read-only staging browser and API tests
+    runs-on: ubuntu-latest
+    environment: lexflow-staging
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Check pure runtime and CORS tests
+        run: |
+          node --check lexflow-ng/ops/staging-client-portal-readonly.mjs
+          node --test lexflow-ng/ops/staging-client-portal-readonly.test.mjs
+      - name: Install synthetic browser test dependencies
+        working-directory: lexflow-ng/backend
+        run: npm install --ignore-scripts --no-audit --no-fund
+      - name: Install Chromium browser for real read-only rendering
+        working-directory: lexflow-ng/backend
+        run: npx playwright install --with-deps chromium
+      - name: Sign in to Azure with protected GitHub OIDC deployment identity
+        uses: azure/login@v2
+        with:
+          client-id: ${{ vars.LEXFLOW_AZURE_CLIENT_ID }}
+          tenant-id: ${{ vars.LEXFLOW_AZURE_TENANT_ID }}
+          subscription-id: ${{ vars.LEXFLOW_AZURE_SUBSCRIPTION_ID }}
+      - name: Resolve exact existing Container App staging host
+        shell: bash
+        env:
+          STAGING_GROUP: ${{ vars.LEXFLOW_STAGING_RESOURCE_GROUP }}
+        run: |
+          set -euo pipefail
+          test "$STAGING_GROUP" = 'lexflow-staging-rg'
+          FQDN="$(az containerapp show --resource-group "$STAGING_GROUP" --name lexflowstg-api --query properties.configuration.ingress.fqdn --output tsv)"
+          test -n "$FQDN"
+          echo "LEXFLOW_STAGING_BASE_URL=https://$FQDN" >> "$GITHUB_ENV"
+      - name: Test real Azure closed gates, CORS and browser portals
+        env:
+          LEXFLOW_ACCEPTANCE_REPORT: ${{ runner.temp }}/lexflow-portal-closed-gate.json
+        run: node lexflow-ng/ops/staging-client-portal-readonly.mjs
+      - name: Upload nonsensitive acceptance report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: lexflow-azure-portal-closed-gate-report
+          path: ${{ runner.temp }}/lexflow-portal-closed-gate.json
+          if-no-files-found: ignore
+          retention-days: 14
