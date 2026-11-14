@@ -100,8 +100,7 @@ jobs:
           test "$STAGING_GROUP" = 'lexflow-staging-rg'
           az containerapp show --resource-group "$STAGING_GROUP" --name lexflowstg-api --output json > "$RUNNER_TEMP/lexflow-before.json"
           LEXFLOW_SAVE_OLD_IMAGE=true node lexflow-ng/ops/staging-release-guard.mjs < "$RUNNER_TEMP/lexflow-before.json"
-          test -n "$LEXFLOW_OLD_IMAGE"
-      - name: Deploy approved image only, preserving all other settings
+      - name: Deploy approved immutable image and explicitly retain diagnostic gate OFF
         id: deploy_image
         shell: bash
         env:
@@ -110,8 +109,8 @@ jobs:
         run: |
           set -euo pipefail
           [[ "$APPROVED_IMAGE" =~ ^ghcr\.io/nigeriastudentcenter/lexflow-ng-api@sha256:[a-f0-9]{64}$ ]]
-          az containerapp update --resource-group "$STAGING_GROUP" --name lexflowstg-api --image "$APPROVED_IMAGE" --output none
-          echo "Approved image update requested. All feature gates remain unchanged."
+          az containerapp update --resource-group "$STAGING_GROUP" --name lexflowstg-api --image "$APPROVED_IMAGE" --set-env-vars ENABLE_AUTH_DIAGNOSTIC=false --output none
+          echo "Approved image update requested. Business gates unchanged; authentication diagnostic explicitly disabled."
       - name: Verify new image, Azure readiness and all closed gates
         id: smoke
         shell: bash
@@ -141,7 +140,7 @@ jobs:
         run: |
           set -euo pipefail
           test -n "$LEXFLOW_OLD_IMAGE"
-          az containerapp update --resource-group "$STAGING_GROUP" --name lexflowstg-api --image "$LEXFLOW_OLD_IMAGE" --output none
+          az containerapp update --resource-group "$STAGING_GROUP" --name lexflowstg-api --image "$LEXFLOW_OLD_IMAGE" --set-env-vars ENABLE_AUTH_DIAGNOSTIC=false --output none
           echo "::warning::Staging image restored to the pre-deployment digest. Check smoke/rollback logs before retrying."
       - name: Publish deployment status (no sensitive configuration)
         if: always()
