@@ -62,7 +62,8 @@ run('real API and PostgreSQL with synthetic Playwright client/lawyer browser jou
     await db.reviewPaymentDetails('e2e-reviewer-one',p.id,{decision:'approve',name_match_confirmed:true});
     await db.reviewPaymentDetails('e2e-reviewer-two',p.id,{decision:'approve',name_match_confirmed:true});
 
-    api=await buildApp({config:{allowedOrigins:[origin],
+    const allowedOrigins=[];
+    api=await buildApp({config:{allowedOrigins,
       gates:{applications:false,verification:false,publication:false,directory:true,engagements:true}},
       db,authenticate:async request=>{
         const token=request.headers.authorization;
@@ -106,6 +107,7 @@ run('real API and PostgreSQL with synthetic Playwright client/lawyer browser jou
       server.listen(0,'127.0.0.1',resolve);
     });
     origin='https://127.0.0.1:'+server.address().port;
+    allowedOrigins.push(origin);
     const clientID='12345678-1234-4234-8234-123456789abc';
     files.set('/config.js',['application/javascript',Buffer.from(
       'window.LEXFLOW_PORTAL='+JSON.stringify({
