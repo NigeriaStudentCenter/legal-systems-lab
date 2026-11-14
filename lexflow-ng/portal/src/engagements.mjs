@@ -68,7 +68,7 @@ function fillClientDirectory(records){
       [profile.city,profile.state,(profile.practice_areas||[]).join(' / ')].filter(Boolean).join(' · ')));
     const b=action('Choose lawyer',()=>{
       selectedLawyerId=profile.id;
-      notify([profile.full_name,profile.city,profile.state].filter(Boolean).join(' · '),'#selectedLawyer');
+      $('#selectedLawyer').value=[profile.full_name,profile.city,profile.state].filter(Boolean).join(' · ');
       $('#clientEnquiryFields').disabled=false;
       $('#enquiryCategory').value=profile.practice_areas?.[0]||practiceAreas[0];
       $('#enquiryCategory').focus();
