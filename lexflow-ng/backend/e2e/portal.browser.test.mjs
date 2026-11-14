@@ -176,6 +176,7 @@ run('real API and PostgreSQL with synthetic Playwright client/lawyer browser jou
     await client.getByRole('button',{name:'Confirm my payment'}).click();
     await client.getByText(/Client agrees payment was made/).first().waitFor();
     await client.getByRole('button',{name:'View reported receipt'}).click();
+    await client.waitForFunction(()=>(document.querySelector('#receiptBody')?.textContent||'').includes('did not receive, hold, process or verify'));
     const receipt=await client.locator('#receiptBody').innerText();
     assert.match(receipt,/25,000\.50/);
     assert.match(receipt,/did not receive, hold, process or verify/i);
