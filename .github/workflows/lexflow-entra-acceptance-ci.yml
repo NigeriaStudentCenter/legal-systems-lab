@@ -71,7 +71,8 @@ jobs:
           test -s dist/engagements.js
           test -s dist/identity-check.js
       - name: Confirm portal disabled by default
-        run: grep -Fq 'enabled: false' config.js
+        run: |
+          grep -Fq 'enabled: false' config.js
       - name: Upload non-production acceptance browser preview
         uses: actions/upload-artifact@v4
         with:
