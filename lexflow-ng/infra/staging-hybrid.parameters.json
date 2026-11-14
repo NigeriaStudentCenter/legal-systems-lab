@@ -1,0 +1,27 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "prefix": {
+      "value": "lexflowstg"
+    },
+    "vaultName": {
+      "value": "lexflowstg-kv-f88b66"
+    },
+    "image": {
+      "value": "ghcr.io/nigeriastudentcenter/lexflow-ng-api@sha256:874a5698ad60c270a9d9bfd8655f204727130e12c89d0ca5a4ac3948d1c63141"
+    },
+    "oidcIssuer": {
+      "value": "https://5ddfd479-a3cb-4ff7-bdd8-9d745c4309b7.ciamlogin.com/5ddfd479-a3cb-4ff7-bdd8-9d745c4309b7/v2.0"
+    },
+    "oidcAudience": {
+      "value": "e0db88c1-c50d-48ff-985d-df0a01a222d4"
+    },
+    "oidcJwksUri": {
+      "value": "https://lexflowngstaging.ciamlogin.com/5ddfd479-a3cb-4ff7-bdd8-9d745c4309b7/discovery/v2.0/keys"
+    },
+    "browserOrigin": {
+      "value": "https://legal.bsoedu.org"
+    }
+  }
+}

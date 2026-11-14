@@ -1,0 +1,37 @@
+name: LexFlow Azure staging plan (no deployment)
+on:
+  workflow_dispatch:
+permissions:
+  id-token: write
+  contents: read
+jobs:
+  azure-plan:
+    if: ${{ vars.LEXFLOW_AZURE_PLAN_ENABLED == 'true' }}
+    environment: lexflow-staging
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref }}
+      - name: Azure identity federation
+        uses: azure/login@v2
+        with:
+          client-id: ${{ vars.LEXFLOW_AZURE_CLIENT_ID }}
+          tenant-id: ${{ vars.LEXFLOW_AZURE_TENANT_ID }}
+          subscription-id: ${{ vars.LEXFLOW_AZURE_SUBSCRIPTION_ID }}
+      - name: Evaluate staging changes only
+        shell: bash
+        env:
+          RESOURCE_GROUP: ${{ vars.LEXFLOW_STAGING_RESOURCE_GROUP }}
+        run: |
+          set -euo pipefail
+          test -n "$RESOURCE_GROUP"
+          # Hybrid staging: the database lives on a shared server and is not declared
+          # in this template, so no database password is needed here.
+          az deployment group what-if \
+            --resource-group "$RESOURCE_GROUP" \
+            --template-file lexflow-ng/infra/staging-hybrid.bicep \
+            --parameters @lexflow-ng/infra/staging-hybrid.parameters.json \
+            --result-format ResourceIdOnly
+      - name: Note
+        run: echo "No Azure resources were created by this plan-only workflow."

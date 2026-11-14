@@ -1,0 +1,33 @@
+name: LexFlow Azure infrastructure validation
+on:
+  push:
+    branches: [production-foundation, azure-staging-hybrid]
+    paths:
+      - 'lexflow-ng/infra/**'
+      - '.github/workflows/lexflow-infra-check.yml'
+  pull_request:
+    paths:
+      - 'lexflow-ng/infra/**'
+      - '.github/workflows/lexflow-infra-check.yml'
+permissions:
+  contents: read
+jobs:
+  bicep:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install Bicep CLI
+        run: |
+          curl -fsSL https://github.com/Azure/bicep/releases/latest/download/bicep-linux-x64 -o /tmp/bicep
+          chmod +x /tmp/bicep
+          /tmp/bicep --version
+      - name: Compile Bicep without Azure credentials
+        run: |
+          /tmp/bicep build lexflow-ng/infra/bootstrap.bicep --outfile /tmp/lexflow-bootstrap.json
+          /tmp/bicep build lexflow-ng/infra/containerapp.bicep --outfile /tmp/lexflow-api.json
+          /tmp/bicep build lexflow-ng/infra/staging-hybrid.bicep --outfile /tmp/lexflow-hybrid.json
+      - name: Verify blocked release settings
+        run: |
+          grep -q "publicNetworkAccess:'Disabled'" lexflow-ng/infra/bootstrap.bicep
+          grep -q "internal:true" lexflow-ng/infra/containerapp.bicep
+          grep -q "ENABLE_APPLICATIONS',value:'false'" lexflow-ng/infra/containerapp.bicep

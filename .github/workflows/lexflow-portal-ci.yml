@@ -1,0 +1,42 @@
+name: LexFlow NG portal build
+on:
+  push:
+    branches: [production-foundation]
+    paths:
+      - 'lexflow-ng/portal/**'
+      - '.github/workflows/lexflow-portal-ci.yml'
+  pull_request:
+    paths:
+      - 'lexflow-ng/portal/**'
+      - '.github/workflows/lexflow-portal-ci.yml'
+permissions:
+  contents: read
+jobs:
+  portal:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: lexflow-ng/portal
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: npm install --ignore-scripts --no-audit --no-fund
+      - run: npm run check
+      - run: npm test
+      - run: npm run build
+      - run: test -s dist/portal.js
+      - run: npm audit --omit=dev --audit-level=high
+      - name: Upload compiled staging portal for review only
+        uses: actions/upload-artifact@v4
+        with:
+          name: lexflow-portal-staging
+          path: |
+            lexflow-ng/portal/dist/portal.js
+            lexflow-ng/portal/register.html
+            lexflow-ng/portal/status.html
+            lexflow-ng/portal/review.html
+            lexflow-ng/portal/portal.css
+            lexflow-ng/portal/config.js
+          retention-days: 14

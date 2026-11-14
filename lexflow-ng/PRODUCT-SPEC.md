@@ -55,6 +55,35 @@ Search → profile review → urgent or ordinary issue classification → lawyer
 - Billing for SaaS should be separate from collection of professional fees. Payment escrow is NOT available merely because a PSP has transfer or split settlement.
 - Complaints route, human review and appeal; reasonable neutral search ordering.
 
+## Payments model: three separate money flows (decided 14 November 2026)
+LexFlow does not take custody of legal fees. The three flows never share an account.
+
+| Payment | Who receives the money | Arrangement |
+|---|---|---|
+| BSOE course fees | BSOE | BSOE's existing Paystack business. The only payment live today. |
+| LexFlow software subscriptions | LexFlow's operating business | A separate, appropriately registered Paystack business. Fixed fees, independent of any client fee. Not built. |
+| Clients' legal fees | The lawyer or law firm | Directly into the lawyer's own reviewed bank account or the lawyer's own Paystack page. Never LexFlow. |
+
+### How a client pays a lawyer
+1. Client chooses a verified, published lawyer and requests an engagement: a practice-area label, their name and one contact, and an acknowledgement that fees go directly to the lawyer. No description of the problem is collected.
+2. Lawyer confirms the engagement after a conflict check, or declines. Scope, fees and payment terms are agreed between lawyer and client outside this record.
+3. Lawyer issues an invoice in the app: own reference, a fixed fee label, amount in naira, due date. The invoice shows the lawyer's approved payment details.
+4. Client pays the lawyer directly, outside LexFlow.
+5. Lawyer reports the funds as received, which generates a receipt. The client then confirms or disputes it.
+
+### What "payment status" means
+LexFlow cannot see the transaction. Status is **reported by the lawyer** and then **confirmed or disputed by the client**, and every receipt says so. It must never be shown as "verified by LexFlow".
+
+### Safeguards
+- Payment details are shown to clients only after two independent reviewers confirm the account name matches the verified lawyer or firm. Any change returns them to review and blocks new invoices; invoices already issued keep the details approved at the time.
+- Only a 10-digit Nigerian account or a Paystack-hosted payment page is accepted, to limit redirection fraud.
+- Invoices and receipts carry no case facts: fixed labels and a reference code only.
+- A lawyer who is suspended or no longer verified cannot accept engagements or issue invoices.
+- No percentage, commission or referral fee on any legal fee. Platform revenue is fixed subscriptions only, with a free verified basic profile, subject to professional-conduct review.
+
+### Not decided or not built
+Holding client money on account, refunds and dispute resolution (a dispute is recorded, not adjudicated), VAT and withholding tax on invoices, firm-level accounts, subscriptions, and any automatic confirmation from Paystack.
+
 ## Architecture for production
 Frontends: progressive web app (client/public + professional portals) using accessible responsive UI. API: versioned backend, Node/TypeScript or .NET, deployed in approved region with WAF and rate limiting. IAM: OAuth/OIDC, MFA for lawyers, RBAC/ABAC, firm and matter tenant isolation. Data: Postgres with row level security, encrypted object storage for evidence, background jobs for consented notifications, secrets vault, SIEM audit logs. Search: scoped indexes containing no privileged case facts. AI: retrieval from licensed and checked legal sources, provenance/versions, strict non-advice boundaries, lawyer-sign-off and evaluation. Payments: only after banking/PSP/legal advice; do not label split payments 'escrow'. Integrations: CAC and courts only where authorised; notification providers only with opt-in and minimisation. Backup and disaster recovery. DPIA, NDPA 2023 controls, breach and DSAR procedures.
 

@@ -1,0 +1,45 @@
+name: LexFlow NG backend validation
+on:
+  push:
+    branches: [production-foundation]
+    paths:
+      - 'lexflow-ng/backend/**'
+      - '.github/workflows/lexflow-api-ci.yml'
+  pull_request:
+    paths:
+      - 'lexflow-ng/backend/**'
+      - '.github/workflows/lexflow-api-ci.yml'
+permissions:
+  contents: read
+jobs:
+  validate:
+    name: Node 22 validation and PostgreSQL verification tests
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: lexflow_test
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U postgres"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+    env:
+      TEST_DATABASE_URL: postgresql://postgres:postgres@localhost:5432/lexflow_test
+    defaults:
+      run:
+        working-directory: lexflow-ng/backend
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: npm install --ignore-scripts --no-audit --no-fund
+      - run: npm run check
+      - run: npm test
+      - run: npm audit --omit=dev --audit-level=high

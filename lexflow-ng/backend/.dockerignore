@@ -1,0 +1,12 @@
+.env
+.env.*
+!.env.example
+node_modules
+test
+sql
+docs
+README.md
+RELEASE-GATES.md
+.git
+coverage
+*.log
