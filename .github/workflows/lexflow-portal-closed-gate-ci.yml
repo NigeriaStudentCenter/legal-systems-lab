@@ -4,6 +4,7 @@ on:
     branches: [main]
     paths:
       - 'lexflow-ng/ops/staging-client-portal-readonly.*'
+      - 'lexflow-ng/ops/staging-client-portal-browser.test.mjs'
       - '.github/workflows/lexflow-azure-portal-closed-gate.yml'
       - '.github/workflows/lexflow-portal-closed-gate-ci.yml'
   pull_request:
@@ -25,6 +26,17 @@ jobs:
         run: |
           node --check lexflow-ng/ops/staging-client-portal-readonly.mjs
           node --test lexflow-ng/ops/staging-client-portal-readonly.test.mjs
+      - name: Install backend browser regression dependencies
+        working-directory: lexflow-ng/backend
+        run: npm install --ignore-scripts --no-audit --no-fund
+      - name: Install frontend Microsoft Entra dependency
+        working-directory: lexflow-ng/portal
+        run: npm install --ignore-scripts --no-audit --no-fund
+      - name: Install Chromium for closed-gate local HTTPS regression
+        working-directory: lexflow-ng/backend
+        run: npx playwright install --with-deps chromium
+      - name: Verify client and lawyer startup with disabled business gates
+        run: node --test lexflow-ng/ops/staging-client-portal-browser.test.mjs
       - name: Confirm no Azure mutation, no live user tokens
         shell: bash
         run: |
