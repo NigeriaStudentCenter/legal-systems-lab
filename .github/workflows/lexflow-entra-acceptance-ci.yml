@@ -1,0 +1,84 @@
+name: LexFlow Entra staging acceptance code checks
+on:
+  push:
+    branches: [entra-staging-acceptance]
+    paths:
+      - 'lexflow-ng/backend/**'
+      - 'lexflow-ng/portal/**'
+      - 'lexflow-ng/infra/staging-hybrid.bicep'
+      - '.github/workflows/lexflow-entra-acceptance-ci.yml'
+  pull_request:
+    paths:
+      - 'lexflow-ng/backend/**'
+      - 'lexflow-ng/portal/**'
+      - 'lexflow-ng/infra/staging-hybrid.bicep'
+      - '.github/workflows/lexflow-entra-acceptance-ci.yml'
+permissions:
+  contents: read
+jobs:
+  api:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: lexflow_test
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U postgres"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 8
+    defaults:
+      run:
+        working-directory: lexflow-ng/backend
+    env:
+      TEST_DATABASE_URL: postgresql://postgres:postgres@127.0.0.1:5432/lexflow_test
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: npm install --ignore-scripts --no-audit --no-fund
+      - name: Syntax and tests including disabled-by-default authentication
+        run: npm run check && npm test
+      - name: Audit production dependencies
+        run: npm audit --omit=dev --audit-level=high
+      - name: Confirm feature gate remains disabled in Azure Bicep
+        run: |
+          grep -Fq "name: 'ENABLE_AUTH_DIAGNOSTIC', value: 'false'" ../infra/staging-hybrid.bicep
+          grep -Fq "name: 'ENABLE_ENGAGEMENTS', value: 'false'" ../infra/staging-hybrid.bicep
+  browser:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: lexflow-ng/portal
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: npm install --ignore-scripts --no-audit --no-fund
+      - name: Browser portal syntax and unit tests
+        run: npm run check && npm test
+      - name: Bundle staging-only browser diagnostic
+        run: |
+          npm run build
+          test -s dist/portal.js
+          test -s dist/engagements.js
+          test -s dist/identity-check.js
+      - name: Confirm portal disabled by default
+        run: grep -Fq 'enabled: false' config.js
+      - name: Upload non-production acceptance browser preview
+        uses: actions/upload-artifact@v4
+        with:
+          name: lexflow-entra-acceptance-preview
+          path: |
+            lexflow-ng/portal/identity-check.html
+            lexflow-ng/portal/portal.css
+            lexflow-ng/portal/config.js
+            lexflow-ng/portal/dist/identity-check.js
+          retention-days: 14
