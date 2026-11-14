@@ -44,8 +44,9 @@ export function validateExistingApp(raw,{expectedImage,requireAuthGate=false}={}
   }
   need(variables.get('NODE_ENV')?.value==='production','NODE_ENV is not set');
   need(variables.get('DATABASE_SSL')?.value==='true','database TLS disabled');
-  need(variables.get('DATABASE_URL')?.secretRef==='database-url',
-    'database connection must be secretRef, never plain text');
+  need(variables.get('DATABASE_URL')?.secretRef==='database-url' &&
+    !Object.prototype.hasOwnProperty.call(variables.get('DATABASE_URL'),'value'),
+    'database connection must be secretRef without a plain-text value');
   need(variables.get('OIDC_ISSUER')?.value===identity.expectedIssuer,'identity issuer drift');
   need(variables.get('OIDC_AUDIENCE')?.value===identity.apiAudience,'identity audience drift');
   need(variables.get('OIDC_JWKS_URI')?.value===identity.expectedJwksUri,'identity signing keys drift');
