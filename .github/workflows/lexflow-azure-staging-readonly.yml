@@ -1,0 +1,51 @@
+name: LexFlow Azure staging acceptance (READ ONLY)
+on:
+  workflow_dispatch:
+permissions:
+  contents: read
+  id-token: write
+concurrency:
+  group: lexflow-staging-readonly-inspection
+  cancel-in-progress: false
+jobs:
+  inspect:
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    environment: lexflow-staging
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Validate check code without Azure
+        run: node --test lexflow-ng/ops/staging-readonly.test.mjs
+      - name: Authenticate to approved Azure staging via GitHub OIDC
+        uses: azure/login@v2
+        with:
+          client-id: ${{ vars.LEXFLOW_AZURE_CLIENT_ID }}
+          tenant-id: ${{ vars.LEXFLOW_AZURE_TENANT_ID }}
+          subscription-id: ${{ vars.LEXFLOW_AZURE_SUBSCRIPTION_ID }}
+      - name: Resolve the exact configured staging Container App
+        id: resolve
+        shell: bash
+        env:
+          RESOURCE_GROUP: ${{ vars.LEXFLOW_STAGING_RESOURCE_GROUP }}
+        run: |
+          set -euo pipefail
+          test "$RESOURCE_GROUP" = 'lexflow-staging-rg'
+          FQDN="$(az containerapp show --resource-group "$RESOURCE_GROUP" --name lexflowstg-api --query properties.configuration.ingress.fqdn --output tsv)"
+          test -n "$FQDN"
+          echo "LEXFLOW_STAGING_BASE_URL=https://$FQDN" >> "$GITHUB_ENV"
+      - name: Read-only staging API and business-gate verification
+        env:
+          LEXFLOW_PREFLIGHT_REPORT: ${{ runner.temp }}/lexflow-staging-readonly.json
+        run: node lexflow-ng/ops/staging-readonly.mjs
+      - name: Upload non-sensitive acceptance report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: lexflow-staging-readonly-report
+          path: ${{ runner.temp }}/lexflow-staging-readonly.json
+          if-no-files-found: ignore
+          retention-days: 14

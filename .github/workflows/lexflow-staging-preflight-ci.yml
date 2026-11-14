@@ -1,0 +1,27 @@
+name: LexFlow staging read-only preflight tests
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'lexflow-ng/ops/staging-readonly.*'
+      - '.github/workflows/lexflow-azure-staging-readonly.yml'
+      - '.github/workflows/lexflow-staging-preflight-ci.yml'
+  pull_request:
+    paths:
+      - 'lexflow-ng/ops/staging-readonly.*'
+      - '.github/workflows/lexflow-azure-staging-readonly.yml'
+      - '.github/workflows/lexflow-staging-preflight-ci.yml'
+permissions:
+  contents: read
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Syntax and preflight safety tests (no Azure access)
+        run: |
+          node --check lexflow-ng/ops/staging-readonly.mjs
+          node --test lexflow-ng/ops/staging-readonly.test.mjs
