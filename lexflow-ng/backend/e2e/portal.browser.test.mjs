@@ -20,7 +20,8 @@ let origin;
 const apiOrigin='https://api.lexflow-e2e.test';
 const stub=[
  'export class PublicClientApplication {',
- 'static async createPublicClientApplication(){return new PublicClientApplication()}',
+ // Mirrors msal-browser v5: no static factory; construct, then initialize().
+ 'async initialize(){this.ready=true}',
  'getAllAccounts(){return this.user?[this.user]:[]}',
  'getActiveAccount(){return this.user||null}',
  'setActiveAccount(a){this.user=a}',

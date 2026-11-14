@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "build": "esbuild src/main.mjs --bundle --format=esm --platform=browser --target=es2022 --minify --outfile=dist/portal.js && esbuild src/engagements.mjs --bundle --format=esm --platform=browser --target=es2022 --minify --outfile=dist/engagements.js && esbuild src/identity-check.mjs --bundle --format=esm --platform=browser --target=es2022 --minify --outfile=dist/identity-check.js",
-    "check": "node --check src/main.mjs && node --check src/runtime.mjs && node --check src/engagements.mjs && node --check src/engagements-runtime.mjs && node --check src/identity-check.mjs && node --check src/entra-acceptance-domain.mjs",
+    "check": "node --check src/main.mjs && node --check src/msal-init.mjs && node --check src/runtime.mjs && node --check src/engagements.mjs && node --check src/engagements-runtime.mjs && node --check src/identity-check.mjs && node --check src/entra-acceptance-domain.mjs",
     "test": "node --test test/*.test.mjs"
   },
   "dependencies": {
