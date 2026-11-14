@@ -1,4 +1,5 @@
 import {PublicClientApplication} from '@azure/msal-browser';
+import {createMsal} from './msal-init.mjs';
 import {validateAcceptanceConfig,verifyGenuineToken,fingerprintSubject,verifyDiagnosticResponse} from './entra-acceptance-domain.mjs';
 
 const $=id=>document.getElementById(id);
@@ -153,7 +154,7 @@ async function boot(){
     }
     // Verify API gates before initiating any Entra sign-in attempt.
     await requireClosedBusinessGates();
-    msal=await PublicClientApplication.createPublicClientApplication({
+    msal=await createMsal(PublicClientApplication,{
       auth:{clientId:cfg.clientId,authority:cfg.authority,
         knownAuthorities:['lexflowngstaging.ciamlogin.com'],
         redirectUri:cfg.redirectUri,navigateToLoginRequestUrl:false},

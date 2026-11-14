@@ -1,4 +1,5 @@
 import {PublicClientApplication} from '@azure/msal-browser';
+import {createMsal} from './msal-init.mjs';
 import {states,practiceAreas,validatePortalConfig} from './runtime.mjs';
 import {feeTypes,paymentStatusLabels,displayNgn,safeLawyerPaymentUrl,validateServiceRequest,validateLawyerInvoice,validateLawyerPaymentDetails,receiptText} from './engagements-runtime.mjs';
 
@@ -281,7 +282,7 @@ async function start(){
     // and must not issue any sign-in request for a disabled workflow.
     const meta=await callApi('/v1/meta',{publicAccess:true});
     if(!meta.live_services?.engagements){locked();return;}
-    msal=await PublicClientApplication.createPublicClientApplication({
+    msal=await createMsal(PublicClientApplication,{
       auth:{clientId:settings.clientId,authority:settings.authority,
         redirectUri:settings.redirectUri,navigateToLoginRequestUrl:false},
       cache:{cacheLocation:'sessionStorage'}
