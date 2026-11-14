@@ -44,8 +44,11 @@ export function validateExistingApp(raw,{expectedImage,requireAuthGate=false}={}
   }
   need(variables.get('NODE_ENV')?.value==='production','NODE_ENV is not set');
   need(variables.get('DATABASE_SSL')?.value==='true','database TLS disabled');
+  // Azure CLI updates echo secret-backed variables back as value:"" (or null) beside the
+  // secretRef. That carries no secret; any non-empty value is still refused.
+  const dbValue=variables.get('DATABASE_URL')?.value;
   need(variables.get('DATABASE_URL')?.secretRef==='database-url' &&
-    !Object.prototype.hasOwnProperty.call(variables.get('DATABASE_URL'),'value'),
+    (dbValue===undefined||dbValue===null||dbValue===''),
     'database connection must be secretRef without a plain-text value');
   need(variables.get('OIDC_ISSUER')?.value===identity.expectedIssuer,'identity issuer drift');
   need(variables.get('OIDC_AUDIENCE')?.value===identity.apiAudience,'identity audience drift');
