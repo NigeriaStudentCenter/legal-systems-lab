@@ -14,8 +14,8 @@ The GitHub workflow at `.github/workflows/lexflow-azure-portal-closed-gate.yml` 
 1. Staging `/healthz`, `/readyz` and `/v1/meta` are healthy.
 2. All application, professional verification, directory, engagement, payment, client record and related gates remain disabled.
 3. The approved browser origin `https://legal.bsoedu.org` passes the API CORS allowlist; an attacker origin is blocked; authorization preflight is correctly scoped.
-4. Browser pages are rendered from the committed portal source using an in-memory bundle and temporary network routing for static files. Their **API requests reach actual Azure staging**.
-5. Both client and lawyer portal sign-in and business action controls remain disabled; JavaScript does not crash.
+4. The client and lawyer pages are rendered in Chromium from the committed portal source on an ephemeral loopback HTTPS preview with `enabled:false`. **These browser pages deliberately make no API or sign-in requests.** The suite independently verifies actual Azure staging health, metadata, closed business endpoints, and CORS using read-only HTTP requests.
+5. Both client and lawyer portal sign-in and business action controls remain disabled; JavaScript does not crash. The separate authentication diagnostic endpoint `/v1/diagnostics/auth` must return HTTP 503 without credentials.
 
 ## Next approval milestone: genuine browser Entra auth and two-sided engagements
 A genuine Entra popup test requires an approved browser preview on an **exact registered redirect URI**, plus distinct synthetic client and lawyer Entra accounts (only one applicant is currently documented). Do not expose the current `test-user-password` or test credentials in GitHub, conversation, logs or a public web page.

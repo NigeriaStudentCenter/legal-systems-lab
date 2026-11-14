@@ -1,0 +1,53 @@
+name: LexFlow genuine Entra two-account acceptance — code safety
+on:
+  push:
+    branches: [staging-auth-gate-hardening]
+    paths:
+      - 'lexflow-ng/portal/**'
+      - '.github/workflows/lexflow-entra-two-account-ci.yml'
+  pull_request:
+    paths:
+      - 'lexflow-ng/portal/**'
+      - '.github/workflows/lexflow-entra-two-account-ci.yml'
+permissions:
+  contents: read
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    defaults:
+      run:
+        working-directory: lexflow-ng/portal
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install browser and JWT validation dependencies
+        run: npm install --ignore-scripts --no-audit --no-fund
+      - name: Run identity and portal tests
+        run: npm run check && npm test
+      - name: Build genuine sign-in acceptance browser
+        run: |
+          npm run build
+          test -s dist/identity-check.js
+          test -s dist/engagements.js
+      - name: Verify no public automatic sign-in activation
+        shell: bash
+        run: |
+          set -euo pipefail
+          grep -Fq 'enabled:false' identity-acceptance-config.js
+          grep -Fq 'enabled: false' config.js
+          ! grep -E 'accessToken|client_secret|password' identity-acceptance-config.js
+      - name: Audit production dependencies
+        run: npm audit --omit=dev --audit-level=high
+      - name: Upload disabled, non-production preview assets only
+        uses: actions/upload-artifact@v4
+        with:
+          name: lexflow-genuine-entra-preview-disabled
+          path: |
+            lexflow-ng/portal/identity-check.html
+            lexflow-ng/portal/identity-acceptance-config.js
+            lexflow-ng/portal/dist/identity-check.js
+            lexflow-ng/portal/portal.css
+          retention-days: 14
