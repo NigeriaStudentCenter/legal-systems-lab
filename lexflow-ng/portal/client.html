@@ -1,0 +1,30 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex,nofollow">
+<title>Client service portal | LexFlow NG</title><link rel="stylesheet" href="portal.css"><link rel="stylesheet" href="engagements.css"></head>
+<body data-page="client">
+<header class="site-header"><a class="brand" href="../index.html">LexFlow <span>NG</span></a><nav><a href="../index.html">Marketplace</a><a href="lawyer.html">Lawyer workspace</a></nav></header>
+<main class="shell" id="main"><div class="eyebrow">CLIENT SERVICES · CONTROLLED STAGING</div>
+<h1>Find support. Track what happens next.</h1>
+<p class="lead">When approved for real use, this space will let clients contact a verified Nigerian lawyer, receive lawyer-issued invoices and check payment reports. Until then, it is unavailable to the public.</p>
+<div class="callout warning" role="status"><strong>No live intake:</strong> Never enter actual case facts, arrest reports, evidence, payment credentials or confidential legal information into this staging portal. No legal fees are taken by LexFlow.</div>
+<div id="engagementSystemStatus" class="callout" role="status" aria-live="polite">Checking service availability…</div>
+<div class="actions"><button id="engagementSignIn" class="btn" type="button" disabled>Sign in</button><button id="engagementSignOut" class="btn outline" type="button" disabled>Sign out</button><span id="engagementIdentity">Not signed in</span></div>
+<section class="panel"><h2>Choose a verified professional</h2><p>The directory below will only contain approved, unexpired professional profiles. No fictional marketplace profile will create a live engagement.</p>
+<div class="form-grid"><label>State <select id="findState"><option value="">All Nigeria</option></select></label>
+<label>Practice area <select id="findPractice"><option value="">All areas</option></select></label></div>
+<button id="findLawyers" class="btn outline" type="button" disabled>Search verified directory</button>
+<div id="lawyerResults" class="result" aria-live="polite">Real directory searches are disabled.</div></section>
+<section class="panel"><h2>Request professional services</h2><form id="clientEnquiryForm">
+<fieldset id="clientEnquiryFields" disabled><label>Selected lawyer <input id="selectedLawyer" readonly value="Select a verified lawyer above"></label>
+<label>Service category <select id="enquiryCategory" required></select></label>
+<div class="form-grid"><label>Your name <input id="enquiryName" required maxlength="110" autocomplete="name"></label>
+<label>Contact email or phone <input id="enquiryContact" required maxlength="120" autocomplete="email"></label></div>
+<label class="check"><input id="directFeeAck" type="checkbox" required> I understand that all legal fees are agreed with and paid directly to the lawyer or law firm. LexFlow does not hold client funds.</label>
+<button class="btn" type="submit">Request consultation</button></fieldset></form><div id="enquiryResult" role="status" aria-live="polite"></div>
+<p class="small">A request is not acceptance of an engagement. The lawyer must check for conflicts and agree the scope and lawful fees.</p></section>
+<section class="panel"><div class="headrow"><h2>My legal service requests</h2><button class="btn outline" id="clientRefresh" disabled>Refresh</button></div>
+<div id="clientRequests" class="result" aria-live="polite">Sign in to view your own requests.</div></section>
+<section class="panel"><h2>Invoices and receipts</h2><p>Only approved payment instructions issued by the lawyer are shown. A receipt is generated from a lawyer's report, not confirmation by LexFlow or a payment processor.</p>
+<div id="clientInvoices" class="result" aria-live="polite">Select an accepted engagement to inspect its invoices.</div><div id="receiptPreview" class="receipt" hidden><h3>Lawyer-issued receipt record</h3><pre id="receiptBody"></pre><button id="downloadReceipt" class="btn outline" type="button">Download text copy</button></div></section>
+</main><footer>LexFlow NG · No live payments or legal advice · <a href="../index.html">Return to marketplace</a></footer>
+<script src="config.js"></script><script type="module" src="dist/engagements.js"></script></body></html>

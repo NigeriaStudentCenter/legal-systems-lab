@@ -55,3 +55,27 @@ test('browser CORS allows only approved origin',async()=>{
     assert.equal(fail.statusCode,403);
   }finally{await app.close();}
 });
+
+test('real identity diagnostic fails closed by default and never reads DB',async()=>{
+  const diagnostic=await buildApp({config,db,authenticate:auth});
+  try {
+    const result=await diagnostic.inject({url:'/v1/diagnostics/auth',headers:{authorization:'Bearer test-valid'}});
+    assert.equal(result.statusCode,503);
+  }finally{await diagnostic.close()}
+});
+
+test('staging diagnostic authenticates token but returns no identifiers or account data',async()=>{
+  const cfg={...config,gates:{...config.gates,authDiagnostic:true}};
+  const a=await buildApp({config:cfg,db,authenticate:auth});
+  try{
+    const anonymous=await a.inject({url:'/v1/diagnostics/auth'});
+    assert.equal(anonymous.statusCode,401);
+    const invalid=await a.inject({url:'/v1/diagnostics/auth',headers:{authorization:'Bearer forged'}});
+    assert.equal(invalid.statusCode,401);
+    const ok=await a.inject({url:'/v1/diagnostics/auth',headers:{authorization:'Bearer test-valid'}});
+    assert.equal(ok.statusCode,200);
+    assert.deepEqual(ok.json(),{authenticated:true,environment:'staging-acceptance',
+      data_access:false,professional_verification:false});
+    assert.ok(!ok.body.includes('idp|test-lawyer'));
+  }finally{await a.close()}
+});
