@@ -1,0 +1,24 @@
+name: LexFlow Entra staging public discovery
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'lexflow-ng/ops/entra-*'
+      - '.github/workflows/lexflow-entra-discovery.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  discovery:
+    name: Microsoft Entra OIDC issuer and key consistency
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Test identity discovery safety checks
+        run: node --test lexflow-ng/ops/entra-discovery.test.mjs
+      - name: Read real public Entra OIDC metadata and JWKS (no credentials)
+        run: node lexflow-ng/ops/entra-discovery.mjs

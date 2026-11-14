@@ -1,0 +1,11 @@
+{
+  "description": "Non-secret CIAM staging identity reference, not an application activation",
+  "tenantId": "5ddfd479-a3cb-4ff7-bdd8-9d745c4309b7",
+  "authority": "https://lexflowngstaging.ciamlogin.com/",
+  "expectedIssuer": "https://5ddfd479-a3cb-4ff7-bdd8-9d745c4309b7.ciamlogin.com/5ddfd479-a3cb-4ff7-bdd8-9d745c4309b7/v2.0",
+  "expectedJwksUri": "https://lexflowngstaging.ciamlogin.com/5ddfd479-a3cb-4ff7-bdd8-9d745c4309b7/discovery/v2.0/keys",
+  "apiAudience": "e0db88c1-c50d-48ff-985d-df0a01a222d4",
+  "portalClientId": "c0ec48d2-b103-4f62-950a-e3d6c65bb55d",
+  "apiScope": "api://e0db88c1-c50d-48ff-985d-df0a01a222d4/access_as_user",
+  "callbackOrigin": "https://legal.bsoedu.org"
+}
