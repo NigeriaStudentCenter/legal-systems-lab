@@ -63,11 +63,14 @@ Left in place for repeat tests:
 Not covered: the browser pop-up sign-in from the portal pages, the sign-up flow, and the reviewer, publisher and suspension routes.
 
 ## Direct-to-lawyer engagements (14 Nov 2026)
-`sql/002_engagements.sql` is applied to `lexflow_staging` and the image includes the engagement, invoice and receipt endpoints. `ENABLE_ENGAGEMENTS` is `false`, so they all answer 503.
+`sql/002_engagements.sql` is applied to `lexflow_staging` and the image includes the engagement, invoice and receipt endpoints. `ENABLE_ENGAGEMENTS` is `false`, so they all answer 503. The image also carries `/v1/diagnostics/auth`, which only confirms a token is valid; `ENABLE_AUTH_DIAGNOSTIC` is `false`.
 
 ## Operating it
-- New image: push to `azure-staging-hybrid` under `lexflow-ng/backend/`; copy the digest from the run summary into `staging-hybrid.parameters.json`.
-- Deploy: `az deployment group create -g lexflow-staging-rg --template-file lexflow-ng/infra/staging-hybrid.bicep --parameters @lexflow-ng/infra/staging-hybrid.parameters.json` by an authorised operator. There is still no automated deploy workflow.
+- **Releases go through GitHub**, not a laptop: run `LexFlow approved Entra staging API release` on `main` with the confirmation `DEPLOY_SYNTHETIC_STAGING` and approve the `lexflow-staging` environment. It builds a pinned commit, updates only the image, re-checks every gate and rolls back on failure. See `../ops/README-APPROVED-STAGING-RELEASE.md`.
+- After each release, copy the new image digest into `staging-hybrid.parameters.json` so this template keeps matching what is running. Last synced 14 Nov 2026 (`sha256:874a5698…`, source commit `9d15b55`); `az deployment group what-if` then showed no change to the API's image or settings.
+- The Bicep template is for rebuilding the environment or changing its shape: `az deployment group create -g lexflow-staging-rg --template-file lexflow-ng/infra/staging-hybrid.bicep --parameters @lexflow-ng/infra/staging-hybrid.parameters.json` by an authorised operator. Deploying it with a stale digest would undo the latest release.
+- Read-only check at any time: run `LexFlow Azure staging acceptance (READ ONLY)` on `main`.
+- The deployment identity trusts GitHub's ID-based subject `repo:NigeriaStudentCenter@88378425/legal-systems-lab@1456667293:environment:lexflow-staging`; the name-only form is refused by Azure.
 - Schema changes: connect to `estatecopilot-db` as a Microsoft Entra administrator, never as the runtime login.
 - Remove everything: delete `lexflow-staging-rg`, then `DROP DATABASE lexflow_staging; DROP ROLE lexflow_staging_api;`.
 
