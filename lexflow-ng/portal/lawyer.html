@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex,nofollow">
+<title>Lawyer practice portal | LexFlow NG</title><link rel="stylesheet" href="portal.css"><link rel="stylesheet" href="engagements.css"></head>
+<body data-page="lawyer"><header class="site-header"><a href="../index.html" class="brand">LexFlow <span>NG</span></a><nav><a href="status.html">My verification</a><a href="client.html">Client view</a></nav></header>
+<main class="shell"><div class="eyebrow">LAWYER WORKSPACE · CONTROLLED STAGING</div><h1>Make professional progress visible.</h1>
+<p class="lead">Accept enquiries after a conflict check, send lawyer-issued invoices and track payment reports without transferring legal fees to LexFlow.</p>
+<div class="callout warning"><strong>Not for real legal work:</strong> This staging environment uses a shared database server. No real client records or financial accounts are permitted until security and regulatory approval.</div>
+<div id="engagementSystemStatus" class="callout" role="status" aria-live="polite">Checking service availability…</div>
+<div class="actions"><button id="engagementSignIn" class="btn" disabled>Sign in</button><button id="engagementSignOut" class="btn outline" disabled>Sign out</button><span id="engagementIdentity">Not signed in</span></div>
+<section class="panel"><h2>Where clients pay your firm</h2><p>Only independently approved payment details can appear on invoices. Every change goes back to two-person review.</p>
+<form id="paymentDetailsForm"><fieldset id="paymentDetailsFields" disabled>
+<label>Payment method <select id="payMethod"><option value="bank_transfer">Nigerian bank transfer</option><option value="paystack_link">Own Paystack payment page</option></select></label>
+<label>Verified payee name <input id="payAccountName" maxlength="110" required></label>
+<div id="bankFields"><div class="form-grid"><label>Bank name<input id="payBankName" maxlength="80"></label><label>10-digit account number<input id="payAccountNumber" inputmode="numeric" maxlength="10"></label></div></div>
+<div id="paystackFields" hidden><label>Lawyer-owned Paystack payment page<input id="payUrl" placeholder="https://paystack.shop/pay/your-page"></label></div>
+<button class="btn" type="submit">Submit payment details for review</button>
+</fieldset></form><div id="paymentDetailsStatus" role="status" aria-live="polite">No payment details loaded.</div></section>
+<section class="panel"><div class="headrow"><h2>Client enquiries</h2><button id="lawyerRefresh" class="btn outline" disabled>Refresh</button></div><div id="lawyerRequests" class="result">Sign in to view authorised engagements.</div></section>
+<section id="selectedEngagementSection" class="panel" hidden><h2 id="selectedEngagementTitle">Selected engagement</h2><p id="selectedEngagementInfo"></p><div class="actions" id="engagementActions">
+<label class="check"><input id="conflictCheck" type="checkbox"> I have independently completed the conflict and competence check.</label>
+<button class="btn" id="acceptEngagement" disabled>Accept request</button><button class="btn outline" id="declineEngagement" disabled>Decline</button><button class="btn outline" id="completeEngagement" disabled>Mark work completed</button>
+</div><p id="engagementActionResult" role="status" aria-live="polite"></p></section>
+<section class="panel"><h2>Issue an invoice</h2><p>Invoices are issued by the lawyer for lawful fees, not by LexFlow. A lawyer must agree scope, remuneration and payment terms with the client.</p>
+<form id="invoiceForm"><fieldset id="invoiceFields" disabled>
+<label>Active engagement<input id="invoiceEngagement" readonly placeholder="Select an accepted request above"></label>
+<div class="form-grid"><label>Lawyer reference<input id="invoiceReference" placeholder="INV-2026-001" maxlength="40" required></label>
+<label>Fee category<select id="invoiceFeeType"></select></label>
+<label>Amount (NGN)<input id="invoiceAmount" inputmode="decimal" placeholder="25000.00" required></label>
+<label>Due date<input id="invoiceDueDate" type="date" required></label></div>
+<button class="btn" type="submit">Issue lawyer invoice</button></fieldset></form>
+<p id="invoiceResult" role="status" aria-live="polite"></p></section>
+<section class="panel"><h2>Invoice reports and receipt records</h2><div id="lawyerInvoices" class="result">Select an engagement to see its invoices.</div>
+<div id="lawyerReceiptPreview" class="receipt" hidden><pre id="lawyerReceiptBody"></pre><button id="lawyerDownloadReceipt" class="btn outline">Save receipt record</button></div></section>
+</main><footer>LexFlow NG · Direct-to-lawyer legal fees · <a href="client.html">Client portal</a></footer>
+<script src="config.js"></script><script type="module" src="dist/engagements.js"></script></body></html>
