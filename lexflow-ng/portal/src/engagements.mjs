@@ -276,6 +276,11 @@ async function start(){
   try{
     settings=validatePortalConfig(cfg,location.origin);
     if(!settings.enabled){locked();return;}
+    // Check the server-side business gate BEFORE initialising Entra.
+    // Closed staging must not depend on identity discovery being reachable,
+    // and must not issue any sign-in request for a disabled workflow.
+    const meta=await callApi('/v1/meta',{publicAccess:true});
+    if(!meta.live_services?.engagements){locked();return;}
     msal=await PublicClientApplication.createPublicClientApplication({
       auth:{clientId:settings.clientId,authority:settings.authority,
         redirectUri:settings.redirectUri,navigateToLoginRequestUrl:false},
@@ -283,8 +288,6 @@ async function start(){
     });
     await msal.handleRedirectPromise();
     if(account())msal.setActiveAccount(account());
-    const meta=await callApi('/v1/meta',{publicAccess:true});
-    if(!meta.live_services?.engagements){locked();return;}
     notify('Staging workflow available for authorised synthetic testing. No legal fees are processed by LexFlow.');
     $('#engagementSignIn').disabled=false;
     setAuthUI();
