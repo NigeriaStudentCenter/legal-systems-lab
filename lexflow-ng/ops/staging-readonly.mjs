@@ -9,6 +9,8 @@ const ROUTES=[
   ['/healthz',200],['/readyz',200],['/v1/meta',200],
   ['/v1/directory',503],['/v1/applications/me',503],
   ['/v1/verification/queue',503],['/v1/engagements',503],
+  // A token-validation endpoint is intentionally present but MUST remain disabled.
+  ['/v1/diagnostics/auth',503],
   ['/v1/payment-details/me',503],
   ['/v1/invoices/00000000-0000-4000-8000-000000000000/receipt',503]
 ];
