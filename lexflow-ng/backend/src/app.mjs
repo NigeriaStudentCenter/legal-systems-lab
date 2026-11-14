@@ -42,6 +42,15 @@ export async function buildApp({config, db, authenticate}) {
     // LexFlow never takes custody of legal fees: clients pay the lawyer directly.
     payments:false,legal_fee_custody:false,custody_dispatch:false,client_matter_storage:false
   }}));
+  // Narrow staging acceptance endpoint: validates REAL OIDC access tokens, but
+  // never reads any database account, privilege, client matter or legal document.
+  // It must remain OFF in every production configuration and after acceptance.
+  app.get('/v1/diagnostics/auth', {config:{rateLimit:{max:8,timeWindow:'1 minute'}}},async request=>{
+    gated(config,'authDiagnostic');
+    await withAuth(request);
+    return {authenticated:true,environment:'staging-acceptance',
+      data_access:false,professional_verification:false};
+  });
   app.get('/v1/directory',async request=>{gated(config,'directory');return db.listPublic(parseFilters(Object.fromEntries(Object.entries(request.query))));});
   app.post('/v1/applications', {config:{rateLimit:{max:5,timeWindow:'1 hour'}}},async(request,reply)=>{
     gated(config,'applications');const actor=await withAuth(request);const data=parseApplication(request.body);

@@ -25,3 +25,10 @@ test('production refuses insecure provider and DB configuration',()=>{
   assert.throws(()=>readConfig({...env,ENABLE_PUBLICATION:'yes'}));
   assert.throws(()=>readConfig({...env,OIDC_AUDIENCE:''}));
 });
+
+test('identity diagnostic gate defaults off and refuses invalid boolean',()=>{
+  assert.equal(readConfig(env).gates.authDiagnostic,false);
+  assert.equal(readConfig({...env,ENABLE_AUTH_DIAGNOSTIC:'false'}).gates.authDiagnostic,false);
+  assert.equal(readConfig({...env,ENABLE_AUTH_DIAGNOSTIC:'true'}).gates.authDiagnostic,true);
+  assert.throws(()=>readConfig({...env,ENABLE_AUTH_DIAGNOSTIC:'yes'}));
+});
