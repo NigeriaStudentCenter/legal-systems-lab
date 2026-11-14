@@ -1,31 +1,31 @@
 <!doctype html>
 <html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="robots" content="noindex,nofollow"><meta name="referrer" content="no-referrer">
-<title>LexFlow NG — Staging identity acceptance</title>
+<title>LexFlow NG — Genuine Entra staging identity acceptance</title>
 <link rel="stylesheet" href="portal.css"></head>
-<body data-page="identity-check">
-<header class="site-header"><a class="brand" href="../index.html">LexFlow <span>NG</span></a></header>
+<body><header class="site-header"><a class="brand" href="../index.html">LexFlow <span>NG</span></a></header>
 <main class="shell">
-<div class="eyebrow">STAGING ONLY · AUTHENTICATION ACCEPTANCE</div>
-<h1>Check secure sign-in</h1>
-<p class="lead">This diagnostic checks whether the approved Microsoft Entra staging login can obtain a valid access token for LexFlow's API. It never submits a client matter, lawyer application, invoice or payment.</p>
-<div class="callout warning"><strong>Access is disabled until approved.</strong> Test with a designated synthetic staging account only. Do not enter real client information. Never share access tokens or passwords in screenshots, messages or reports.</div>
-<div id="identityCheckStatus" role="status" aria-live="polite" class="callout">Checking staging configuration…</div>
-<div class="panel">
-<h2>Authentication only</h2>
-<div class="actions"><button id="identityTestLogin" class="btn" disabled>Sign in and test API</button><button id="identityTestLogout" class="btn outline" disabled>Sign out</button></div>
-<p id="identityTestResult" role="status" aria-live="polite">The sign-in test has not run.</p>
-</div>
-<div class="panel">
-<h2>Pass criteria</h2>
-<ol>
-<li>Entra returns to this approved browser origin, with a valid delegated access token.</li>
-<li>The Azure API responds 200 from the identity diagnostic endpoint and returns no names or user IDs.</li>
-<li>Unsigned or invalid tokens are rejected.</li>
-<li>Business services continue to show disabled in API metadata.</li>
-</ol>
-<p>Only the operator can temporarily activate the staging diagnostic route. The default is disabled; restore it to disabled immediately after approval testing.</p>
-</div></main>
-<footer>LexFlow NG · Closed staging identity test only · No legal advice or payments</footer>
-<script src="config.js"></script>
-<script type="module" src="dist/identity-check.js"></script></body></html>
+<div class="eyebrow">SYNTHETIC TEST ACCOUNTS ONLY · ENTRA EXTERNAL ID</div>
+<h1>Verify two genuine Microsoft sign-ins</h1>
+<p class="lead">Use two distinct fictional accounts in the LexFlow NG Staging Microsoft Entra tenant. A successful test verifies a real Entra-issued, signed API-scope access token. It does not establish lawyer credentials or permit legal work.</p>
+<div class="callout warning"><strong>Not for live users.</strong> Do not enter real names, case facts, documents, payment details or live lawyer records. Do not share passwords, access tokens or screenshots containing identity data. The public GitHub config is disabled by default.</div>
+<div class="callout" id="identityCheckStatus" role="status" aria-live="polite">Checking identity test configuration…</div>
+<section class="panel">
+<h2>Step 1 — Fictional client</h2><p>Use only the designated synthetic client Entra account. Sign out before moving to the lawyer test.</p>
+<button class="btn" id="testClient" type="button" disabled>Sign in as fictional client</button>
+<p id="clientResult" role="status">Not tested</p></section>
+<section class="panel"><h2>Step 2 — Fictional lawyer</h2>
+<p>Use a different synthetic account. This is an identity test, <strong>not</strong> professional credential verification.</p>
+<button class="btn" id="testLawyer" type="button" disabled>Sign in as fictional lawyer</button>
+<p id="lawyerResult" role="status">Not tested</p></section>
+<section class="panel"><h2>Staging acceptance results</h2>
+<p id="distinctResult" role="status">Two distinct Entra identities have not yet been verified.</p>
+<p id="apiDiagnosticResult">API diagnostic not tested. The Azure diagnostic remains switched off by default.</p>
+<div class="actions"><button class="btn outline" type="button" id="testSignOut" disabled>Sign out of Microsoft Entra</button>
+<button class="btn outline" type="button" id="copyTestReport" disabled>Copy non-sensitive results</button>
+<button class="btn outline" type="button" id="resetIdentityTest">Clear local results</button></div>
+</section><p class="small">The results are stored only in this browser session as salted, non-reversible account comparisons. The test never uploads or displays a token, name, email or subject identifier.</p>
+</main><footer>LexFlow NG · Test only · Client intake and legal-fee processing disabled</footer>
+<script src="identity-acceptance-config.js"></script>
+<script type="module" src="dist/identity-check.js"></script>
+</body></html>
