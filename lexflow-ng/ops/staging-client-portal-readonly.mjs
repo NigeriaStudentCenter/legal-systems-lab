@@ -116,7 +116,10 @@ export async function verifyClosedPortalBrowser(baseInput,{
     const previewOrigin='https://127.0.0.1:'+server.address().port;
     files.set('/lexflow-ng/portal/config.js',['application/javascript',Buffer.from(
       'window.LEXFLOW_PORTAL=Object.freeze('+JSON.stringify({
-        enabled:true,authority:identity.authority,clientId:identity.portalClientId,
+        // The public preview deliberately mirrors disabled portal/config.js.
+        // Real Azure API health, CORS and feature gates are checked separately.
+        // Do not enable a simulated sign-in for a read-only safety test.
+        enabled:false,authority:identity.authority,clientId:identity.portalClientId,
         apiScope:identity.apiScope,apiBaseUrl:previewOrigin,
         redirectUri:previewOrigin+'/lexflow-ng/portal/register.html'
       })+');'
@@ -174,9 +177,9 @@ export async function verifyClosedPortalBrowser(baseInput,{
       screens.push({screen:name,load:'PASS',business_controls:'disabled'});
       await page.close();
     }
-    return {result:'PASS: closed client and lawyer portal rendering against real Azure metadata',
-      browser:'Chromium with local HTTPS preview; real Azure metadata relayed read-only',
-      origin_verification:'Azure browser CORS verified separately by HTTP requests',
+    return {result:'PASS: closed client and lawyer portal rendering; real Azure API checked separately',
+      browser:'Chromium with local HTTPS preview and disabled portal configuration',
+      origin_verification:'Azure staging API and CORS verified by independent HTTP checks',
       user_login:'not performed',screens};
   }finally{
     if(browser)await browser.close();
