@@ -52,7 +52,7 @@ test('rejects secret leakage, cross-tenant identity drift and wrong resource',()
 test('rejects mutable image and unapproved digest',()=>{
   const data=fixture();data.properties.template.containers[0].image='ghcr.io/nigeriastudentcenter/lexflow-ng-api:staging';
   assert.throws(()=>validateExistingApp(data),/immutable/);
-  assert.throws(()=>validateExistingApp(fixture(),{expectedImage:image.replace(/a/g,'b')}),/digest/);
+  assert.throws(()=>validateExistingApp(fixture(),{expectedImage:image.slice(0,-1)+'b'}),/digest/);
 });
 test('rejects insecure ingress, duplicate environment variables and extra containers',()=>{
   const data=fixture();data.properties.configuration.ingress.allowInsecure=true;
