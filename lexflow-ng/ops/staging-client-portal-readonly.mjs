@@ -171,8 +171,11 @@ export async function verifyClosedPortalBrowser(baseInput,{
       }
       expect(await page.locator('#engagementSignIn').isDisabled(),
         name+': sign-in unexpectedly enabled while business gates are closed');
-      expect(await page.locator(name==='client.html'?'#clientEnquiryFields':'#invoiceFields').isDisabled(),
-        name+': business input fields unexpectedly enabled');
+      const actionInput=name==='client.html'?'#enquiryName':'#invoiceAmount';
+      const actionButton=name==='client.html'?'#clientEnquiryForm button[type="submit"]':'#invoiceForm button[type="submit"]';
+      expect(await page.locator(actionInput).isDisabled() &&
+        await page.locator(actionButton).isDisabled(),
+        name+': a client or lawyer action input is unexpectedly enabled');
       expect(!errors.length,name+': browser JavaScript error occurred: '+errors.join('; '));
       screens.push({screen:name,load:'PASS',business_controls:'disabled'});
       await page.close();
