@@ -1,0 +1,51 @@
+name: LexFlow client portal Phase 2 checks
+on:
+  push:
+    branches: [client-portal-phase2]
+    paths:
+      - 'lexflow-ng/portal/**'
+      - '.github/workflows/lexflow-phase2-ci.yml'
+  pull_request:
+    paths:
+      - 'lexflow-ng/portal/**'
+      - '.github/workflows/lexflow-phase2-ci.yml'
+permissions:
+  contents: read
+jobs:
+  portal:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: lexflow-ng/portal
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install dependencies
+        run: npm install --ignore-scripts --no-audit --no-fund
+      - name: Syntax checks
+        run: npm run check
+      - name: Run validation tests
+        run: npm test
+      - name: Build both portal bundles
+        run: npm run build
+      - name: Verify both bundles exist
+        run: |
+          test -s dist/portal.js
+          test -s dist/engagements.js
+      - name: Audit runtime dependencies
+        run: npm audit --omit=dev --audit-level=high
+      - name: Upload non-production preview
+        uses: actions/upload-artifact@v4
+        with:
+          name: lexflow-client-portal-phase2
+          path: |
+            lexflow-ng/portal/dist/portal.js
+            lexflow-ng/portal/dist/engagements.js
+            lexflow-ng/portal/client.html
+            lexflow-ng/portal/lawyer.html
+            lexflow-ng/portal/portal.css
+            lexflow-ng/portal/engagements.css
+            lexflow-ng/portal/config.js
+          retention-days: 14
