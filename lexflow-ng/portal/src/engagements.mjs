@@ -7,7 +7,7 @@ const page=document.body.dataset.page;
 const cfg=window.LEXFLOW_PORTAL;
 let settings=null,msal=null,selectedLawyerId='',selectedEngagementId='',engagements=[],directory=[],lastReceiptText='';
 const apiError=(message,node='#engagementSystemStatus')=>{const n=$(node);if(n){n.textContent=String(message);n.classList.add('error')}};
-const notify=(message,node)=>{const n=$(node);if(n){n.textContent=String(message);n.classList.remove('error')}};
+const notify=(message,node='#engagementSystemStatus')=>{const n=$(node);if(n){n.textContent=String(message);n.classList.remove('error')}};
 const node=(name,value='',className='')=>{const element=document.createElement(name);element.textContent=String(value??'');if(className)element.className=className;return element;};
 function row(...children){const r=node('div','','record');r.append(...children);return r}
 function labeled(label,value){const p=node('p');p.append(node('strong',label+': '),document.createTextNode(String(value??'—')));return p}
