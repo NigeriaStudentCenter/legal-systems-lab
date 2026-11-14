@@ -40,7 +40,27 @@ Microsoft Entra External ID tenant **LexFlow NG Staging** (`lexflowngstaging.onm
 | Redirect URIs | `https://legal.bsoedu.org/lexflow-ng/portal/{register,status,review}.html` |
 | User flow | "LexFlow staging sign-up and sign-in", email and password, self-service sign-up allowed |
 
-None of these values is secret. `portal/config.js` is still `enabled: false` and has **not** been filled in: doing so on the public site would open sign-up to anyone. No test users exist, no MFA or conditional access is configured, and a real token has not yet been validated end to end against the API.
+None of these values is secret. `portal/config.js` is still `enabled: false` and has **not** been filled in: doing so on the public site would open sign-up to anyone. No MFA or conditional access is configured.
+
+### End-to-end sign-in test, 14 Nov 2026
+`ENABLE_APPLICATIONS` was switched on in staging for a few minutes, then back off.
+
+| Call | Result |
+|---|---|
+| `GET /v1/applications/me`, no token | 401 |
+| Same, token with a tampered signature | 401 |
+| Same, valid token | 200, no application |
+| `POST /v1/applications`, synthetic record | 201, status `pending` |
+| `GET /v1/applications/me` again | 200, returns the record |
+| `POST /v1/applications` a second time | 409 |
+| `GET /v1/verification/queue` (gate off) | 503 |
+
+Left in place for repeat tests:
+- Test user `synthetic.applicant1@lexflowngstaging.onmicrosoft.com`; its password is the Key Vault secret `test-user-password`.
+- App "LexFlow NG test client (staging)" (`996d77d8-9a65-44d9-a7e7-38c179b2e474`), a public client that allows direct username-and-password sign-in. Delete it before the tenant holds any real account.
+- One synthetic application, "Synthetic Applicant One", in `lexflow_staging`.
+
+Not covered: the browser pop-up sign-in from the portal pages, the sign-up flow, and the reviewer, publisher and suspension routes.
 
 ## Operating it
 - New image: push to `azure-staging-hybrid` under `lexflow-ng/backend/`; copy the digest from the run summary into `staging-hybrid.parameters.json`.
@@ -49,4 +69,4 @@ None of these values is secret. `portal/config.js` is still `enabled: false` and
 - Remove everything: delete `lexflow-staging-rg`, then `DROP DATABASE lexflow_staging; DROP ROLE lexflow_staging_api;`.
 
 ## Still open before real use
-Checklist steps 5, 6 and 7, MFA and test users in the sign-in tenant, every row of `backend/RELEASE-GATES.md`, and a move to a pay-as-you-go subscription with a private database (Visual Studio credits are licensed for development and test only).
+Checklist steps 5, 6 and 7, MFA in the sign-in tenant, a browser test of the portal, every row of `backend/RELEASE-GATES.md`, and a move to a pay-as-you-go subscription with a private database (Visual Studio credits are licensed for development and test only).
