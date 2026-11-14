@@ -1,0 +1,159 @@
+name: LexFlow approved Entra staging API release
+on:
+  workflow_dispatch:
+permissions:
+  contents: read
+  packages: write
+  id-token: write
+concurrency:
+  group: lexflow-approved-staging-deployment
+  cancel-in-progress: false
+jobs:
+  validate:
+    name: Validate approval source and staging guard
+    runs-on: ubuntu-latest
+    outputs:
+      source_sha: ${{ steps.source.outputs.sha }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Verify approved merged commit is unchanged
+        id: source
+        shell: bash
+        run: |
+          set -euo pipefail
+          APPROVED_SHA='9d15b558d10ef5b1874382e924a401c2bc4328b0'
+          git cat-file -e "$APPROVED_SHA^{commit}" || git fetch origin "$APPROVED_SHA"
+          git cat-file -e "$APPROVED_SHA^{commit}"
+          git show "$APPROVED_SHA:lexflow-ng/backend/src/app.mjs" | grep -Fq "/v1/diagnostics/auth"
+          git show "$APPROVED_SHA:lexflow-ng/backend/src/config.mjs" | grep -Fq "ENABLE_AUTH_DIAGNOSTIC"
+          git show "$APPROVED_SHA:lexflow-ng/infra/staging-hybrid.bicep" | grep -Fq "name: 'ENABLE_AUTH_DIAGNOSTIC', value: 'false'"
+          echo "sha=$APPROVED_SHA" >> "$GITHUB_OUTPUT"
+      - name: Check staging release guard and negative tests
+        run: |
+          node --check lexflow-ng/ops/staging-release-guard.mjs
+          node --test lexflow-ng/ops/staging-release-guard.test.mjs
+  image:
+    name: Build immutable approved API image
+    needs: validate
+    runs-on: ubuntu-latest
+    outputs:
+      image: ${{ steps.digest.outputs.image }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ needs.validate.outputs.source_sha }}
+      - uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - id: publish
+        uses: docker/build-push-action@v6
+        with:
+          context: lexflow-ng/backend
+          push: true
+          provenance: false
+          tags: ghcr.io/nigeriastudentcenter/lexflow-ng-api:entra-acceptance-9d15b558
+          labels: |
+            org.opencontainers.image.source=https://github.com/NigeriaStudentCenter/legal-systems-lab
+            org.opencontainers.image.revision=${{ needs.validate.outputs.source_sha }}
+      - id: digest
+        env:
+          IMAGE_DIGEST: ${{ steps.publish.outputs.digest }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          [[ "$IMAGE_DIGEST" =~ ^sha256:[a-f0-9]{64}$ ]]
+          echo "image=ghcr.io/nigeriastudentcenter/lexflow-ng-api@$IMAGE_DIGEST" >> "$GITHUB_OUTPUT"
+          echo "Built approved source ${{ needs.validate.outputs.source_sha }} as an immutable container digest." >> "$GITHUB_STEP_SUMMARY"
+  deploy:
+    name: Human-approved synthetic Azure staging deployment
+    needs: [validate, image]
+    runs-on: ubuntu-latest
+    environment: lexflow-staging
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Authenticate through GitHub-to-Azure OIDC
+        uses: azure/login@v2
+        with:
+          client-id: ${{ vars.LEXFLOW_AZURE_CLIENT_ID }}
+          tenant-id: ${{ vars.LEXFLOW_AZURE_TENANT_ID }}
+          subscription-id: ${{ vars.LEXFLOW_AZURE_SUBSCRIPTION_ID }}
+      - name: Verify subscription, app identity, locked gates and existing immutable image
+        id: baseline
+        shell: bash
+        env:
+          STAGING_GROUP: ${{ vars.LEXFLOW_STAGING_RESOURCE_GROUP }}
+        run: |
+          set -euo pipefail
+          test "$STAGING_GROUP" = 'lexflow-staging-rg'
+          az containerapp show --resource-group "$STAGING_GROUP" --name lexflowstg-api --output json > "$RUNNER_TEMP/lexflow-before.json"
+          LEXFLOW_SAVE_OLD_IMAGE=true node lexflow-ng/ops/staging-release-guard.mjs < "$RUNNER_TEMP/lexflow-before.json"
+          test -n "$LEXFLOW_OLD_IMAGE"
+      - name: Deploy approved image only, preserving all other settings
+        id: deploy_image
+        shell: bash
+        env:
+          STAGING_GROUP: ${{ vars.LEXFLOW_STAGING_RESOURCE_GROUP }}
+          APPROVED_IMAGE: ${{ needs.image.outputs.image }}
+        run: |
+          set -euo pipefail
+          [[ "$APPROVED_IMAGE" =~ ^ghcr\.io/nigeriastudentcenter/lexflow-ng-api@sha256:[a-f0-9]{64}$ ]]
+          az containerapp update --resource-group "$STAGING_GROUP" --name lexflowstg-api --image "$APPROVED_IMAGE" --output none
+          echo "Approved image update requested. All feature gates remain unchanged."
+      - name: Verify new image, Azure readiness and all closed gates
+        id: smoke
+        shell: bash
+        env:
+          STAGING_GROUP: ${{ vars.LEXFLOW_STAGING_RESOURCE_GROUP }}
+          LEXFLOW_EXPECTED_IMAGE: ${{ needs.image.outputs.image }}
+        run: |
+          set -euo pipefail
+          az containerapp show --resource-group "$STAGING_GROUP" --name lexflowstg-api --output json > "$RUNNER_TEMP/lexflow-after.json"
+          LEXFLOW_REQUIRE_AUTH_GATE=true node lexflow-ng/ops/staging-release-guard.mjs < "$RUNNER_TEMP/lexflow-after.json"
+          FQDN="$(az containerapp show --resource-group "$STAGING_GROUP" --name lexflowstg-api --query properties.configuration.ingress.fqdn -o tsv)"
+          test -n "$FQDN"
+          export LEXFLOW_STAGING_BASE_URL="https://$FQDN"
+          node lexflow-ng/ops/staging-readonly.mjs
+          export LEXFLOW_STAGING_BASE_URL
+          node --input-type=module -e '
+            const url=process.env.LEXFLOW_STAGING_BASE_URL+"/v1/diagnostics/auth";
+            const response=await fetch(url,{method:"GET",redirect:"manual",signal:AbortSignal.timeout(30000)});
+            if(response.status!==503)throw Error("Authentication diagnostic must remain disabled: "+response.status);
+            process.stdout.write("PASS: authentication diagnostic remains closed.\n");
+          '
+      - name: Roll back image after failed update or verification
+        if: failure() && steps.baseline.outcome == 'success' && steps.deploy_image.outcome != 'skipped'
+        shell: bash
+        env:
+          STAGING_GROUP: ${{ vars.LEXFLOW_STAGING_RESOURCE_GROUP }}
+        run: |
+          set -euo pipefail
+          test -n "$LEXFLOW_OLD_IMAGE"
+          az containerapp update --resource-group "$STAGING_GROUP" --name lexflowstg-api --image "$LEXFLOW_OLD_IMAGE" --output none
+          echo "::warning::Staging image restored to the pre-deployment digest. Check smoke/rollback logs before retrying."
+      - name: Publish deployment status (no sensitive configuration)
+        if: always()
+        env:
+          APPROVED_IMAGE: ${{ needs.image.outputs.image }}
+        shell: bash
+        run: |
+          {
+            echo "### LexFlow NG Entra staging API release"
+            echo "- Source commit: \`9d15b558d10ef5b1874382e924a401c2bc4328b0\`"
+            echo "- Container image: \`$APPROVED_IMAGE\`"
+            echo "- Azure scope: staging-only, lexflow-staging-rg / lexflowstg-api"
+            echo "- Business and authentication diagnostic flags remain disabled."
+            echo "- This workflow does not test a real user sign-in or handle client records."
+          } >> "$GITHUB_STEP_SUMMARY"
