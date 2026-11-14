@@ -29,9 +29,12 @@ jobs:
           APPROVED_SHA='9d15b558d10ef5b1874382e924a401c2bc4328b0'
           git cat-file -e "$APPROVED_SHA^{commit}" || git fetch origin "$APPROVED_SHA"
           git cat-file -e "$APPROVED_SHA^{commit}"
-          git show "$APPROVED_SHA:lexflow-ng/backend/src/app.mjs" | grep -Fq "/v1/diagnostics/auth"
-          git show "$APPROVED_SHA:lexflow-ng/backend/src/config.mjs" | grep -Fq "ENABLE_AUTH_DIAGNOSTIC"
-          git show "$APPROVED_SHA:lexflow-ng/infra/staging-hybrid.bicep" | grep -Fq "name: 'ENABLE_AUTH_DIAGNOSTIC', value: 'false'"
+          git show "$APPROVED_SHA:lexflow-ng/backend/src/app.mjs" > "$RUNNER_TEMP/approved-app.mjs"
+          git show "$APPROVED_SHA:lexflow-ng/backend/src/config.mjs" > "$RUNNER_TEMP/approved-config.mjs"
+          git show "$APPROVED_SHA:lexflow-ng/infra/staging-hybrid.bicep" > "$RUNNER_TEMP/approved-staging.bicep"
+          grep -Fq "/v1/diagnostics/auth" "$RUNNER_TEMP/approved-app.mjs"
+          grep -Fq "ENABLE_AUTH_DIAGNOSTIC" "$RUNNER_TEMP/approved-config.mjs"
+          grep -Fq "name: 'ENABLE_AUTH_DIAGNOSTIC', value: 'false'" "$RUNNER_TEMP/approved-staging.bicep"
           echo "sha=$APPROVED_SHA" >> "$GITHUB_OUTPUT"
       - name: Check staging release guard and negative tests
         run: |
