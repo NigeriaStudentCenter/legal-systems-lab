@@ -38,6 +38,7 @@ test('read-only preflight accepts healthy, locked-down synthetic staging',async(
   const results=await inspectStaging(url,{fetchImpl:fakeRequest()});
   assert.match(results.result,/PASS/);
   assert.equal(results.endpoints['/v1/engagements'],503);
+  assert.equal(results.endpoints['/v1/diagnostics/auth'],503);
   assert.equal(results.endpoints['/v1/meta'],200);
   assert.equal(results.feature_gates.jurisdiction_count,37);
   assert.equal(results.feature_gates.all_business_features_disabled,true);
@@ -60,4 +61,11 @@ test('fails closed when database or health is unavailable',async()=>{
 test('fails if an unexpected redirect is returned',async()=>{
   await assert.rejects(inspectStaging(url,{fetchImpl:fakeRequest({'/healthz':{status:302}})}),
     /expected HTTP 200 but received 302/);
+});
+
+test('fails closed if the staging token diagnostic is enabled without approval',async()=>{
+  await assert.rejects(
+    inspectStaging(url,{fetchImpl:fakeRequest({'/v1/diagnostics/auth':{status:401}})}),
+    /\/v1\/diagnostics\/auth expected HTTP 503 but received 401/
+  );
 });
