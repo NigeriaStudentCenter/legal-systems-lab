@@ -107,3 +107,74 @@ export function reviewOutcome(reviewDecisions) {
   if (reviewDecisions.includes('reject')) return 'rejected';
   return reviewDecisions.filter(x=>x==='approve').length >= 2 ? 'verified' : 'pending';
 }
+
+// ---- Direct-to-lawyer engagements, invoices and receipts ----
+// LexFlow records what was invoiced and what each party reported. It never handles the money.
+export const feeTypes = Object.freeze(['Consultation','Fixed-fee service','Retainer deposit','Disbursements','Other professional fees']);
+const uuidPattern = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+export function parsePaymentDetails(raw) {
+  exactFields(raw, ['method','account_name','bank_name','account_number','payment_url']);
+  const account_name = string(raw.account_name,'account_name',3,110,/^[\p{L}\p{N} .,&\-']+$/u);
+  if (raw.method === 'bank_transfer') {
+    if (raw.payment_url !== undefined) return fail('Unrecognised field');
+    if (typeof raw.account_number !== 'string' || !/^[0-9]{10}$/.test(raw.account_number)) return fail('Invalid account_number');
+    return {method:'bank_transfer',account_name,
+      bank_name:string(raw.bank_name,'bank_name',2,80,/^[\p{L}\p{N} .&\-']+$/u),
+      account_number:raw.account_number,payment_url:null};
+  }
+  if (raw.method === 'paystack_link') {
+    if (raw.bank_name !== undefined || raw.account_number !== undefined) return fail('Unrecognised field');
+    // The lawyer's OWN Paystack page. Only Paystack-hosted pages; no query strings or redirects.
+    if (typeof raw.payment_url !== 'string' || !/^https:\/\/(paystack\.com|paystack\.shop)\/pay\/[A-Za-z0-9_-]{2,80}$/.test(raw.payment_url))
+      return fail('Invalid payment_url');
+    return {method:'paystack_link',account_name,bank_name:null,account_number:null,payment_url:raw.payment_url};
+  }
+  return fail('Unsupported method');
+}
+export function parsePaymentDetailReview(raw) {
+  exactFields(raw, ['decision','name_match_confirmed','reason']);
+  if (raw.decision === 'reject') return {decision:'reject',name_match_confirmed:false,reason:string(raw.reason,'reason',8,220)};
+  if (raw.decision !== 'approve') return fail('Invalid review decision');
+  if (raw.name_match_confirmed !== true) return fail('Approval requires confirming the account name matches the verified lawyer or firm');
+  return {decision:'approve',name_match_confirmed:true};
+}
+export function parseEngagementRequest(raw) {
+  exactFields(raw, ['application_id','service_category','client_name','client_contact','direct_payment_acknowledged']);
+  if (typeof raw.application_id !== 'string' || !uuidPattern.test(raw.application_id)) return fail('Invalid application_id');
+  if (raw.direct_payment_acknowledged !== true)
+    return fail('Acknowledge that fees are paid directly to the lawyer and are not held by LexFlow');
+  const contact = string(raw.client_contact,'client_contact',7,120);
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(contact) && !/^\+?[0-9][0-9 ]{8,17}$/.test(contact)) return fail('Invalid client_contact');
+  return {application_id:raw.application_id.toLowerCase(),
+    service_category:enumeration(raw.service_category, practiceAreas, 'service_category'),
+    client_name:string(raw.client_name,'client_name',3,110,/^[\p{L} .\-']+$/u),
+    client_contact:contact};
+}
+export function parseEngagementResponse(raw) {
+  exactFields(raw, ['decision','conflict_check_confirmed']);
+  if (raw.decision === 'decline') return {decision:'decline'};
+  if (raw.decision !== 'accept') return fail('Invalid decision');
+  if (raw.conflict_check_confirmed !== true) return fail('Acceptance requires a completed conflict check');
+  return {decision:'accept'};
+}
+export function parseInvoice(raw, now = new Date()) {
+  exactFields(raw, ['lawyer_reference','fee_type','amount_kobo','due_date']);
+  const amount = raw.amount_kobo;
+  if (!Number.isSafeInteger(amount) || amount < 10000 || amount > 1000000000000) return fail('Invalid amount_kobo');
+  const due_date = isoDate(raw.due_date);
+  if (due_date < now.toISOString().slice(0,10)) return fail('Due date cannot be in the past');
+  return {lawyer_reference:string(raw.lawyer_reference,'lawyer_reference',3,40,/^[A-Z0-9][A-Z0-9\-\/]+$/),
+    fee_type:enumeration(raw.fee_type, feeTypes, 'fee_type'),amount_kobo:amount,due_date};
+}
+export function parsePaidReport(raw, now = new Date()) {
+  exactFields(raw, ['received_on','funds_received_confirmed']);
+  if (raw.funds_received_confirmed !== true) return fail('Confirm that the funds have reached your account');
+  const received_on = isoDate(raw.received_on);
+  if (received_on > now.toISOString().slice(0,10)) return fail('Receipt date cannot be in the future');
+  return {received_on};
+}
+export function parseClientResponse(raw) {
+  exactFields(raw, ['response']);
+  if (!['confirm','dispute'].includes(raw.response)) return fail('Invalid response');
+  return {response:raw.response};
+}

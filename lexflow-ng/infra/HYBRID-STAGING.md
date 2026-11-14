@@ -62,6 +62,9 @@ Left in place for repeat tests:
 
 Not covered: the browser pop-up sign-in from the portal pages, the sign-up flow, and the reviewer, publisher and suspension routes.
 
+## Direct-to-lawyer engagements (14 Nov 2026)
+`sql/002_engagements.sql` is applied to `lexflow_staging` and the image includes the engagement, invoice and receipt endpoints. `ENABLE_ENGAGEMENTS` is `false`, so they all answer 503.
+
 ## Operating it
 - New image: push to `azure-staging-hybrid` under `lexflow-ng/backend/`; copy the digest from the run summary into `staging-hybrid.parameters.json`.
 - Deploy: `az deployment group create -g lexflow-staging-rg --template-file lexflow-ng/infra/staging-hybrid.bicep --parameters @lexflow-ng/infra/staging-hybrid.parameters.json` by an authorised operator. There is still no automated deploy workflow.

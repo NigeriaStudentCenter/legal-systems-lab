@@ -9,7 +9,9 @@
 | Hosting and encryption | Owned Azure or other tenancy, HTTPS gateway, trusted CA, WAF, secrets vault, secure network + backups | Not provisioned |
 | Operations | Trained reviewers, independent publisher, audit access, incident pager and incident runbooks | Not staffed |
 | Code review | All CI checks pass, independent security code review and pen test | Pending |
-| Financial handling | No payments/escrow until regulated model and provider contract agreed | Disabled |
+| Financial handling | LexFlow never holds legal fees (direct-to-lawyer model, see PRODUCT-SPEC). No escrow, splits or commission | Custody permanently off; `payments:false` |
+| Direct-to-lawyer engagements and invoices (`ENABLE_ENGAGEMENTS`) | Counsel's opinion on fee display, invoicing through a third-party platform and client-account rules; client privacy notice and DPIA covering client name and contact; payment-detail review procedure and trained reviewers; dispute and complaint runbook; tax treatment of invoices | Built, tested with synthetic data, flag off |
+| Software subscriptions | Separately registered LexFlow merchant account; pricing reviewed against advertising and remuneration rules | Not built |
 | Client portal and custody dispatch | Separate legal/privacy/safety reviews; no reliance on a mock workflow | Not implemented |
 | Production data testing | Only synthetic fixtures during validation; enforce retention and erasure | Not approved |
 
@@ -22,7 +24,7 @@
 6. Revalidate periodically. Listings are automatically hidden on expiry. A compliance administrator can suspend a listing immediately; adverse decisions require human appeals and appropriate notice.
 
 ## Production rollback
-Turn off all `ENABLE_*` flags, stop public onboarding, revoke affected OIDC subjects, and close the origin at the gateway. Maintain the immutable change trail and statutory record retention. Database rollback needs an approved migration plan; never drop production tables to recover a failure.
+Turn off all `ENABLE_*` flags (including `ENABLE_ENGAGEMENTS`), stop public onboarding, revoke affected OIDC subjects, and close the origin at the gateway. Maintain the immutable change trail and statutory record retention. Database rollback needs an approved migration plan; never drop production tables to recover a failure.
 
 ## Operator sign-off
 No sign-offs have been supplied. The default position is **DO NOT ENABLE PUBLIC APPLICATIONS**.

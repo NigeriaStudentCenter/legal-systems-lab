@@ -124,6 +124,7 @@ resource api 'Microsoft.App/containerApps@2024-03-01' = {
             { name: 'ENABLE_VERIFICATION', value: 'false' }
             { name: 'ENABLE_PUBLICATION', value: 'false' }
             { name: 'ENABLE_DIRECTORY', value: 'false' }
+            { name: 'ENABLE_ENGAGEMENTS', value: 'false' }
           ]
         }
       ]

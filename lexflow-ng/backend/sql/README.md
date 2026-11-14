@@ -18,3 +18,8 @@ Grant 'publisher' and 'compliance_admin' only after written organisational autho
 An applicant cannot self-review. It takes two independent reviewers and a separate publishing officer. Publication is gated by two current evidence-based reviews and a manual remuneration/advertising sign-off. Suspending is available only to compliance_admin.
 
 **Never** move client evidence, criminal-case facts, detainee information, government ID images, attorney disciplinary records, banking credentials or privileged client instructions into this initial onboarding database or GitHub.
+
+## 002_engagements.sql
+Adds the `client` role, `lawyer_payment_details`, `payment_detail_reviews`, `engagements` and `invoices`. Apply after `001_initial.sql`. Grant the API identity SELECT/INSERT/UPDATE on the four new tables and nothing else.
+
+These tables hold a client's name and one contact, and a lawyer's bank account or Paystack page. They must not hold case facts: `service_category`, `fee_type` and `lawyer_reference` are labels and codes only. Payment status columns record what the lawyer and client reported; they are not proof of payment.

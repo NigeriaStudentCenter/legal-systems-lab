@@ -1,5 +1,6 @@
 import pg from 'pg';
 import { InputError, reviewOutcome } from './domain.mjs';
+import { makeEngagementDb } from './engagements.mjs';
 const { Pool } = pg;
 const expose = row => row ? {
   id: row.id, full_name: row.full_name, state: row.state, city: row.city,
@@ -44,6 +45,7 @@ export function makeDb(config) {
     return user;
   }
   return {
+    ...makeEngagementDb({pool, transaction, audit, principal, requireRole}),
     pool,
     async close() { await pool.end(); },
     async ready() { await pool.query('SELECT 1'); },

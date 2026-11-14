@@ -30,3 +30,11 @@
 - Reviewer source checks rely on human evidence; technology does not itself contact NBA registers.
 - Insufficient monitoring, event alerts, abuse/risk scoring and internal admin UI.
 - Need DB integration tests, log redaction audits, end-to-end auth tests and DPIA.
+
+## Direct-to-lawyer payments (added 14 November 2026)
+- **Account substitution**: an attacker who takes over a lawyer login replaces the bank account. Control: every change needs two independent reviewers to re-confirm the account name before clients see it; issued invoices keep their original snapshot; all changes audited. Residual: reviewers match names by hand, there is no bank name-enquiry check.
+- **Phishing link as payment page**: control: only `https://paystack.com/pay/…` or `https://paystack.shop/pay/…` with no query string. Residual: anyone can create a Paystack page, so the page owner's name still has to be checked by reviewers.
+- **False "paid" status**: a lawyer reports payment that never arrived, or a client disputes a real one. Control: status is labelled as reported, the client can dispute, both actions are audited. LexFlow does not adjudicate.
+- **Enumeration of engagements or invoices**: non-parties get the same 404 as for a missing record.
+- **Case facts leaking into billing records**: no free-text fields on engagements or invoices; reference codes limited to capitals, digits, hyphen and slash.
+- **Client personal data**: name and one contact, visible only to the chosen lawyer. Needs a client privacy notice and DPIA before the gate opens.
