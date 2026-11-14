@@ -84,7 +84,7 @@ test('different real accounts get distinct session-scoped hash comparisons',asyn
   assert.equal(a,again);
   assert.notEqual(a,b);
   assert.notEqual(a,await fingerprintSubject('fictional-client','b'.repeat(32),webcrypto));
-  assert.throws(()=>fingerprintSubject('person','weak',webcrypto));
+  await assert.rejects(fingerprintSubject('person','weak',webcrypto));
 });
 test('API diagnostic cannot leak identifiers or authority',()=>{
   assert.equal(verifyDiagnosticResponse({authenticated:true,environment:'staging-acceptance',
