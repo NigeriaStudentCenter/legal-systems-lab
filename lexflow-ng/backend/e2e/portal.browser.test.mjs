@@ -5,6 +5,10 @@ import {fileURLToPath} from 'node:url';
 import path from 'node:path';
 import {build} from 'esbuild';
 import {chromium} from 'playwright';
+import https from 'node:https';
+import os from 'node:os';
+import {execFileSync} from 'node:child_process';
+import {mkdtemp,rm} from 'node:fs/promises';
 import pg from 'pg';
 import {makeDb} from '../src/db.mjs';
 import {buildApp} from '../src/app.mjs';
@@ -12,7 +16,7 @@ import {InputError} from '../src/domain.mjs';
 
 // Synthetic E2E only. The in-memory MSAL test double is never shipped.
 const portal=path.resolve(path.dirname(fileURLToPath(import.meta.url)),'../../portal');
-const origin='https://lexflow-e2e.test';
+let origin;
 const apiOrigin='https://api.lexflow-e2e.test';
 const stub=[
  'export class PublicClientApplication {',
@@ -36,7 +40,7 @@ run('real API and PostgreSQL with synthetic Playwright client/lawyer browser jou
   if(!['localhost','127.0.0.1'].includes(url.hostname)||url.pathname!=='/lexflow_e2e')
     throw Error('Only local dedicated lexflow_e2e database can be used');
   const admin=new pg.Pool({connectionString:database});
-  let db,api,browser;
+  let db,api,browser,server,certDir;
   try{
     for(const name of ['001_initial.sql','002_engagements.sql'])
       await admin.query(await readFile(new URL('../sql/'+name,import.meta.url),'utf8'));
@@ -75,26 +79,41 @@ run('real API and PostgreSQL with synthetic Playwright client/lawyer browser jou
         }
       }]
     });
-    const clientID='12345678-1234-4234-8234-123456789abc';
-    const config=Buffer.from('window.LEXFLOW_PORTAL='+JSON.stringify({
-      enabled:true,authority:'https://testing.ciamlogin.com/',clientId:clientID,
-      apiScope:'api://'+clientID+'/access_as_user',apiBaseUrl:apiOrigin,
-      redirectUri:origin+'/client.html'
-    })+';');
+    // Host actual portal assets on an ephemeral local HTTPS server.
+    // Synthetic browser auth and API forwarding stay isolated from staging.
     const files=new Map([
       ['/client.html',['text/html',await readFile(path.join(portal,'client.html'))]],
       ['/lawyer.html',['text/html',await readFile(path.join(portal,'lawyer.html'))]],
       ['/portal.css',['text/css',await readFile(path.join(portal,'portal.css'))]],
       ['/engagements.css',['text/css',await readFile(path.join(portal,'engagements.css'))]],
-      ['/config.js',['application/javascript',config]],
       ['/dist/engagements.js',['application/javascript',bundled.outputFiles[0].contents]]
     ]);
-    const staticHandler=async route=>{
-      console.log('E2E static:',route.request().url());
-      const item=files.get(new URL(route.request().url()).pathname);
-      if(!item){await route.fulfill({status:404,body:'Unknown test asset'});return;}
-      await route.fulfill({status:200,contentType:item[0],body:item[1]});
-    };
+    certDir=await mkdtemp(path.join(os.tmpdir(),'lexflow-e2e-'));
+    execFileSync('openssl',['req','-x509','-newkey','rsa:2048','-nodes','-sha256',
+      '-keyout',path.join(certDir,'localhost.key'),'-out',path.join(certDir,'localhost.crt'),
+      '-days','1','-subj','/CN=localhost'],{stdio:'ignore'});
+    server=https.createServer({
+      key:await readFile(path.join(certDir,'localhost.key')),
+      cert:await readFile(path.join(certDir,'localhost.crt'))
+    },(req,res)=>{
+      const item=files.get(new URL(req.url,'https://localhost').pathname);
+      if(!item){res.writeHead(404);res.end('Unknown synthetic asset');return;}
+      res.writeHead(200,{'Content-Type':item[0],'Cache-Control':'no-store'});
+      res.end(item[1]);
+    });
+    await new Promise((resolve,reject)=>{
+      server.once('error',reject);
+      server.listen(0,'127.0.0.1',resolve);
+    });
+    origin='https://127.0.0.1:'+server.address().port;
+    const clientID='12345678-1234-4234-8234-123456789abc';
+    files.set('/config.js',['application/javascript',Buffer.from(
+      'window.LEXFLOW_PORTAL='+JSON.stringify({
+        enabled:true,authority:'https://testing.ciamlogin.com/',clientId:clientID,
+        apiScope:'api://'+clientID+'/access_as_user',apiBaseUrl:apiOrigin,
+        redirectUri:origin+'/client.html'
+      })+';'
+    )]);
     const apiHandler=async route=>{
       console.log('E2E API:',route.request().method(),route.request().url());
       const r=route.request(),location=new URL(r.url());
@@ -112,7 +131,6 @@ run('real API and PostgreSQL with synthetic Playwright client/lawyer browser jou
     await lawyer.addInitScript(()=>window.__E2E_PERSONA='lawyer');
     for(const page of [client,lawyer]){
       await page.route(apiOrigin+'/**',apiHandler);
-      await page.route(origin+'/**',staticHandler);
     }
     await client.goto(origin+'/client.html',{waitUntil:'domcontentloaded',timeout:12000});
     await lawyer.goto(origin+'/lawyer.html',{waitUntil:'domcontentloaded',timeout:12000});
@@ -163,6 +181,8 @@ run('real API and PostgreSQL with synthetic Playwright client/lawyer browser jou
     if(browser)await browser.close();
     if(api)await api.close();
     if(db)await db.close();
+    if(server)await new Promise(resolve=>server.close(resolve));
+    if(certDir)await rm(certDir,{recursive:true,force:true});
     await admin.end();
   }
 });
