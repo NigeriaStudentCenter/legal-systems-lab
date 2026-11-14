@@ -8,7 +8,7 @@
 - The deploy job requests the existing protected `lexflow-staging` GitHub environment, with a human reviewer.
 - OIDC is used to authenticate to the existing Azure subscription.
 - Before the update, the app name/resource group, current immutable image, issuer, audience, JWKS, CORS, TLS connection and all disabled business gates must match the expected configuration.
-- The only Azure mutation is `az containerapp update --image <approved immutable digest>`. The workflow does not run SQL migrations, change feature flags, grant Azure roles, or publish browser pages.
+- The only Azure mutation is an image update **plus explicitly setting `ENABLE_AUTH_DIAGNOSTIC=false`**. All other feature flags must already be disabled and are left untouched. The workflow does not run SQL migrations, grant Azure roles, or publish browser pages.
 - After updating it checks the exact new image, readiness, all existing business gates **off**, and `GET /v1/diagnostics/auth` returning 503 with no credentials.
 - If the image update or validation fails, an automatic rollback restores the prior immutable image. If rollback itself fails, escalate immediately to the authorised Azure administrator.
 
