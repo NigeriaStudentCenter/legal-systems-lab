@@ -126,7 +126,18 @@ export async function verifyClosedPortalBrowser(baseInput,{
     for(const name of ['client.html','lawyer.html']){
       const page=await browser.newPage({ignoreHTTPSErrors:true});
       const errors=[];
+      const failedRequests=[];
+      const loadedScripts=[];
       page.on('pageerror',e=>errors.push(e.message));
+      page.on('console',m=>{if(m.type()==='error')errors.push('console: '+m.text());});
+      page.on('requestfailed',req=>failedRequests.push(
+        req.url().replace(/https:\/\/127\.0\.0\.1:\d+/, 'https://loopback')+
+        ': '+String(req.failure()?.errorText||'failed')
+      ));
+      page.on('response',resp=>{
+        if(resp.url().includes('/dist/engagements.js'))
+          loadedScripts.push({status:resp.status(),type:resp.headers()['content-type']});
+      });
       await page.goto(previewOrigin+'/lexflow-ng/portal/'+name,{
         waitUntil:'domcontentloaded',timeout:15000
       });
@@ -142,12 +153,18 @@ export async function verifyClosedPortalBrowser(baseInput,{
         const scriptReady=await page.evaluate(()=>({
           configLoaded:typeof window.LEXFLOW_PORTAL==='object',
           bundleLoaded:!!document.querySelector('script[src$="dist/engagements.js"]'),
-          documentReady:document.readyState
+          documentReady:document.readyState,
+          moduleTag:document.querySelector('script[src$="dist/engagements.js"]')?.outerHTML,
+          serviceCategoryOptions:document.querySelector('#enquiryCategory')?.options?.length,
+          resourcePaths:performance.getEntriesByType('resource')
+            .filter(e=>e.name.includes('engagements.js')).map(e=>new URL(e.name).pathname)
         })).catch(()=>({evaluationFailed:true}));
         throw Error(name+': closed-gate state never appeared. Status='+
           JSON.stringify(String(status).slice(0,350))+
           '; browser='+JSON.stringify(scriptReady)+
-          '; javascriptErrors='+JSON.stringify(errors.slice(0,4)));
+          '; javascriptErrors='+JSON.stringify(errors.slice(0,4))+
+          '; scriptResponse='+JSON.stringify(loadedScripts)+
+          '; networkFailures='+JSON.stringify(failedRequests.slice(0,4)));
       }
       expect(await page.locator('#engagementSignIn').isDisabled(),
         name+': sign-in unexpectedly enabled while business gates are closed');
