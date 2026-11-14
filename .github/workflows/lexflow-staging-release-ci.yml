@@ -1,0 +1,39 @@
+name: LexFlow approved staging release safety checks
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'lexflow-ng/ops/staging-release-guard.*'
+      - '.github/workflows/lexflow-approved-staging-release.yml'
+      - '.github/workflows/lexflow-staging-release-ci.yml'
+  pull_request:
+    paths:
+      - 'lexflow-ng/ops/staging-release-guard.*'
+      - '.github/workflows/lexflow-approved-staging-release.yml'
+      - '.github/workflows/lexflow-staging-release-ci.yml'
+permissions:
+  contents: read
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Static check and strict negative tests
+        run: |
+          node --check lexflow-ng/ops/staging-release-guard.mjs
+          node --test lexflow-ng/ops/staging-release-guard.test.mjs
+      - name: Confirm manual environment approval and immutable image pinning
+        shell: bash
+        run: |
+          set -euo pipefail
+          FILE=.github/workflows/lexflow-approved-staging-release.yml
+          grep -Fq 'workflow_dispatch:' "$FILE"
+          grep -Fq 'environment: lexflow-staging' "$FILE"
+          grep -Fq '9d15b558d10ef5b1874382e924a401c2bc4328b0' "$FILE"
+          grep -Fq 'LEXFLOW_REQUIRE_AUTH_GATE=true' "$FILE"
+          grep -Fq -- '--set-env-vars ENABLE_AUTH_DIAGNOSTIC=false' "$FILE"
+          grep -Fq 'if: failure()' "$FILE"
+          grep -Fq 'az containerapp update' "$FILE"
