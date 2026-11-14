@@ -12,8 +12,8 @@ import {InputError} from '../src/domain.mjs';
 
 // Synthetic E2E only. The in-memory MSAL test double is never shipped.
 const portal=path.resolve(path.dirname(fileURLToPath(import.meta.url)),'../../portal');
-const origin='https://lexflow-e2e.invalid';
-const apiOrigin='https://api.lexflow-e2e.invalid';
+const origin='https://lexflow-e2e.test';
+const apiOrigin='https://api.lexflow-e2e.test';
 const stub=[
  'export class PublicClientApplication {',
  'static async createPublicClientApplication(){return new PublicClientApplication()}',
@@ -90,11 +90,13 @@ run('real API and PostgreSQL with synthetic Playwright client/lawyer browser jou
       ['/dist/engagements.js',['application/javascript',bundled.outputFiles[0].contents]]
     ]);
     const staticHandler=async route=>{
+      console.log('E2E static:',route.request().url());
       const item=files.get(new URL(route.request().url()).pathname);
       if(!item){await route.fulfill({status:404,body:'Unknown test asset'});return;}
       await route.fulfill({status:200,contentType:item[0],body:item[1]});
     };
     const apiHandler=async route=>{
+      console.log('E2E API:',route.request().method(),route.request().url());
       const r=route.request(),location=new URL(r.url());
       const injected=await api.inject({method:r.method(),url:location.pathname+location.search,
         headers:{...r.headers(),origin},...(r.postData()?{payload:r.postData()}:{})});
@@ -112,8 +114,8 @@ run('real API and PostgreSQL with synthetic Playwright client/lawyer browser jou
       await page.route(apiOrigin+'/**',apiHandler);
       await page.route(origin+'/**',staticHandler);
     }
-    await client.goto(origin+'/client.html');
-    await lawyer.goto(origin+'/lawyer.html');
+    await client.goto(origin+'/client.html',{waitUntil:'domcontentloaded',timeout:12000});
+    await lawyer.goto(origin+'/lawyer.html',{waitUntil:'domcontentloaded',timeout:12000});
     await client.getByRole('button',{name:'Sign in'}).click();
     await lawyer.getByRole('button',{name:'Sign in'}).click();
     await client.getByText('No client requests associated with this authenticated account.').waitFor();
