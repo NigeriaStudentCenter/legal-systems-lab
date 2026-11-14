@@ -119,6 +119,7 @@ run('real API and PostgreSQL with synthetic Playwright client/lawyer browser jou
       const r=route.request(),location=new URL(r.url());
       const injected=await api.inject({method:r.method(),url:location.pathname+location.search,
         headers:{...r.headers(),origin},...(r.postData()?{payload:r.postData()}:{})});
+      console.log('E2E injected response',location.pathname,injected.statusCode,injected.body.slice(0,500));
       await route.fulfill({status:injected.statusCode,
         headers:{'access-control-allow-origin':origin,'access-control-allow-headers':'Authorization,Content-Type',
           'access-control-allow-methods':'GET,POST,PUT,OPTIONS','content-type':injected.headers['content-type']||'application/json'},
@@ -134,6 +135,8 @@ run('real API and PostgreSQL with synthetic Playwright client/lawyer browser jou
     }
     await client.goto(origin+'/client.html',{waitUntil:'domcontentloaded',timeout:12000});
     await lawyer.goto(origin+'/lawyer.html',{waitUntil:'domcontentloaded',timeout:12000});
+    console.log('Client startup:',await client.locator('#engagementSystemStatus').innerText(),'signInDisabled=',await client.locator('#engagementSignIn').isDisabled());
+    console.log('Lawyer startup:',await lawyer.locator('#engagementSystemStatus').innerText(),'signInDisabled=',await lawyer.locator('#engagementSignIn').isDisabled());
     await client.getByRole('button',{name:'Sign in'}).click();
     await lawyer.getByRole('button',{name:'Sign in'}).click();
     await client.getByText('No client requests associated with this authenticated account.').waitFor();
