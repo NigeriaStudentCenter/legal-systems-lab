@@ -10,7 +10,7 @@ const closed=JSON.stringify({live_services:{
   engagements:false,payments:false,legal_fee_custody:false,
   custody_dispatch:false,client_matter_storage:false
 }});
-test('both real Chromium portals display closed staging before requesting Entra sign-in',
+test('both real Chromium portals remain disabled without requesting API metadata or Entra sign-in',
   {timeout:45000},async()=>{
     let count=0;
     const result=await verifyClosedPortalBrowser(staging,{
@@ -27,6 +27,7 @@ test('both real Chromium portals display closed staging before requesting Entra 
     assert.equal(result.screens.length,2);
     assert.ok(result.screens.every(item=>item.business_controls==='disabled'));
     assert.equal(result.user_login,'not performed');
-    assert.equal(count,2);
+    // Closed public portals must not request API metadata or identity tokens.
+    assert.equal(count,0);
   }
 );
