@@ -65,6 +65,13 @@ Not covered: the browser pop-up sign-in from the portal pages, the sign-up flow,
 ## Direct-to-lawyer engagements (14 Nov 2026)
 `sql/002_engagements.sql` is applied to `lexflow_staging` and the image includes the engagement, invoice and receipt endpoints. `ENABLE_ENGAGEMENTS` is `false`, so they all answer 503. The image also carries `/v1/diagnostics/auth`, which only confirms a token is valid; `ENABLE_AUTH_DIAGNOSTIC` is `false`.
 
+## Tests completed on staging
+- 14 Nov: read-only acceptance and approved release (see `../ops/`).
+- 15 Nov: genuine two-account browser sign-in (`../portal/REAL-ENTRA-ACCEPTANCE.md`).
+- 15 Nov: full journey with real tokens, 41/41 (`../ops/STAGING-JOURNEY-ACCEPTANCE.md`). All flags were on for about two and a half minutes and are off again.
+
+Tenant changes since first set-up: self-service sign-up is **off**; fictional accounts `synthetic.client1`, `.applicant1`, `.reviewer1`, `.reviewer2`, `.publisher1` exist (passwords in Key Vault as `test-*-password`); a report-only Conditional Access policy requires MFA for the portal app. The password-only test client `996d77d8-…` still exists and must never be copied to production.
+
 ## Operating it
 - **Releases go through GitHub**, not a laptop: run `LexFlow approved Entra staging API release` on `main` with the confirmation `DEPLOY_SYNTHETIC_STAGING` and approve the `lexflow-staging` environment. It builds a pinned commit, updates only the image, re-checks every gate and rolls back on failure. See `../ops/README-APPROVED-STAGING-RELEASE.md`.
 - After each release, copy the new image digest into `staging-hybrid.parameters.json` so this template keeps matching what is running. Last synced 14 Nov 2026 (`sha256:874a5698…`, source commit `9d15b55`); `az deployment group what-if` then showed no change to the API's image or settings.

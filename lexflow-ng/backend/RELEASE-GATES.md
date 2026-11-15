@@ -15,6 +15,8 @@
 | Client portal and custody dispatch | Separate legal/privacy/safety reviews; no reliance on a mock workflow | Not implemented |
 | Production data testing | Only synthetic fixtures during validation; enforce retention and erasure | Not approved |
 
+**Sign-off:** evidence, missing items and signature lines for every row above are in `../compliance/RELEASE-SIGN-OFF-PACK.md`. As of 15 November 2026 nothing is signed.
+
 ## Suggested verification runbook
 1. Receive applicant self-reported factual profile **without** any public verification label.
 2. Verify legal identity, call to bar / roll details, practice credentials and current standing through a legitimately approved professional source. Keep a record of source and date in restricted review tables; do not expose IDs publicly.
