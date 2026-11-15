@@ -1,6 +1,6 @@
 # LexFlow NG — Genuine Entra External ID two-account acceptance
 
-**Status:** Test UI and JWT-verification code are on the `staging-auth-gate-hardening` review branch. The deployed staging Azure API is healthy and closed, but **real two-account sign-in is not yet executed**. No credentials, legal data or money are used by CI.
+**Status:** The genuine two-account browser sign-in **passed on 15 November 2026** (see the acceptance record at the end). The test page is switched off again on `main`. The Azure API diagnostic was not exercised. No credentials, legal data or money are used by CI.
 
 ## Evidence already collected
 - [Azure read-only portal/API acceptance passed](https://github.com/NigeriaStudentCenter/legal-systems-lab/actions/runs/43618634025).
