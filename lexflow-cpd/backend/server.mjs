@@ -1,42 +1,174 @@
 /**
- * LexFlow CPD: secure backend scaffold for Azure App Service (Node 20+).
- * DOES NOT confer NBA accreditation, verify attendance by itself, or issue NBA credits.
- * Before production: security review, NDPA DPIA, tenant configuration, DB indexing,
- * instructor-reviewed evidentiary workflows, monitored backups and penetration testing.
+ * LexFlow CPD PostgreSQL API - Azure Container Apps / port 8080.
+ * Schema is provisioned OUT OF BAND by an operator; runtime never executes DDL.
+ * Production requires security review, actual faculty approvals and regulator agreement.
  */
 import express from "express";
 import helmet from "helmet";
 import rateLimit from "express-rate-limit";
-import {createRemoteJWKSet, jwtVerify} from "jose";
-import {CosmosClient} from "@azure/cosmos";
-import {DefaultAzureCredential, getBearerTokenProvider} from "@azure/identity";
-import {randomUUID, createHash} from "node:crypto";
+import pg from "pg";
+import {createRemoteJWKSet,jwtVerify} from "jose";
+import {DefaultAzureCredential,getBearerTokenProvider} from "@azure/identity";
+import {randomUUID,createHash} from "node:crypto";
 
-const required=["ENTRA_ISSUER","ENTRA_AUDIENCE","ENTRA_JWKS_URI","COSMOS_ENDPOINT","COSMOS_DATABASE"];
-for(const k of required)if(!process.env[k]){console.error("Missing "+k);process.exit(1)}
-const issuer=process.env.ENTRA_ISSUER, audience=process.env.ENTRA_AUDIENCE;
+const required=["DATABASE_URL","ENTRA_ISSUER","ENTRA_AUDIENCE","ENTRA_JWKS_URI"];
+for(const key of required){if(!process.env[key]){console.error("Missing "+key);process.exit(1)}}
+if(process.env.DATABASE_SSL!=="true"){console.error("DATABASE_SSL=true is required");process.exit(1)}
+const pool=new pg.Pool({
+  connectionString:process.env.DATABASE_URL,
+  ssl:{rejectUnauthorized:true},
+  max:10,connectionTimeoutMillis:4500,idleTimeoutMillis:30000,
+  application_name:"lexflow-cpd-api"
+});
+pool.on("error",()=>console.error("Idle PostgreSQL connection error"));
+const query=(sql,values=[])=>pool.query(sql,values);
 const jwks=createRemoteJWKSet(new URL(process.env.ENTRA_JWKS_URI));
 const credential=new DefaultAzureCredential();
-const cosmos=new CosmosClient({endpoint:process.env.COSMOS_ENDPOINT,aadCredentials:credential});
-const db=cosmos.database(process.env.COSMOS_DATABASE);
-const users=db.container("users"),sessions=db.container("sessions"),events=db.container("events"),certificates=db.container("certificates"),audit=db.container("audit"),approvals=db.container("approvals");
-const app=express();app.disable("x-powered-by");app.use(helmet());app.use(express.json({limit:"12kb"}));
-app.use(rateLimit({windowMs:60_000,limit:60,standardHeaders:"draft-7",legacyHeaders:false}));
-app.use((req,res,next)=>{const origin=req.headers.origin;if(origin&&origin===process.env.PUBLIC_WEB_ORIGIN){res.setHeader("Access-Control-Allow-Origin",origin);res.setHeader("Vary","Origin");res.setHeader("Access-Control-Allow-Headers","Authorization,Content-Type");res.setHeader("Access-Control-Allow-Methods","GET,POST,OPTIONS")}if(req.method==="OPTIONS")return res.sendStatus(origin===process.env.PUBLIC_WEB_ORIGIN?204:403);next()});
-const err=(res,status,message)=>res.status(status).json({error:message});
-const sha=s=>createHash("sha256").update(s).digest("hex");
-function text(s,max=3000){return typeof s==="string"&&s.trim().length>0&&s.length<=max?s.trim():null}
-async function auth(req,res,next){try{const bearer=req.headers.authorization?.match(/^Bearer (.+)$/);if(!bearer)return err(res,401,"Sign-in required");const {payload}=await jwtVerify(bearer[1],jwks,{issuer,audience,algorithms:["RS256"]});const sub=payload.oid||payload.sub;if(!sub||typeof sub!=="string")return err(res,401,"Invalid subject");req.subject=sub;const {resource}=await users.item(sub,sub).read();if(!resource||resource.active!==true)return err(res,403,"User not provisioned");req.user={id:sub,role:resource.role};next()}catch(e){console.error("Access rejected",e?.code||"unknown");return err(res,401,"Authentication failed")}}
-const allow=(...roles)=>(req,res,next)=>roles.includes(req.user.role)?next():err(res,403,"Insufficient permissions");
-async function log(actor,kind,target,detail={}){await audit.items.create({id:randomUUID(),partition:"audit",time:new Date().toISOString(),actor,kind,target,detail})}
-app.get("/health",(req,res)=>res.json({service:"lexflow-cpd-api",status:"configured",accreditation:"not-confirmed"}));
-app.get("/api/me",auth,(req,res)=>res.json({id:req.user.id,role:req.user.role}));
-app.get("/api/sessions",auth,async(req,res)=>{try{const {resources}=await sessions.items.query({query:"SELECT c.id,c.course,c.start,c.end,c.status FROM c WHERE c.public=true"}).fetchAll();res.json({sessions:resources})}catch{err(res,503,"Storage unavailable")}});
-app.post("/api/attendance/checkin",auth,async(req,res)=>{const id=text(req.body?.sessionId,120);if(!id)return err(res,400,"sessionId required");try{const {resource:s}=await sessions.item(id,id).read();if(!s||s.status!=="running")return err(res,409,"Session unavailable");const now=Date.now();if(now<Date.parse(s.start)||now>Date.parse(s.end))return err(res,409,"Outside session period");const record={id:randomUUID(),partition:req.user.id,learnerId:req.user.id,sessionId:id,event:"self-checkin-unverified",at:new Date().toISOString()};await events.items.create(record);await log(req.user.id,"self-checkin",id);res.status(201).json({id:record.id,status:"unverified",note:"Faculty must independently confirm attendance. Check-in is not CPD evidence alone."})}catch{err(res,503,"Check-in failed")}});
-app.post("/api/attendance/attest",auth,allow("faculty","admin"),async(req,res)=>{const sessionId=text(req.body?.sessionId,120),learnerId=text(req.body?.learnerId,150),evidence=text(req.body?.evidence,2000);if(!sessionId||!learnerId||!evidence)return err(res,400,"sessionId, learnerId and evidence required");try{const {resource:s}=await sessions.item(sessionId,sessionId).read();if(!s||!Array.isArray(s.facultyIds)||(!s.facultyIds.includes(req.user.id)&&req.user.role!=="admin"))return err(res,403,"Not assigned to this session");const record={id:randomUUID(),partition:learnerId,learnerId,sessionId,event:"faculty-attestation",facultyId:req.user.id,evidence,at:new Date().toISOString(),status:"pending-compliance-review"};await events.items.create(record);await log(req.user.id,"attestation",record.id,{sessionId,learnerId});res.status(201).json({id:record.id,status:record.status})}catch{err(res,503,"Attestation failed")}});
-app.post("/api/certificates/issue",auth,allow("admin"),async(req,res)=>{const learnerId=text(req.body?.learnerId,150),sessionId=text(req.body?.sessionId,120);if(!learnerId||!sessionId)return err(res,400,"Learner and session required");try{const {resource:s}=await sessions.item(sessionId,sessionId).read();if(!s||s.status!=="completed")return err(res,409,"Course session not completed");const {resources:ev}=await events.items.query({query:"SELECT * FROM c WHERE c.learnerId=@l AND c.sessionId=@s AND c.event='faculty-attestation' AND c.status='approved'",parameters:[{name:"@l",value:learnerId},{name:"@s",value:sessionId}]}).fetchAll();if(!ev.length)return err(res,409,"No approved faculty evidence");const credits=s.approvalId?await approvals.item(s.approvalId,s.approvalId).read():{resource:null};const approval=credits.resource;const recognised=Boolean(approval&&approval.status==="approved"&&approval.courseVersion===s.courseVersion&&approval.verifiedBy==="compliance");const ref="LF-"+randomUUID();const cert={id:sha(ref),partition:"certificate",refHash:sha(ref),learnerId,sessionId,course:s.course,issuedAt:new Date().toISOString(),issuedBy:req.user.id,issuer:"BSOE",type:"completion",nbaCredits:recognised?approval.credits:0,approvalId:recognised?approval.id:null,status:"issued"};await certificates.items.create(cert);await log(req.user.id,"certificate-issued",cert.id,{sessionId,learnerId,credited:cert.nbaCredits});res.status(201).json({reference:ref,type:cert.type,nbaCredits:cert.nbaCredits,note:"Store this reference securely. Verification does not expose personal data."})}catch(e){console.error(e?.message);err(res,503,"Issuance unavailable")}});
-app.post("/api/certificates/verify",async(req,res)=>{const ref=text(req.body?.reference,100);if(!ref||!/^LF-[a-f0-9-]{36}$/i.test(ref))return err(res,400,"Invalid reference");try{const id=sha(ref);const {resource:c}=await certificates.item(id,"certificate").read();res.json(c&&c.status==="issued"?{valid:true,issuer:"BSOE",course:c.course,issuedAt:c.issuedAt,nbaCredits:c.nbaCredits,approvalId:c.approvalId}:{valid:false})}catch{err(res,503,"Verification unavailable")}});
-app.get("/api/reports/attendance",auth,allow("admin"),async(req,res)=>{const sessionId=text(req.query.sessionId,120);if(!sessionId)return err(res,400,"sessionId required");try{const {resources:ev}=await events.items.query({query:"SELECT c.learnerId,c.sessionId,c.at,c.facultyId,c.status FROM c WHERE c.sessionId=@s AND c.event='faculty-attestation'",parameters:[{name:"@s",value:sessionId}]}).fetchAll();await log(req.user.id,"export-request",sessionId,{count:ev.length});res.json({type:"DRAFT_INTERNAL_REVIEW_NOT_REGULATOR_SUBMISSION",sessionId,records:ev})}catch{err(res,503,"Report unavailable")}});
-app.post("/api/tutor",auth,async(req,res)=>{const question=text(req.body?.question,1000);if(!question)return err(res,400,"Question required");if(/client file|passport|bank account|confidential attachment/i.test(question))return err(res,400,"Do not submit confidential or identifying information");if(!process.env.AZURE_OPENAI_ENDPOINT||!process.env.AZURE_OPENAI_DEPLOYMENT)return err(res,503,"Azure tutor not configured");try{const provider=getBearerTokenProvider(credential,"https://cognitiveservices.azure.com/.default");const token=await provider();const endpoint=process.env.AZURE_OPENAI_ENDPOINT.replace(/\/$/,"");const url=endpoint+"/openai/deployments/"+encodeURIComponent(process.env.AZURE_OPENAI_DEPLOYMENT)+"/chat/completions?api-version="+encodeURIComponent(process.env.AZURE_OPENAI_API_VERSION||"2024-10-21");const controller=new AbortController();const timer=setTimeout(()=>controller.abort(),18000);let response;try{response=await fetch(url,{method:"POST",signal:controller.signal,headers:{"Authorization":"Bearer "+token,"Content-Type":"application/json"},body:JSON.stringify({temperature:0.2,max_tokens:500,messages:[{role:"system",content:"You are LexFlow BSOE educational AI tutor for Nigerian lawyers. Only fictional examples. Never claim current legal authority without verifying primary sources. Never provide case citations unless confidently supported by provided text. Explain uncertainty. Ask learners not to provide confidential client or personal data. Do not treat chat as CPD attendance or legal advice."},{role:"user",content:question}]})})}finally{clearTimeout(timer)}if(!response.ok)return err(res,502,"Azure tutor provider error");const json=await response.json();res.json({answer:json.choices?.[0]?.message?.content||"No response",warning:"Educational only; verify legal sources independently."})}catch{return err(res,503,"Tutor temporarily unavailable")}});
-app.use((req,res)=>err(res,404,"Not found"));
-app.listen(Number(process.env.PORT)||8080,()=>console.log("LexFlow CPD API listening"));
+const app=express();app.disable("x-powered-by");
+app.use(helmet());app.use(express.json({limit:"12kb"}));
+app.use(rateLimit({windowMs:60000,limit:60,standardHeaders:"draft-7",legacyHeaders:false}));
+app.use((req,res,next)=>{
+  const allowed=process.env.PUBLIC_WEB_ORIGIN;
+  if(req.headers.origin===allowed&&allowed){
+    res.setHeader("Access-Control-Allow-Origin",allowed);
+    res.setHeader("Vary","Origin");
+    res.setHeader("Access-Control-Allow-Headers","Authorization,Content-Type");
+    res.setHeader("Access-Control-Allow-Methods","GET,POST,OPTIONS");
+  }
+  if(req.method==="OPTIONS")return res.sendStatus(req.headers.origin===allowed?204:403);
+  next();
+});
+const error=(res,status,message)=>res.status(status).json({error:message});
+const value=(s,max=2000)=>typeof s==="string"&&s.trim()&&s.length<=max?s.trim():null;
+const hash=s=>createHash("sha256").update(s).digest("hex");
+const isUUID=s=>typeof s==="string"&&/^[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$/i.test(s);
+const audit=async(actor,action,target,details={})=>query(
+  "INSERT INTO cpd_audit_events(id,actor_id,action,target,details) VALUES($1,$2,$3,$4,$5::jsonb)",
+  [randomUUID(),actor,action,target,JSON.stringify(details)]
+);
+async function auth(req,res,next){
+  const match=req.headers.authorization?.match(/^Bearer (.+)$/);
+  if(!match)return error(res,401,"Sign-in required");
+  let payload;
+  try{
+    ({payload}=await jwtVerify(match[1],jwks,{
+      issuer:process.env.ENTRA_ISSUER,audience:process.env.ENTRA_AUDIENCE,algorithms:["RS256"]
+    }));
+  }catch{return error(res,401,"Invalid access token")}
+  const id=payload.oid||payload.sub;
+  if(!value(id,250))return error(res,401,"Invalid subject");
+  try{
+    const user=await query("SELECT id,role,active FROM cpd_users WHERE id=$1",[id]);
+    if(!user.rows[0]?.active)return error(res,403,"User not provisioned");
+    req.user={id,role:user.rows[0].role};
+    return next();
+  }catch{return error(res,503,"Identity store unavailable")}
+}
+const allow=(...roles)=>(req,res,next)=>roles.includes(req.user.role)?next():error(res,403,"Insufficient permissions");
+app.get("/healthz",(req,res)=>res.status(200).json({status:"alive"}));
+app.get("/readyz",async(req,res)=>{
+  try{
+    await query("SELECT 1 FROM cpd_users LIMIT 1");
+    return res.status(200).json({status:"ready"});
+  }catch{return res.status(503).json({status:"unavailable"})}
+});
+app.get("/api/me",auth,(req,res)=>res.json(req.user));
+app.get("/api/sessions",auth,async(req,res)=>{
+  try{
+    const result=await query("SELECT id,course,starts_at,ends_at,status FROM cpd_course_sessions WHERE public=true ORDER BY starts_at DESC LIMIT 100");
+    return res.json({sessions:result.rows});
+  }catch{return error(res,503,"Sessions unavailable")}
+});
+app.post("/api/attendance/checkin",auth,allow("learner"),async(req,res)=>{
+  if(!isUUID(req.body?.sessionId))return error(res,400,"Valid sessionId required");
+  try{
+    const enrolled=await query(
+      "SELECT 1 FROM cpd_course_sessions s JOIN cpd_enrolments e ON e.session_id=s.id WHERE s.id=$1 AND e.learner_id=$2 AND e.status='enrolled' AND s.status='running' AND now() BETWEEN s.starts_at AND s.ends_at",
+      [req.body.sessionId,req.user.id]);
+    if(!enrolled.rowCount)return error(res,409,"No active enrolment/session");
+    const id=randomUUID();
+    await query("INSERT INTO cpd_attendance_events(id,session_id,learner_id,event_type,status) VALUES($1,$2,$3,'self-checkin','unverified')",
+      [id,req.body.sessionId,req.user.id]);
+    await audit(req.user.id,"self-checkin",id,{sessionId:req.body.sessionId});
+    return res.status(201).json({id,status:"unverified",cpdCredits:0});
+  }catch{return error(res,503,"Check-in unavailable")}
+});
+app.post("/api/attendance/attest",auth,allow("faculty","admin"),async(req,res)=>{
+  const sessionId=req.body?.sessionId,learnerId=value(req.body?.learnerId,250),evidence=value(req.body?.evidence,2000);
+  if(!isUUID(sessionId)||!learnerId||!evidence)return error(res,400,"Valid sessionId, learnerId and evidence required");
+  try{
+    const r=await query(
+      "SELECT 1 FROM cpd_session_faculty f JOIN cpd_enrolments e ON e.session_id=f.session_id WHERE f.session_id=$1 AND f.faculty_id=$2 AND e.learner_id=$3 AND e.status IN ('enrolled','completed')",
+      [sessionId,req.user.id,learnerId]);
+    if(!r.rowCount)return error(res,403,"Faculty assignment and enrolment required");
+    const id=randomUUID();
+    await query("INSERT INTO cpd_attendance_events(id,session_id,learner_id,event_type,faculty_id,evidence,status) VALUES($1,$2,$3,'faculty-attestation',$4,$5,'pending-compliance-review')",
+      [id,sessionId,learnerId,req.user.id,evidence]);
+    await audit(req.user.id,"attestation-submitted",id,{sessionId,learnerId});
+    return res.status(201).json({id,status:"pending-compliance-review",cpdCredits:0});
+  }catch{return error(res,503,"Attestation unavailable")}
+});
+app.post("/api/certificates/issue",auth,allow("admin"),async(req,res)=>{
+  const learnerId=value(req.body?.learnerId,250),sessionId=req.body?.sessionId;
+  if(!learnerId||!isUUID(sessionId))return error(res,400,"Invalid learner or session");
+  // Issuance is disabled pending independently approved assessment/attendance workflow.
+  return error(res,501,"Certificate issuance requires independently reviewed evidence workflow");
+});
+app.post("/api/certificates/verify",async(req,res)=>{
+  const ref=value(req.body?.reference,100);
+  if(!ref||!/^LF-[a-f0-9-]{36}$/i.test(ref))return error(res,400,"Invalid reference");
+  try{
+    const result=await query(
+      "SELECT course,issued_at,nba_credits,approval_id,status FROM cpd_certificates WHERE reference_hash=$1",[hash(ref)]);
+    const row=result.rows[0];
+    if(!row||row.status!=="issued")return res.json({valid:false});
+    return res.json({valid:true,issuer:"BSOE",course:row.course,issuedAt:row.issued_at,
+      nbaCredits:row.nba_credits,approvalId:row.approval_id});
+  }catch{return error(res,503,"Verification unavailable")}
+});
+app.get("/api/reports/attendance",auth,allow("admin"),async(req,res)=>{
+  const sessionId=req.query.sessionId;
+  if(!isUUID(sessionId))return error(res,400,"Valid sessionId required");
+  try{
+    const result=await query(
+      "SELECT learner_id,session_id,occurred_at,faculty_id,status FROM cpd_attendance_events WHERE session_id=$1 AND event_type='faculty-attestation' ORDER BY occurred_at DESC LIMIT 1000",
+      [sessionId]);
+    await audit(req.user.id,"internal-export",sessionId,{count:result.rows.length});
+    return res.json({type:"DRAFT_INTERNAL_REVIEW_NOT_NBA_ICLE_SUBMISSION",
+      sessionId,records:result.rows});
+  }catch{return error(res,503,"Report unavailable")}
+});
+app.post("/api/tutor",auth,async(req,res)=>{
+  const question=value(req.body?.question,1000);
+  if(!question)return error(res,400,"Question required");
+  if(/client file|passport|bank account|confidential attachment/i.test(question))
+    return error(res,400,"Do not submit confidential data");
+  if(!process.env.AZURE_OPENAI_ENDPOINT||!process.env.AZURE_OPENAI_DEPLOYMENT)
+    return error(res,503,"AI tutor not configured");
+  try{
+    const provider=getBearerTokenProvider(credential,"https://cognitiveservices.azure.com/.default");
+    const token=await provider();
+    const base=process.env.AZURE_OPENAI_ENDPOINT.replace(/\/$/,"");
+    const url=base+"/openai/deployments/"+encodeURIComponent(process.env.AZURE_OPENAI_DEPLOYMENT)+
+      "/chat/completions?api-version="+encodeURIComponent(process.env.AZURE_OPENAI_API_VERSION||"2024-10-21");
+    const controller=new AbortController();
+    const timer=setTimeout(()=>controller.abort(),18000);
+    let response;
+    try{
+      response=await fetch(url,{method:"POST",signal:controller.signal,headers:{
+        Authorization:"Bearer "+token,"Content-Type":"application/json"
+      },body:JSON.stringify({temperature:0.2,max_tokens:500,messages:[
+        {role:"system",content:"You teach AI literacy to Nigerian lawyers with fictional cases only. Do not invent citations or provide personalised legal advice. Require primary-law verification. Do not handle client secrets or regard tutor chat as CPD attendance."},
+        {role:"user",content:question}
+      ]})});
+    }finally{clearTimeout(timer)}
+    if(!response.ok)return error(res,502,"AI provider unavailable");
+    const data=await response.json();
+    return res.json({answer:data.choices?.[0]?.message?.content||"No response",
+      warning:"Education only. Independently verify legal sources."});
+  }catch{return error(res,503,"Tutor unavailable")}
+});
+app.use((req,res)=>error(res,404,"Not found"));
+const server=app.listen(8080,"0.0.0.0",()=>console.log("LexFlow CPD on 8080"));
+process.on("SIGTERM",()=>{server.close(async()=>{await pool.end();process.exit(0)});
+  setTimeout(()=>process.exit(1),20000).unref()});
