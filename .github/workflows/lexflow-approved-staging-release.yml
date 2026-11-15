@@ -135,6 +135,17 @@ jobs:
           LEXFLOW_REQUIRE_AUTH_GATE=true node lexflow-ng/ops/staging-release-guard.mjs < "$RUNNER_TEMP/lexflow-after.json"
           FQDN="$(az containerapp show --resource-group "$STAGING_GROUP" --name lexflowstg-api --query properties.configuration.ingress.fqdn -o tsv)"
           test -n "$FQDN"
+          # The update returns before the new revision serves traffic. With scale-to-zero the
+          # first request can hang through the switch, so wait until the newest revision is
+          # the ready one and the health endpoint answers before running the acceptance checks.
+          SERVING=no
+          for attempt in $(seq 1 30); do
+            READY="$(az containerapp show --resource-group "$STAGING_GROUP" --name lexflowstg-api --query "properties.latestReadyRevisionName == properties.latestRevisionName" -o tsv)"
+            CODE="$(curl -s -o /dev/null -m 20 -w '%{http_code}' "https://$FQDN/healthz" || true)"
+            if [ "$READY" = "true" ] && [ "$CODE" = "200" ]; then SERVING=yes; break; fi
+            sleep 10
+          done
+          test "$SERVING" = yes
           export LEXFLOW_STAGING_BASE_URL="https://$FQDN"
           node lexflow-ng/ops/staging-readonly.mjs
           export LEXFLOW_STAGING_BASE_URL
