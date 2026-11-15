@@ -1,10 +1,13 @@
-// Public identifiers ONLY. Fill after confirming your Entra External tenant and app registrations.
+// Public identifiers ONLY. Registrations LexFlow-CPD-Portal and LexFlow-CPD-API were created on 15 Nov 2026
+// in the LexFlow NG *Staging* external tenant: fictional test identities only, no real learners.
+// apiBaseUrl is deliberately unset, which keeps the sign-in button disabled until the CPD API exists.
 // This file is PUBLIC on GitHub Pages: NEVER include client secrets, keys, passwords or tokens.
 export const lexflowAuthConfig = Object.freeze({
-  clientId: "REPLACE_WITH_LEXFLOW_PORTAL_APPLICATION_CLIENT_ID",
-  authority: "https://REPLACE_WITH_TENANT_SUBDOMAIN.ciamlogin.com/",
-  knownAuthority: "REPLACE_WITH_TENANT_SUBDOMAIN.ciamlogin.com",
-  redirectUri: "https://nigeriastudentcenter.github.io/legal-systems-lab/lexflow-cpd/portal.html",
-  apiScope: "api://REPLACE_WITH_LEXFLOW_API_APPLICATION_CLIENT_ID/access_as_user",
+  clientId: "56b704b7-ab4f-48dd-a292-5825f2a0ddc9",
+  // The tenant ID must be in the path: a bare host fails endpoint discovery in MSAL.
+  authority: "https://lexflowngstaging.ciamlogin.com/5ddfd479-a3cb-4ff7-bdd8-9d745c4309b7/",
+  knownAuthority: "lexflowngstaging.ciamlogin.com",
+  redirectUri: "https://legal.bsoedu.org/lexflow-cpd/portal.html",
+  apiScope: "api://4fe1be03-4e20-49d1-b52e-0f6fe5118d80/access_as_user",
   apiBaseUrl: "https://REPLACE_WITH_AZURE_APP_SERVICE_HOSTNAME"
 });
