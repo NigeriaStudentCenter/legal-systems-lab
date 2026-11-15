@@ -155,10 +155,11 @@ async function boot(){
     // Verify API gates before initiating any Entra sign-in attempt.
     await requireClosedBusinessGates();
     msal=await createMsal(PublicClientApplication,{
-      // Do NOT set knownAuthorities for an Entra External ID (ciamlogin.com) authority:
-      // it stops msal-browser adding the tenant to the discovery address, the lookup
-      // returns HTTP 400 and loginRedirect fails with endpoints_resolution_error.
-      auth:{clientId:cfg.clientId,authority:cfg.authority,
+      // msal-browser 5 cannot resolve a bare https://<name>.ciamlogin.com/ authority:
+      // discovery returns HTTP 400 and loginRedirect fails with endpoints_resolution_error
+      // (with or without knownAuthorities). The tenant ID must be in the authority path.
+      // Verified at the real origin on 15 Nov 2026.
+      auth:{clientId:cfg.clientId,authority:cfg.authority+cfg.tenantId+'/',
         redirectUri:cfg.redirectUri,navigateToLoginRequestUrl:false},
       cache:{cacheLocation:'sessionStorage'}
     });

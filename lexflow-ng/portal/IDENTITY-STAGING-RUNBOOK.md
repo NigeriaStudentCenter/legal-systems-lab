@@ -22,6 +22,7 @@ A separate draft review branch (`staging-auth-gate-hardening`, PR #10) provides 
 
 - Tenant: `lexflowngstaging.onmicrosoft.com`, ID `5ddfd479-a3cb-4ff7-bdd8-9d745c4309b7`
 - Authority: `https://lexflowngstaging.ciamlogin.com/`
+  - The sign-in library must be given this **with the tenant ID appended** (`https://lexflowngstaging.ciamlogin.com/5ddfd479-a3cb-4ff7-bdd8-9d745c4309b7/`). The bare address fails with `endpoints_resolution_error` in msal-browser 5. The test page appends it itself; `portal/config.js` will need the full form in `authority` when the main portal is switched on.
 - Portal SPA client ID: `c0ec48d2-b103-4f62-950a-e3d6c65bb55d`
 - API app ID / audience: `e0db88c1-c50d-48ff-985d-df0a01a222d4`
 - Delegated API scope: `api://e0db88c1-c50d-48ff-985d-df0a01a222d4/access_as_user`
