@@ -17,6 +17,8 @@ param oidcAudience string
 param oidcJwksUri string
 @description('Exact browser origin for CORS')
 param browserOrigin string
+@description('Label of the privacy notice in force; stored with each acknowledgement')
+param privacyNoticeVersion string = 'unapproved-draft-0.1'
 
 var tags = { project: 'lexflow-ng', environment: 'staging', dataClassification: 'synthetic-only' }
 var secretsUserRole = subscriptionResourceId('Microsoft.Authorization/roleDefinitions', '4633458b-17de-408a-b874-0445c86b69e6')
@@ -102,6 +104,12 @@ resource api 'Microsoft.App/containerApps@2024-03-01' = {
           keyVaultUrl: '${vault.properties.vaultUri}secrets/database-url'
           identity: runtime.id
         }
+        {
+          // Encrypts lawyers' bank account numbers at rest. Never store it anywhere else.
+          name: 'payment-details-key'
+          keyVaultUrl: '${vault.properties.vaultUri}secrets/payment-details-key'
+          identity: runtime.id
+        }
       ]
     }
     template: {
@@ -116,6 +124,9 @@ resource api 'Microsoft.App/containerApps@2024-03-01' = {
             { name: 'PORT', value: '8080' }
             { name: 'DATABASE_URL', secretRef: 'database-url' }
             { name: 'DATABASE_SSL', value: 'true' }
+            { name: 'PAYMENT_DETAILS_KEY', secretRef: 'payment-details-key' }
+            { name: 'PRIVACY_NOTICE_VERSION', value: privacyNoticeVersion }
+            { name: 'CLIENT_CONTACT_RETENTION_DAYS', value: '90' }
             { name: 'OIDC_ISSUER', value: oidcIssuer }
             { name: 'OIDC_AUDIENCE', value: oidcAudience }
             { name: 'OIDC_JWKS_URI', value: oidcJwksUri }

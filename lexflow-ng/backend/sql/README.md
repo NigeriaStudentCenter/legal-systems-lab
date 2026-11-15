@@ -23,3 +23,10 @@ An applicant cannot self-review. It takes two independent reviewers and a separa
 Adds the `client` role, `lawyer_payment_details`, `payment_detail_reviews`, `engagements` and `invoices`. Apply after `001_initial.sql`. Grant the API identity SELECT/INSERT/UPDATE on the four new tables and nothing else.
 
 These tables hold a client's name and one contact, and a lawyer's bank account or Paystack page. They must not hold case facts: `service_category`, `fee_type` and `lawyer_reference` are labels and codes only. Payment status columns record what the lawyer and client reported; they are not proof of payment.
+
+## 003_privacy.sql
+Additive; safe to apply while an older API image is running. Adds the privacy-notice version to applications and engagements, encrypted bank-account columns, client-contact removal, `data_requests`, and the operator-only function `lexflow_erase_user(uuid)`.
+
+- Grant the API identity SELECT/INSERT/UPDATE on `data_requests`. Do **not** grant it EXECUTE on `lexflow_erase_user`.
+- After the new image is running, run `scripts/encrypt-account-numbers.mjs` once with an operator login and the key. It encrypts any clear-text account numbers and then forbids clear text.
+- To erase a person: confirm the request and any legal reason to retain, then `SELECT lexflow_erase_user('<app_users.id>');`. See `../../ops/DATA-REQUESTS-PROCEDURE.md`.

@@ -40,8 +40,20 @@ function exactFields(obj, allowed) {
   if (!isPlain(obj)) return fail('Expected a JSON object');
   if (Object.keys(obj).some(k => !allowed.includes(k))) return fail('Unrecognised field');
 }
+// Optional echo of the notice version the person was shown. When present the API
+// refuses the request if it is not the version currently in force.
+function noticeVersion(value) {
+  if (value === undefined) return undefined;
+  if (typeof value !== 'string' || !/^[A-Za-z0-9][A-Za-z0-9._-]{0,39}$/.test(value)) return fail('Invalid privacy_notice_version');
+  return value;
+}
+export const dataRequestKinds = Object.freeze(['erasure','correction','restriction','objection']);
+export function parseDataRequest(raw) {
+  exactFields(raw, ['kind']);
+  return {kind: enumeration(raw.kind, dataRequestKinds, 'kind')};
+}
 export function parseApplication(value, year = new Date().getUTCFullYear()) {
-  exactFields(value, ['full_name','state','city','year_of_call','practice_areas','languages','summary','privacy_acknowledged','verification_authorised']);
+  exactFields(value, ['full_name','state','city','year_of_call','practice_areas','languages','summary','privacy_acknowledged','verification_authorised','privacy_notice_version']);
   if (value.privacy_acknowledged !== true || value.verification_authorised !== true)
     return fail('Privacy acknowledgment and verification consent are required');
   const y = value.year_of_call;
@@ -56,7 +68,8 @@ export function parseApplication(value, year = new Date().getUTCFullYear()) {
     practice_areas: selection(value.practice_areas, practiceAreas, 'practice_areas', 5),
     languages: selection(value.languages, languages, 'languages', 5),
     summary,
-    privacy_acknowledged: true, verification_authorised: true
+    privacy_acknowledged: true, verification_authorised: true,
+    privacy_notice_version: noticeVersion(value.privacy_notice_version)
   });
 }
 export function parseFilters(raw) {
@@ -139,7 +152,7 @@ export function parsePaymentDetailReview(raw) {
   return {decision:'approve',name_match_confirmed:true};
 }
 export function parseEngagementRequest(raw) {
-  exactFields(raw, ['application_id','service_category','client_name','client_contact','direct_payment_acknowledged']);
+  exactFields(raw, ['application_id','service_category','client_name','client_contact','direct_payment_acknowledged','privacy_notice_version']);
   if (typeof raw.application_id !== 'string' || !uuidPattern.test(raw.application_id)) return fail('Invalid application_id');
   if (raw.direct_payment_acknowledged !== true)
     return fail('Acknowledge that fees are paid directly to the lawyer and are not held by LexFlow');
@@ -148,7 +161,8 @@ export function parseEngagementRequest(raw) {
   return {application_id:raw.application_id.toLowerCase(),
     service_category:enumeration(raw.service_category, practiceAreas, 'service_category'),
     client_name:string(raw.client_name,'client_name',3,110,/^[\p{L} .\-']+$/u),
-    client_contact:contact};
+    client_contact:contact,
+    privacy_notice_version:noticeVersion(raw.privacy_notice_version)};
 }
 export function parseEngagementResponse(raw) {
   exactFields(raw, ['decision','conflict_check_confirmed']);

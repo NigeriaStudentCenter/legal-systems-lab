@@ -9,9 +9,9 @@ const url=process.env.TEST_DATABASE_URL;
 const integration=url?test:test.skip;
 integration('PostgreSQL enforces multi-party professional verification and delisting',async()=>{
   const adminPool=new pg.Pool({connectionString:url});
-  const sql=await readFile(new URL('../sql/001_initial.sql',import.meta.url),'utf8');
-  await adminPool.query(sql);
-  await adminPool.query('TRUNCATE audit_events,verification_reviews,lawyer_applications,app_users RESTART IDENTITY CASCADE');
+  for(const f of ['001_initial.sql','002_engagements.sql','003_privacy.sql'])
+    await adminPool.query(await readFile(new URL('../sql/'+f,import.meta.url),'utf8'));
+  await adminPool.query('TRUNCATE data_requests,invoices,engagements,payment_detail_reviews,lawyer_payment_details,audit_events,verification_reviews,lawyer_applications,app_users RESTART IDENTITY CASCADE');
   const db=makeDb({databaseUrl:url,databaseSsl:false});
   const today=new Date().toISOString().slice(0,10);
   const expiry=new Date(Date.now()+60*86400000).toISOString().slice(0,10);

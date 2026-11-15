@@ -9,9 +9,9 @@ const integration=url?test:test.skip;
 const code=n=>e=>e.statusCode===n;
 integration('PostgreSQL enforces the direct-to-lawyer engagement, invoice and receipt rules',async()=>{
   const admin=new pg.Pool({connectionString:url});
-  for(const f of ['001_initial.sql','002_engagements.sql'])await admin.query(await readFile(new URL('../sql/'+f,import.meta.url),'utf8'));
-  await admin.query('TRUNCATE invoices,engagements,payment_detail_reviews,lawyer_payment_details,audit_events,verification_reviews,lawyer_applications,app_users RESTART IDENTITY CASCADE');
-  const db=makeDb({databaseUrl:url,databaseSsl:false});
+  for(const f of ['001_initial.sql','002_engagements.sql','003_privacy.sql'])await admin.query(await readFile(new URL('../sql/'+f,import.meta.url),'utf8'));
+  await admin.query('TRUNCATE data_requests,invoices,engagements,payment_detail_reviews,lawyer_payment_details,audit_events,verification_reviews,lawyer_applications,app_users RESTART IDENTITY CASCADE');
+  const db=makeDb({databaseUrl:url,databaseSsl:false,paymentDetailsKey:Buffer.alloc(32,7),privacyNoticeVersion:'test-1.0'});
   const today=new Date().toISOString().slice(0,10);
   const later=new Date(Date.now()+60*86400000).toISOString().slice(0,10);
   const profile={full_name:'Ada Nwosu',state:'Lagos',city:'Ikeja',year_of_call:2020,practice_areas:['Employment'],languages:['English'],

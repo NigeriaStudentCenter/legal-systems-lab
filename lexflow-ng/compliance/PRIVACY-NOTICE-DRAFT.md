@@ -65,8 +65,8 @@ We will show the date and version of this notice and ask you to acknowledge a ne
 
 ### For the reviewer: this draft is not yet true in these respects
 1. The operating entity, contact, registration status and retention periods are blank.
-2. Requests to delete or export data cannot yet be fulfilled by the system (`DATA-MINIMISATION-AUDIT.md`, gap 1).
-3. The system does not yet record which notice version a person acknowledged (gap 2).
+2. Export and request-recording exist in code but are not deployed; erasure is a manual operator step and retention periods are undecided.
+3. The system records the notice version in force at acknowledgement; the portal does not yet echo the version it displayed.
 4. Multi-factor sign-in is configured in report-only mode on staging, not enforced.
 5. No appeal procedure exists.
 6. No data protection impact assessment has been done.
