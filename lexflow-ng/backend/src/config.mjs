@@ -1,4 +1,5 @@
 import { InputError } from './domain.mjs';
+import { parseKey } from './crypto.mjs';
 
 function required(env, name) {
   const value = (env[name] ?? '').trim();
@@ -34,7 +35,15 @@ export function readConfig(env = process.env) {
   if (!Number.isInteger(port) || port < 1 || port > 65535) throw new InputError('Invalid PORT', 500);
   const databaseSsl = bool(env, 'DATABASE_SSL');
   if (production && !databaseSsl) throw new InputError('Production database requires TLS', 500);
+  const privacyNoticeVersion = (env.PRIVACY_NOTICE_VERSION ?? 'unapproved-draft-0.1').trim();
+  if (!/^[A-Za-z0-9][A-Za-z0-9._-]{0,39}$/.test(privacyNoticeVersion)) throw new InputError('Invalid PRIVACY_NOTICE_VERSION', 500);
+  const retention = Number(env.CLIENT_CONTACT_RETENTION_DAYS ?? 90);
+  if (!Number.isInteger(retention) || retention < 1 || retention > 3650) throw new InputError('Invalid CLIENT_CONTACT_RETENTION_DAYS', 500);
+  const paymentDetailsKey = parseKey(env.PAYMENT_DETAILS_KEY);
+  // Engagements store lawyers' bank details, which must be encrypted.
+  if (bool(env, 'ENABLE_ENGAGEMENTS') && !paymentDetailsKey) throw new InputError('ENABLE_ENGAGEMENTS requires PAYMENT_DETAILS_KEY', 500);
   const config = {
+    privacyNoticeVersion, clientContactRetentionDays: retention, paymentDetailsKey,
     production, port, host: env.HOST || '127.0.0.1', databaseUrl, databaseSsl,
     issuer, audience: required(env, 'OIDC_AUDIENCE'), jwksUri,
     allowedOrigins: origins.map(s => new URL(s).origin),

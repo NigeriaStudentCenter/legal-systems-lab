@@ -1,6 +1,7 @@
 import pg from 'pg';
 import { InputError, reviewOutcome } from './domain.mjs';
 import { makeEngagementDb } from './engagements.mjs';
+import { makeAccountCipher } from './crypto.mjs';
 const { Pool } = pg;
 const expose = row => row ? {
   id: row.id, full_name: row.full_name, state: row.state, city: row.city,
@@ -11,6 +12,7 @@ const expose = row => row ? {
 } : null;
 
 export function makeDb(config) {
+  const noticeVersion = config.privacyNoticeVersion ?? 'unapproved-draft-0.1';
   const pool = new Pool({
     connectionString: config.databaseUrl,
     max: 10, idleTimeoutMillis: 30_000, connectionTimeoutMillis: 5000,
@@ -45,7 +47,8 @@ export function makeDb(config) {
     return user;
   }
   return {
-    ...makeEngagementDb({pool, transaction, audit, principal, requireRole}),
+    ...makeEngagementDb({pool, transaction, audit, principal, requireRole,
+      cipher: makeAccountCipher(config.paymentDetailsKey ?? null), noticeVersion}),
     pool,
     async close() { await pool.end(); },
     async ready() { await pool.query('SELECT 1'); },
@@ -76,10 +79,10 @@ export function makeDb(config) {
         const existing = await q.query('SELECT id FROM lawyer_applications WHERE user_id=$1',[actor.id]);
         if (existing.rows[0]) throw new InputError('Application already exists',409);
         const inserted = await q.query(`
-          INSERT INTO lawyer_applications(user_id,full_name,state,city,year_of_call,practice_areas,languages,summary,privacy_acknowledged_at,verification_authorised_at)
-          VALUES ($1,$2,$3,$4,$5,$6,$7,$8,now(),now())
+          INSERT INTO lawyer_applications(user_id,full_name,state,city,year_of_call,practice_areas,languages,summary,privacy_acknowledged_at,verification_authorised_at,privacy_notice_version)
+          VALUES ($1,$2,$3,$4,$5,$6,$7,$8,now(),now(),$9)
           RETURNING id,status,created_at`,
-          [actor.id,data.full_name,data.state,data.city,data.year_of_call,data.practice_areas,data.languages,data.summary]);
+          [actor.id,data.full_name,data.state,data.city,data.year_of_call,data.practice_areas,data.languages,data.summary,noticeVersion]);
         await audit(q,actor.id,inserted.rows[0].id,'application_submitted');
         return inserted.rows[0];
       });

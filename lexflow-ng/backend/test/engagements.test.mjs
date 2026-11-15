@@ -55,7 +55,9 @@ test('acceptance needs a conflict check; invoices are bounded naira amounts with
 test('ENABLE_ENGAGEMENTS defaults to off',()=>{
   const env={DATABASE_URL:'postgresql://x@localhost/x',OIDC_ISSUER:'https://id.example.test/',OIDC_AUDIENCE:'a',OIDC_JWKS_URI:'https://id.example.test/keys',ALLOWED_ORIGINS:'https://app.example.test'};
   assert.equal(readConfig(env).gates.engagements,false);
-  assert.equal(readConfig({...env,ENABLE_ENGAGEMENTS:'true'}).gates.engagements,true);
+  // Engagements hold bank details, so the gate cannot open without an encryption key.
+  assert.throws(()=>readConfig({...env,ENABLE_ENGAGEMENTS:'true'}),/PAYMENT_DETAILS_KEY/);
+  assert.equal(readConfig({...env,ENABLE_ENGAGEMENTS:'true',PAYMENT_DETAILS_KEY:Buffer.alloc(32,1).toString('base64')}).gates.engagements,true);
 });
 
 const auth=async req=>{

@@ -38,4 +38,14 @@ Client case facts or documents; identity documents; card or bank credentials; cl
 | 10 | Multi-factor sign-in is not enforced and password recovery is untested | Account takeover, especially of lawyers who control payment details | See MFA section of the sign-off pack |
 | 11 | Reviewer identity is keyed on the Entra `sub` claim, which can differ between applications in the same tenant | A role granted against one application's subject may not match another's | Confirm with a browser token before granting production roles; consider keying on object ID |
 
-None of these gaps has been fixed in code yet. Items 1, 2, 3 and 5 need schema or API changes.
+## Update, 15 November 2026: gaps 1, 2, 3 and 5 addressed in code
+Merged to `main` with tests; **not yet deployed to staging**.
+
+| # | What changed | What it still does not do |
+|---|---|---|
+| 1 | `GET /v1/me/data` returns everything held about the signed-in person. `POST /v1/me/requests` records erasure, correction, restriction and objection requests. An operator-only database function removes a person's identifying data while keeping the other party's invoices and the audit trail. | Erasure is carried out by a person, not automatically. Retention periods are still undecided. Entra holds the email and password separately; the account must also be deleted there. Correction requests are recorded but applied by hand. |
+| 2 | The privacy-notice version in force is stored with every lawyer application and client engagement. If the app sends the version it showed and it is out of date, the request is refused. | The portal does not yet send the version it showed, so the record is of the version in force, not proof of what was displayed. |
+| 3 | Bank account numbers are encrypted (AES-256-GCM) before they reach the database, on the lawyer's record and on each invoice. The key lives in the Key Vault. The engagements feature cannot be switched on without a key. | Account name and bank name are not encrypted. Anyone holding both the database and the key can read the numbers. There is no key-rotation procedure yet. |
+| 5 | A client's contact is removed automatically a set number of days (default 90) after their engagement closes. | The client's name is kept, because the lawyer's receipt refers to it. The 90 days is a placeholder until counsel sets retention. |
+
+Gaps 4 and 6–11 are unchanged.

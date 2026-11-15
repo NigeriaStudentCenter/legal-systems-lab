@@ -2,7 +2,7 @@ import Fastify from 'fastify';
 import cors from '@fastify/cors';
 import helmet from '@fastify/helmet';
 import rateLimit from '@fastify/rate-limit';
-import { InputError, parseApplication, parseFilters, parseReview, parsePublication, parseSuspension, parsePaymentDetails, parsePaymentDetailReview, parseEngagementRequest, parseEngagementResponse, parseInvoice, parsePaidReport, parseClientResponse, feeTypes, states, practiceAreas, languages } from './domain.mjs';
+import { InputError, parseApplication, parseFilters, parseReview, parsePublication, parseSuspension, parsePaymentDetails, parsePaymentDetailReview, parseEngagementRequest, parseEngagementResponse, parseInvoice, parsePaidReport, parseClientResponse, parseDataRequest, feeTypes, states, practiceAreas, languages } from './domain.mjs';
 
 function gated(config,key){if(!config.gates[key])throw new InputError('Feature is not enabled',503);}
 const uuidRe=/^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
@@ -34,9 +34,15 @@ export async function buildApp({config, db, authenticate}) {
     reply.code(status).send({error:status>=500?'Service not configured':(error.message||'Request failed')});
   });
   const withAuth=async request=>authenticate(request);
+  // If the client says which notice version it showed, it must be the one in force.
+  const currentNotice=data=>{if(data.privacy_notice_version!==undefined&&data.privacy_notice_version!==config.privacyNoticeVersion)
+    throw new InputError('The privacy notice has changed; please read the current version',409);};
+  // A person's own data and requests are available whenever any account-holding feature is live.
+  const mine=async request=>{if(!config.gates.applications&&!config.gates.engagements)throw new InputError('Feature is not enabled',503);return withAuth(request);};
   app.get('/healthz',async()=>({status:'running',product:'lexflow-ng-api'}));
   app.get('/readyz',async()=>{await db.ready();return {status:'ready'};});
-  app.get('/v1/meta',async()=>({jurisdictions:states,practice_areas:practiceAreas,languages,fee_types:feeTypes,live_services:{
+  app.get('/v1/meta',async()=>({jurisdictions:states,practice_areas:practiceAreas,languages,fee_types:feeTypes,
+    privacy_notice_version:config.privacyNoticeVersion??null,client_contact_retention_days:config.clientContactRetentionDays??null,live_services:{
     applications:config.gates.applications,verification:config.gates.verification,
     directory:config.gates.directory,engagements:Boolean(config.gates.engagements),
     // LexFlow never takes custody of legal fees: clients pay the lawyer directly.
@@ -53,7 +59,7 @@ export async function buildApp({config, db, authenticate}) {
   });
   app.get('/v1/directory',async request=>{gated(config,'directory');return db.listPublic(parseFilters(Object.fromEntries(Object.entries(request.query))));});
   app.post('/v1/applications', {config:{rateLimit:{max:5,timeWindow:'1 hour'}}},async(request,reply)=>{
-    gated(config,'applications');const actor=await withAuth(request);const data=parseApplication(request.body);
+    gated(config,'applications');const actor=await withAuth(request);const data=parseApplication(request.body);currentNotice(data);
     const record=await db.apply(actor.subject,data);reply.code(201);return record;
   });
   app.get('/v1/applications/me',async request=>{
@@ -96,7 +102,8 @@ export async function buildApp({config, db, authenticate}) {
     return db.reviewPaymentDetails(actor.subject,requireId(request.params.id),parsePaymentDetailReview(request.body));
   });
   app.post('/v1/engagements',{config:{rateLimit:{max:10,timeWindow:'1 hour'}}},async(request,reply)=>{
-    const actor=await eng(request);const record=await db.requestEngagement(actor.subject,parseEngagementRequest(request.body));
+    const actor=await eng(request);const body=parseEngagementRequest(request.body);currentNotice(body);
+    const record=await db.requestEngagement(actor.subject,body);
     reply.code(201);return record;
   });
   app.get('/v1/engagements',async request=>{
@@ -131,6 +138,17 @@ export async function buildApp({config, db, authenticate}) {
   });
   app.get('/v1/invoices/:id/receipt',async request=>{
     const actor=await eng(request);return db.receipt(actor.subject,requireId(request.params.id));
+  });
+  // ---- Privacy: a person's own data and data-subject requests ----
+  app.get('/v1/me/data',{config:{rateLimit:{max:6,timeWindow:'1 hour'}}},async request=>{
+    const actor=await mine(request);return db.exportMyData(actor.subject);
+  });
+  app.post('/v1/me/requests',{config:{rateLimit:{max:6,timeWindow:'1 hour'}}},async(request,reply)=>{
+    const actor=await mine(request);const record=await db.createDataRequest(actor.subject,parseDataRequest(request.body).kind);
+    reply.code(201);return record;
+  });
+  app.get('/v1/me/requests',async request=>{
+    const actor=await mine(request);return {requests:await db.myDataRequests(actor.subject)};
   });
   app.setNotFoundHandler((_request,reply)=>reply.code(404).send({error:'Endpoint not found'}));
   return app;

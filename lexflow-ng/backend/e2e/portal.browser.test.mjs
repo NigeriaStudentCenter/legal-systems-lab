@@ -43,10 +43,10 @@ run('real API and PostgreSQL with synthetic Playwright client/lawyer browser jou
   const admin=new pg.Pool({connectionString:database});
   let db,api,browser,server,certDir;
   try{
-    for(const name of ['001_initial.sql','002_engagements.sql'])
+    for(const name of ['001_initial.sql','002_engagements.sql','003_privacy.sql'])
       await admin.query(await readFile(new URL('../sql/'+name,import.meta.url),'utf8'));
-    await admin.query('TRUNCATE invoices, engagements, payment_detail_reviews, lawyer_payment_details, audit_events, verification_reviews, lawyer_applications, app_users RESTART IDENTITY CASCADE');
-    db=makeDb({databaseUrl:database,databaseSsl:false});
+    await admin.query('TRUNCATE data_requests, invoices, engagements, payment_detail_reviews, lawyer_payment_details, audit_events, verification_reviews, lawyer_applications, app_users RESTART IDENTITY CASCADE');
+    db=makeDb({databaseUrl:database,databaseSsl:false,paymentDetailsKey:Buffer.alloc(32,9)});
     const today=new Date().toISOString().slice(0,10);
     const later=new Date(Date.now()+60*86400000).toISOString().slice(0,10);
     const tomorrow=new Date(Date.now()+86400000).toISOString().slice(0,10);

@@ -19,7 +19,7 @@ No payment processing or custody of legal fees, emergency lawyer dispatch, clien
 ## Running locally (NO real persons or data)
 1. Install Node 22+ and PostgreSQL 15+.
 2. In `lexflow-ng/backend`, run `npm install`.
-3. Create an isolated database and apply `sql/001_initial.sql` then `sql/002_engagements.sql` as an operator.
+3. Create an isolated database and apply `sql/001_initial.sql`, `sql/002_engagements.sql` and `sql/003_privacy.sql` as an operator.
 4. Copy `.env.example` to `.env`. Set test-only OIDC issuer, audience and JWKS URI and test database credentials. **Never commit `.env`.**
 5. Leave all `ENABLE_*` flags false until the deployment, privacy and verification processes are approved.
 6. `npm run check && npm test && npm start`.
@@ -54,6 +54,9 @@ The API does not issue its own JWTs or let applicants choose their role. Actual 
 | POST /v1/invoices/:id/client-response | the client | confirm or dispute the reported payment |
 | POST /v1/invoices/:id/void | the lawyer | cancel an unpaid invoice |
 | GET /v1/invoices/:id/receipt | either party | receipt stating LexFlow did not process the payment |
+| GET /v1/me/data | OIDC, when applications or engagements are live | everything held about the caller; no reviewer identities |
+| POST /v1/me/requests | OIDC, same condition | records an erasure, correction, restriction or objection request for an operator |
+| GET /v1/me/requests | OIDC, same condition | the caller's requests and their status |
 
 **LexFlow never receives legal fees.** The engagement endpoints record invoices and what each party reported; they do not move, hold or verify money. See "Payments model" in `../PRODUCT-SPEC.md`.
 

@@ -8,7 +8,7 @@
   },
   "scripts": {
     "start": "node src/main.mjs",
-    "check": "node --check src/app.mjs && node --check src/db.mjs && node --check src/engagements.mjs && node --check src/domain.mjs && node --check src/auth.mjs && node --check src/config.mjs && node --check src/main.mjs",
+    "check": "node --check src/app.mjs && node --check src/db.mjs && node --check src/engagements.mjs && node --check src/crypto.mjs && node --check src/domain.mjs && node --check src/auth.mjs && node --check src/config.mjs && node --check src/main.mjs",
     "test": "node --test --test-concurrency=1 test/*.test.mjs",
     "test:e2e": "node --test e2e/*.test.mjs"
   },
