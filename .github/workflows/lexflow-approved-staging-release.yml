@@ -32,7 +32,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          APPROVED_SHA='9d15b558d10ef5b1874382e924a401c2bc4328b0'
+          APPROVED_SHA='7da5b0fcdc44fb859979228f0f03fba9f366ba36'
           git cat-file -e "$APPROVED_SHA^{commit}" || git fetch origin "$APPROVED_SHA"
           git cat-file -e "$APPROVED_SHA^{commit}"
           git show "$APPROVED_SHA:lexflow-ng/backend/src/app.mjs" > "$RUNNER_TEMP/approved-app.mjs"
@@ -40,6 +40,9 @@ jobs:
           git show "$APPROVED_SHA:lexflow-ng/infra/staging-hybrid.bicep" > "$RUNNER_TEMP/approved-staging.bicep"
           grep -Fq "/v1/diagnostics/auth" "$RUNNER_TEMP/approved-app.mjs"
           grep -Fq "ENABLE_AUTH_DIAGNOSTIC" "$RUNNER_TEMP/approved-config.mjs"
+          # The approved source must include the privacy controls (encrypted account numbers).
+          grep -Fq "PAYMENT_DETAILS_KEY" "$RUNNER_TEMP/approved-config.mjs"
+          git cat-file -e "$APPROVED_SHA:lexflow-ng/backend/sql/003_privacy.sql"
           grep -Fq "name: 'ENABLE_AUTH_DIAGNOSTIC', value: 'false'" "$RUNNER_TEMP/approved-staging.bicep"
           echo "sha=$APPROVED_SHA" >> "$GITHUB_OUTPUT"
       - name: Check staging release guard and negative tests
@@ -67,7 +70,7 @@ jobs:
           context: lexflow-ng/backend
           push: true
           provenance: false
-          tags: ghcr.io/nigeriastudentcenter/lexflow-ng-api:entra-acceptance-9d15b558
+          tags: ghcr.io/nigeriastudentcenter/lexflow-ng-api:staging-release-7da5b0fc
           labels: |
             org.opencontainers.image.source=https://github.com/NigeriaStudentCenter/legal-systems-lab
             org.opencontainers.image.revision=${{ needs.validate.outputs.source_sha }}
@@ -159,7 +162,7 @@ jobs:
         run: |
           {
             echo "### LexFlow NG Entra staging API release"
-            echo "- Source commit: \`9d15b558d10ef5b1874382e924a401c2bc4328b0\`"
+            echo "- Source commit: \`7da5b0fcdc44fb859979228f0f03fba9f366ba36\`"
             echo "- Container image: \`$APPROVED_IMAGE\`"
             echo "- Azure scope: staging-only, lexflow-staging-rg / lexflowstg-api"
             echo "- Business and authentication diagnostic flags remain disabled."

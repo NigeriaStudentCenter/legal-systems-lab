@@ -1,9 +1,9 @@
 # Approved LexFlow Entra Staging API Release — Operator Procedure
 
-**Scope:** Upgrades the existing *synthetic-only* `lexflowstg-api` Container App image to the code from merged PR #7. It does not enable lawyer registration, directory, engagements, payments or the temporary authentication diagnostic. It is NOT a production deployment.
+**Scope:** Upgrades the existing *synthetic-only* `lexflowstg-api` Container App image to the pinned commit below (currently `main` after PR #18, which adds the privacy controls). It does not enable lawyer registration, directory, engagements, payments or the temporary authentication diagnostic. It is NOT a production deployment.
 
 ## Exactly what is authorised by this workflow
-- The source SHA is pinned to the merged, previously tested commit `9d15b558d10ef5b1874382e924a401c2bc4328b0`.
+- The source SHA is pinned to the merged, previously tested commit `7da5b0fcdc44fb859979228f0f03fba9f366ba36`.
 - The source builds a new container image on GHCR, referenced by its SHA-256 digest, **not** a mutable `:latest` image.
 - The deploy job requests the existing protected `lexflow-staging` GitHub environment, with a human reviewer.
 - OIDC is used to authenticate to the existing Azure subscription.

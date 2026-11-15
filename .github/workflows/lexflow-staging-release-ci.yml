@@ -32,7 +32,7 @@ jobs:
           FILE=.github/workflows/lexflow-approved-staging-release.yml
           grep -Fq 'workflow_dispatch:' "$FILE"
           grep -Fq 'environment: lexflow-staging' "$FILE"
-          grep -Fq '9d15b558d10ef5b1874382e924a401c2bc4328b0' "$FILE"
+          grep -Fq '7da5b0fcdc44fb859979228f0f03fba9f366ba36' "$FILE"
           grep -Fq 'LEXFLOW_REQUIRE_AUTH_GATE=true' "$FILE"
           grep -Fq -- '--set-env-vars ENABLE_AUTH_DIAGNOSTIC=false' "$FILE"
           grep -Fq 'if: failure()' "$FILE"
