@@ -155,8 +155,10 @@ async function boot(){
     // Verify API gates before initiating any Entra sign-in attempt.
     await requireClosedBusinessGates();
     msal=await createMsal(PublicClientApplication,{
+      // Do NOT set knownAuthorities for an Entra External ID (ciamlogin.com) authority:
+      // it stops msal-browser adding the tenant to the discovery address, the lookup
+      // returns HTTP 400 and loginRedirect fails with endpoints_resolution_error.
       auth:{clientId:cfg.clientId,authority:cfg.authority,
-        knownAuthorities:['lexflowngstaging.ciamlogin.com'],
         redirectUri:cfg.redirectUri,navigateToLoginRequestUrl:false},
       cache:{cacheLocation:'sessionStorage'}
     });
