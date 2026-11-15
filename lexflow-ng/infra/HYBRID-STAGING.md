@@ -72,9 +72,12 @@ Not covered: the browser pop-up sign-in from the portal pages, the sign-up flow,
 
 Tenant changes since first set-up: self-service sign-up is **off**; fictional accounts `synthetic.client1`, `.applicant1`, `.reviewer1`, `.reviewer2`, `.publisher1` exist (passwords in Key Vault as `test-*-password`); a report-only Conditional Access policy requires MFA for the portal app. The password-only test client `996d77d8-…` still exists and must never be copied to production.
 
+## Privacy controls (15 Nov 2026)
+`sql/003_privacy.sql` is applied; the API login has SELECT/INSERT/UPDATE on `data_requests` and no right to run `lexflow_erase_user`. The app reads `PAYMENT_DETAILS_KEY` from Key Vault secret `payment-details-key`, with `PRIVACY_NOTICE_VERSION=unapproved-draft-0.1` and `CLIENT_CONTACT_RETENTION_DAYS=90`. `scripts/encrypt-account-numbers.mjs` has been run once. Losing that key makes stored account numbers unreadable: it has no backup or rotation procedure yet.
+
 ## Operating it
 - **Releases go through GitHub**, not a laptop: run `LexFlow approved Entra staging API release` on `main` with the confirmation `DEPLOY_SYNTHETIC_STAGING` and approve the `lexflow-staging` environment. It builds a pinned commit, updates only the image, re-checks every gate and rolls back on failure. See `../ops/README-APPROVED-STAGING-RELEASE.md`.
-- After each release, copy the new image digest into `staging-hybrid.parameters.json` so this template keeps matching what is running. Last synced 14 Nov 2026 (`sha256:874a5698…`, source commit `9d15b55`); `az deployment group what-if` then showed no change to the API's image or settings.
+- After each release, copy the new image digest into `staging-hybrid.parameters.json` so this template keeps matching what is running. Last synced 15 Nov 2026 (`sha256:de6d6acb…`, source commit `7da5b0f`); `az deployment group what-if` then showed no change to the API's image or settings.
 - The Bicep template is for rebuilding the environment or changing its shape: `az deployment group create -g lexflow-staging-rg --template-file lexflow-ng/infra/staging-hybrid.bicep --parameters @lexflow-ng/infra/staging-hybrid.parameters.json` by an authorised operator. Deploying it with a stale digest would undo the latest release.
 - Read-only check at any time: run `LexFlow Azure staging acceptance (READ ONLY)` on `main`.
 - The deployment identity trusts GitHub's ID-based subject `repo:NigeriaStudentCenter@88378425/legal-systems-lab@1456667293:environment:lexflow-staging`; the name-only form is refused by Azure.

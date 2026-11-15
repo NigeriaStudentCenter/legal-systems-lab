@@ -9,7 +9,7 @@
       "value": "lexflowstg-kv-f88b66"
     },
     "image": {
-      "value": "ghcr.io/nigeriastudentcenter/lexflow-ng-api@sha256:874a5698ad60c270a9d9bfd8655f204727130e12c89d0ca5a4ac3948d1c63141"
+      "value": "ghcr.io/nigeriastudentcenter/lexflow-ng-api@sha256:de6d6acb34a59e13d0a801b40cc9af72369b32815b67fa577bfab8fdd4938cea"
     },
     "oidcIssuer": {
       "value": "https://5ddfd479-a3cb-4ff7-bdd8-9d745c4309b7.ciamlogin.com/5ddfd479-a3cb-4ff7-bdd8-9d745c4309b7/v2.0"

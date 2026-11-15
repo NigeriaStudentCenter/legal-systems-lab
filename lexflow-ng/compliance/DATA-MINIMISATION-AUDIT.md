@@ -39,7 +39,7 @@ Client case facts or documents; identity documents; card or bank credentials; cl
 | 11 | Reviewer identity is keyed on the Entra `sub` claim, which can differ between applications in the same tenant | A role granted against one application's subject may not match another's | Confirm with a browser token before granting production roles; consider keying on object ID |
 
 ## Update, 15 November 2026: gaps 1, 2, 3 and 5 addressed in code
-Merged to `main` with tests; **not yet deployed to staging**.
+Merged to `main` with tests and **deployed to staging on 15 November 2026** (image `sha256:de6d6acb…`, schema `003_privacy.sql`). The one synthetic account number already on staging was encrypted and clear text is now forbidden by a database constraint. Checked there with real sign-in tokens, 15 of 15: decryption for the lawyer and the client, export for both, reviewer identity hidden, request recording and duplicate refusal.
 
 | # | What changed | What it still does not do |
 |---|---|---|
