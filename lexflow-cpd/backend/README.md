@@ -1,46 +1,41 @@
-# LexFlow CPD Azure Backend — deployment scaffold only
+# LexFlow CPD Backend — PostgreSQL / Azure Container Apps
 
-**Status:** Source code prepared; NOT deployed to Azure or connected to GitHub Pages. This is an engineering starting point, not production-ready software or a regulatory reporting integration.
+**Status:** GitHub source only; not deployed to an Azure Container App or connected to PostgreSQL. This is a development scaffold, not yet security-tested for production. NBA-ICLE accreditation and regulatory reporting are not established.
 
-## Components
-- Entra issuer/audience verification with remote signing keys; users require approved server-side role provisioning.
-- Managed-identity Cosmos DB access.
-- Azure OpenAI tutoring via managed identity (no keys in public website).
-- Self-checkin events clearly marked unverified; faculty attestation pending a separate compliance review.
-- BSOE completion-certificate API requiring completed session and approved faculty evidence. NBA credit field defaults to zero unless an approval record is independently established.
-- Private administrator JSON report labelled **DRAFT INTERNAL REVIEW**. No NBA transmission.
-- Minimal public certificate verification by unguessable reference.
+## Runtime
 
-## Required Cosmos DB containers and partition keys
-Provision database named in COSMOS_DATABASE and containers:
-| Container | Partition key |
-| --- | --- |
-| users | /id |
-| sessions | /id |
-| events | /partition |
-| certificates | /partition |
-| audit | /partition |
-| approvals | /id |
+Node.js 20+ API with `pg`, PostgreSQL 15+, JWT validation using `ENTRA_ISSUER`, `ENTRA_AUDIENCE`, `ENTRA_JWKS_URI`, and a managed-identity Azure AI tutor. Run as a container in **Azure Container Apps** on **port 8080**.
 
-Provision server role records with `id` equal to verified token `oid` (or `sub`), `role` = learner/faculty/admin, `active` = true. **Never provide user self-registration APIs that assign elevated roles**. A separate access-reviewed provisioning workflow is essential.
+Mandatory database settings: `DATABASE_URL` (supply securely as a Container Apps secret) and `DATABASE_SSL=true`. TLS certificate validation is required (`rejectUnauthorized: true`). The PostgreSQL server must present a trusted certificate. Do not disable certificate verification to work around an error. Secure the DB with network restrictions, backup, auditing, and encryption.
 
-## Deploy
-1. Set up Azure tenant and External ID app registrations for SPA and API, scope and permissions. Configure correct discovery issuer/JWKS and audience.
-2. Provision Azure App Service (Node >=20) and a managed identity. Restrict network access as appropriate.
-3. Provision Cosmos DB and its database/containers. Grant the App Service managed identity the necessary Cosmos data-plane roles.
-4. Provision Azure OpenAI resource and model deployment. Grant the identity "Cognitive Services OpenAI User" as appropriate.
-5. Set all environment values from `.env.example` in App Service configuration/Key Vault and configure `npm install && npm start` with locked dependencies.
-6. Enable HTTPS, logging, WAF/rate limits, backups, alerts, vulnerability scans and policy-based retention. Restrict CORS origins.
-7. Perform NDPA/privacy, threat-model, security and legal review; integration tests; teacher/manual approvals; record lifecycle controls and GDPR/NDPA response procedures before admitting real learners.
-8. Once this deployment has a stable HTTPS URL, update SPA authentication with a proper authorization-code-with-PKCE flow; **never** embed API secrets or access tokens in source.
-9. For NBA-ICLE, obtain approved provider/course reference, session reporting dates, required templates and an authorised submission procedure. Implement independently reviewed reports before claiming regulator integration.
+### Container lifecycle
 
-### Additional release blockers
-- No secure SPA identity/sign-in flow has been deployed.
-- Faculty attestation remains `pending-compliance-review` with no approval operation yet; thus certificates cannot be issued in a fresh installation.
-- Production requires stronger data-model constraints, unique certificate per completed enrolment, concurrency controls, explicit approval/denial workflows, audit immutability, reviewer separation of duties, session-limited consent, secure report minimisation, per-role filtering, expiry/revocation, and independent penetration tests.
-- The report query and sample data should only be used with synthetic data until reviewed.
-- Additional privacy-preserving content filter and abuse detection needed before AI tutor release.
-- **Do not place actual learner records, Azure secrets, privileged source documents or production exports in GitHub.**
+- `GET /healthz`: liveness, returns 200 if process is handling requests; deliberately does not query the DB.
+- `GET /readyz`: readiness, performs a read-only `SELECT` against `cpd_users`, returns 503 if DB access/schema is unavailable.
+- Container listens at `0.0.0.0:8080`.
+- No migrations or other DDL execute at startup. No DELETE statements.
+- On SIGTERM the process drains HTTP requests and closes the `pg` pool.
 
-This repository contains no NBA-ICLE API specification or proof of accreditation.
+### Database schema and migration responsibility
+
+Read [sql/README.md](sql/README.md). Apply `sql/001_initial.sql` to an empty PostgreSQL 15+ database through a *separate, operator-controlled DDL migration identity*. The application uses **SELECT, INSERT, UPDATE only** on specified CPD tables. It must have no CREATE, ALTER, DROP, TRUNCATE, DELETE, ownership or schema-management rights. Configure secure runtime grants with the privileged operator, not through the app.
+
+The SQL tables cover `cpd_users`, `cpd_course_sessions`, `cpd_session_faculty`, `cpd_enrolments`, `cpd_attendance_events`, `cpd_course_approvals`, `cpd_certificates`, and `cpd_audit_events`. User identities are explicitly provisioned by an administrator after identity verification, never by a public self-assignment endpoint.
+
+### Azure Container Apps deployment
+
+1. Provision Azure Database for PostgreSQL Flexible Server (or another approved managed PostgreSQL service), database and network access. Set TLS to require certificate validation.
+2. Apply migration 001 with a separate migration operator; set least-privilege runtime grants.
+3. Build the Dockerfile from the `backend/` directory (use an immutable image tag in your container registry).
+4. Create an Azure Container Apps environment and the `lexflow-cpd-api` Container App with external HTTPS ingress, target port **8080**, appropriately sized resources and health/readiness probes.
+5. Store `DATABASE_URL` as a Container Apps secret; map via secretRef. Configure `DATABASE_SSL=true` and the Entra settings. Assign a managed identity and Azure AI permissions if using the tutor.
+6. Protect DB connectivity using secure private networking where supported, run smoke tests for `/healthz` and `/readyz`, then test restricted API access with a fictional learner.
+7. Update public `auth-config.js` **only after** the Azure URL and Entra identifiers are available and approved. This migration does not modify that file.
+
+### API controls and outstanding blockers
+
+Authenticated `/api/me`, sessions, learner check-in, faculty attestation, internal-report preview and AI tutor routes are preserved and use parameterised SQL. Self-check-in remains unverified, faculty evidence is pending independent compliance review, certificate *issuance is disabled* until the approval workflow is built, and any public verification only checks pre-existing issued records. No NBA-ICLE credits are awarded by the current API.
+
+This remains a scaffold. Before real records: implement auditable attendance approval, granular privacy rights, operational backup and recovery, safe user lifecycle, DB privilege testing, authentication integration tests, assessment verification, certificate revocation, AI prompt/abuse controls, request quotas in a distributed rate limiter, GDPR/NDPA review, and independent security assessment.
+
+Do not place production credentials, learner data or privileged legal documents in GitHub.
