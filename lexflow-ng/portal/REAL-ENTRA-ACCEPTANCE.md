@@ -32,3 +32,32 @@
 - Azure API: business flags remain off throughout
 - Optional API probe: bearer validation accepted by staging only in approved time window and disabled afterwards
 - No credentials, token strings, identity names, case facts or payments in report
+
+## Acceptance record — 15 November 2026
+
+Run by the repository owner in a single browser tab at `https://legal.bsoedu.org/lexflow-ng/portal/identity-check.html`, with two fictional accounts in the `lexflowngstaging` tenant.
+
+```
+LEXFLOW NG — ENTRA EXTERNAL ID STAGING
+Fictional client: SIGNED JWT VERIFIED
+Fictional lawyer: SIGNED JWT VERIFIED
+Distinct accounts: YES
+Azure API diagnostic: NOT BOTH VERIFIED
+User roles and lawyer licence: NOT VERIFIED
+Legal engagements/payments: DISABLED
+No identifiers or tokens included
+```
+
+- Code revision: `main` after #14 (authority with tenant ID in its path).
+- `apiProbe` was `false` and `ENABLE_AUTH_DIAGNOSTIC` stayed `false`, so the Azure API did **not** validate these browser tokens. That remains a separate, optional test.
+- All business gates reported off before and after each sign-in (the page refuses to proceed otherwise).
+
+### How the window was run, and deviations from the runbook
+- The page was published on the public site for the test, not on an access-controlled preview: GitHub Pages cannot restrict access and the page only runs at this exact address. Instead, self-service sign-up was switched off in the tenant, so only the two fictional accounts could sign in.
+- Window opened 14 Nov (#11), closed 15 Nov by this change: `identity-acceptance-config.js` is back to `{enabled:false}` and the built bundle is removed.
+- The staging API was held at one running copy during the window (cold starts exceeded the page's 18-second timeout) and returned to scale-to-zero afterwards.
+- Both test-account passwords were changed after the window.
+
+### Defects found and fixed on the way
+1. `PublicClientApplication.createPublicClientApplication` does not exist in msal-browser 5 (#12).
+2. A bare `https://<name>.ciamlogin.com/` authority fails with `endpoints_resolution_error`; the tenant ID must be in the path (#14; #13 was an incorrect first attempt).
