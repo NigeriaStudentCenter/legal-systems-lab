@@ -1,0 +1,17 @@
+# Weekly update pull requests for dependencies, the CPD API base image and the Actions used in CI.
+version: 2
+updates:
+  - package-ecosystem: npm
+    directory: /lexflow-cpd/backend
+    schedule: { interval: weekly }
+    open-pull-requests-limit: 5
+  - package-ecosystem: npm
+    directory: /lexflow-ng/backend
+    schedule: { interval: weekly }
+    open-pull-requests-limit: 5
+  - package-ecosystem: docker
+    directory: /lexflow-cpd/backend
+    schedule: { interval: weekly }
+  - package-ecosystem: github-actions
+    directory: /
+    schedule: { interval: weekly }

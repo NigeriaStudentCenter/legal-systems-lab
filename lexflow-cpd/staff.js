@@ -1,4 +1,4 @@
-import {PublicClientApplication,InteractionRequiredAuthError} from "https://cdn.jsdelivr.net/npm/@azure/msal-browser@4.25.1/+esm";
+import {PublicClientApplication,InteractionRequiredAuthError} from "./vendor/msal-browser-4.25.1.mjs";
 import {lexflowAuthConfig as cfg} from "./auth-config.js";
 const $=id=>document.getElementById(id),msg=s=>$("staffState").textContent=s;
 const uuid=s=>/^[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$/i.test(s||"");
