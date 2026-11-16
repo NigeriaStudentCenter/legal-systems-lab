@@ -396,3 +396,38 @@ test("database rules for migration 002 hold even if the API is bypassed",async()
   await assert.rejects(runtime.query("DELETE FROM cpd_attendance_reviews"),/permission denied/);
   await assert.rejects(runtime.query("DELETE FROM cpd_certificates"),/permission denied/);
 });
+
+
+test("secure capstone: restricted learner submission, six-part faculty marking and no certificate side-effects",async()=>{
+ const answers=Object.fromEntries(["scope","research","privacy","governance","evaluation","recommendation"].map(k=>[k,("Fictional evidence, verification and responsible review for "+k+". ").repeat(4)]));
+ const marks={scope:11,research:15,privacy:16,governance:12,evaluation:10,recommendation:12};
+ const sessionId=ids.running;
+ assert.equal((await call("POST","/api/capstone/submissions",{body:{sessionId,answers}})).status,401);
+ assert.equal((await call("POST","/api/capstone/submissions",{as:ids.faculty,body:{sessionId,answers}})).status,403);
+ assert.equal((await call("POST","/api/capstone/submissions",{as:ids.learner,body:{sessionId,answers:{scope:"incomplete"}}})).status,400);
+ const created=await call("POST","/api/capstone/submissions",{as:ids.learner,body:{sessionId,answers}});
+ assert.equal(created.status,201);assert.equal(created.json.certificateEligible,false);
+ const id=created.json.id;
+ assert.equal((await call("POST","/api/capstone/submissions",{as:ids.learner,body:{sessionId,answers}})).status,409);
+ const mine=await call("GET","/api/capstone/my",{as:ids.learner});
+ assert.equal(mine.status,200);assert.equal(mine.json.submissions.find(x=>x.id===id).status,"submitted");
+ assert.equal((await call("GET","/api/faculty/capstones",{as:ids.learner})).status,403);
+ assert.equal((await call("GET","/api/faculty/capstones",{as:ids.admin})).status,403);
+ const pending=await call("GET","/api/faculty/capstones",{as:ids.faculty});
+ assert.equal(pending.status,200);assert.equal(pending.json.pending.find(x=>x.id===id).answers.scope,answers.scope.trim());
+ const endpoint="/api/faculty/capstones/"+id+"/decision";
+ assert.equal((await call("POST",endpoint,{as:ids.admin,body:{decision:"pass",marks,feedback:"Good fictional analysis and careful controls."}})).status,403);
+ assert.equal((await call("POST",endpoint,{as:ids.faculty2,body:{decision:"pass",marks,feedback:"Good fictional analysis and careful controls."}})).status,404,"only assigned faculty can decide");
+ assert.equal((await call("POST",endpoint,{as:ids.faculty,body:{decision:"pass",marks:{...marks,research:21},feedback:"Good fictional analysis and careful controls."}})).status,400);
+ const decided=await call("POST",endpoint,{as:ids.faculty,body:{decision:"pass",marks,feedback:"Good fictional analysis and careful controls."}});
+ assert.equal(decided.status,200);assert.equal(decided.json.total,76);assert.equal(decided.json.certificateEligible,false);
+ assert.equal((await call("POST",endpoint,{as:ids.faculty,body:{decision:"fail",marks,feedback:"Second change of mind not allowed."}})).status,404);
+ const after=await call("GET","/api/capstone/my",{as:ids.learner});
+ const outcome=after.json.submissions.find(x=>x.id===id);
+ assert.equal(outcome.status,"passed");assert.equal(outcome.total,76);
+ const legacy=(await call("GET","/api/me/record",{as:ids.learner})).json;
+ assert.equal(legacy.enrolments[0].assessment_verified,false,"capstone cannot change original certificate qualification");
+ assert.equal(legacy.certificates.length,0);
+ await assert.rejects(runtime.query("DELETE FROM cpd_capstone_submissions"),/permission denied/);
+ await assert.rejects(runtime.query("CREATE TABLE runtime_capstone_ddl_test (id integer)"),/permission denied/);
+});
