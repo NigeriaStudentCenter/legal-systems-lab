@@ -5,7 +5,12 @@ on:
     paths:
       - lexflow-cpd/academy*.js
       - lexflow-cpd/case-*.js
+      - lexflow-cpd/guided-investigations*
+      - lexflow-cpd/capstone*
+      - lexflow-cpd/instructor-guide*
+      - lexflow-cpd/INSTRUCTOR-DELIVERY-PACK.md
       - lexflow-cpd/backend/tutor-curriculum.mjs
+      - lexflow-cpd/backend/tutor-investigations.mjs
       - lexflow-cpd/academy*.html
       - lexflow-cpd/case-*.html
       - lexflow-cpd/course.html
@@ -15,6 +20,10 @@ on:
     paths:
       - lexflow-cpd/academy*.js
       - lexflow-cpd/case-*.js
+      - lexflow-cpd/guided-investigations*
+      - lexflow-cpd/capstone*
+      - lexflow-cpd/instructor-guide*
+      - lexflow-cpd/INSTRUCTOR-DELIVERY-PACK.md
       - lexflow-cpd/backend/tutor-curriculum.mjs
       - lexflow-cpd/academy*.html
       - lexflow-cpd/case-*.html
@@ -34,6 +43,6 @@ jobs:
           node-version: 22
       - name: JavaScript syntax
         run: |
-          for file in lexflow-cpd/academy*.js lexflow-cpd/case-*.js lexflow-cpd/backend/tutor-curriculum.mjs; do node --check "$file"; done
+          for file in lexflow-cpd/academy*.js lexflow-cpd/case-*.js lexflow-cpd/guided-investigations*.js lexflow-cpd/capstone*.js lexflow-cpd/instructor-guide.js lexflow-cpd/backend/tutor-*.mjs; do node --check "$file"; done
       - name: Curriculum and links
         run: node lexflow-cpd/academy-check.mjs
