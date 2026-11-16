@@ -143,6 +143,13 @@ if(!valid()){
       }catch{live("The API could not be reached.")}
     }
     el("refreshAction")?.addEventListener("click",loadLive);
+    const deepLinkParams=new URLSearchParams(location.search);
+    const caseChoice=deepLinkParams.get("caseId");
+    const stageChoice=deepLinkParams.get("stage");
+    const validCase=/^(authority|amendment|contract|privacy|pilot)$/.test(caseChoice||"")&&/^[0-4]$/.test(stageChoice||"");
+    if(validCase){
+      el("tutorQuestion").placeholder="Investigate "+caseChoice+" — stage "+(Number(stageChoice)+1)+". Ask a question using fictional facts only.";
+    }
     const lessonChoice=new URLSearchParams(location.search).get("lessonId");
     if(/^[0-4]-[0-3]$/.test(lessonChoice||"")){
       const note=el("tutorQuestion");
@@ -153,7 +160,8 @@ if(!valid()){
       try{
         const requestedLesson=new URLSearchParams(location.search).get("lessonId");
         const validLesson=/^[0-4]-[0-3]$/.test(requestedLesson||"")?requestedLesson:null;
-        const r=await api("POST","/api/tutor",{question:el("tutorQuestion").value,...(validLesson?{lessonId:validLesson}:{})});if(!r){out.textContent="";return}
+        const tutorContext=validCase?{caseId:caseChoice,investigationStage:Number(stageChoice)}:(validLesson?{lessonId:validLesson}:{});
+        const r=await api("POST","/api/tutor",{question:el("tutorQuestion").value,...tutorContext});if(!r){out.textContent="";return}
         const d=await r.json().catch(()=>({}));
         out.textContent=r.ok?d.answer+"\n\n"+d.warning:"Not answered: "+String(d.error||("HTTP "+r.status))+".";
       }catch{out.textContent="The tutor could not be reached."}
