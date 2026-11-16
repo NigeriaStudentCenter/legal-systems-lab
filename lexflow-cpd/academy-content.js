@@ -1,8 +1,9 @@
 export const SOURCES=[
-  {name:"Nigeria Data Protection Act 2023 — official federal PDF",url:"https://cert.gov.ng/ngcert/resources/Nigeria_Data_Protection_Act_2023.pdf"},
-  {name:"Nigeria Data Protection Commission (NDPC)",url:"https://ndpc.gov.ng/"},
-  {name:"NBA official explanation of Mandatory CPD requirements (2025)",url:"https://blog.nigerianbar.org.ng/2025/06/20/setting-the-record-straight-on-mandatory-cpd-requirement-and-the-right-to-practice-law/"},
-  {name:"NBA-ICLE MCPD Rules 2025 — published rules",url:"https://www.nbaicle.org/_files/ugd/81a65d_03fc1c9b473a4c6c8ebb26d02debfcc2.pdf?index=true"}
+  {name:"Nigeria Data Protection Act 2023 — Federal Gazette text",url:"https://cert.gov.ng/ngcert/resources/Nigeria_Data_Protection_Act_2023.pdf"},
+  {name:"NDPC General Application and Implementation Directive (GAID) 2025",url:"https://ndpc.gov.ng/wp-content/uploads/2025/07/NDP-ACT-GAID-2025-MARCH-20TH.pdf"},
+  {name:"Rules of Professional Conduct for Legal Practitioners 2023 — Rule 19 client confidence (reference reproduction)",url:"https://www.judy.legal/legislation/akn/ng/act/si/2023/32"},
+  {name:"NBA-ICLE Mandatory CPD Rules 2025 — Rule 12 provider accreditation and Rule 13 course approval",url:"https://www.nbaicle.org/_files/ugd/81a65d_03fc1c9b473a4c6c8ebb26d02debfcc2.pdf?index=true"},
+  {name:"NBA announcement of MCPD Rules 2025",url:"https://blog.nigerianbar.org.ng/2025/03/15/nigerian-bar-association-introduces-mandatory-continuing-professional-development-rules/"}
 ];
 export const MODULES=[
  {name:"AI foundations and professional judgment",objective:"Distinguish language-model assistance from verified legal analysis.",lessons:[
