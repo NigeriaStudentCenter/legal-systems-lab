@@ -143,10 +143,17 @@ if(!valid()){
       }catch{live("The API could not be reached.")}
     }
     el("refreshAction")?.addEventListener("click",loadLive);
+    const lessonChoice=new URLSearchParams(location.search).get("lessonId");
+    if(/^[0-4]-[0-3]$/.test(lessonChoice||"")){
+      const note=el("tutorQuestion");
+      note.placeholder="Ask about lesson "+lessonChoice+": explain a concept using a fictional scenario.";
+    }
     el("tutorAsk")?.addEventListener("click",async()=>{
       const out=el("tutorAnswer");out.hidden=false;out.textContent="Thinking...";
       try{
-        const r=await api("POST","/api/tutor",{question:el("tutorQuestion").value});if(!r){out.textContent="";return}
+        const requestedLesson=new URLSearchParams(location.search).get("lessonId");
+        const validLesson=/^[0-4]-[0-3]$/.test(requestedLesson||"")?requestedLesson:null;
+        const r=await api("POST","/api/tutor",{question:el("tutorQuestion").value,...(validLesson?{lessonId:validLesson}:{})});if(!r){out.textContent="";return}
         const d=await r.json().catch(()=>({}));
         out.textContent=r.ok?d.answer+"\n\n"+d.warning:"Not answered: "+String(d.error||("HTTP "+r.status))+".";
       }catch{out.textContent="The tutor could not be reached."}
