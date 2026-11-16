@@ -39,7 +39,7 @@ jobs:
       TEST_DATABASE_URL: postgresql://postgres:postgres@127.0.0.1:5432/lexflow_test
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v7
         with:
           node-version: '22'
       - run: npm install --ignore-scripts --no-audit --no-fund
@@ -58,7 +58,7 @@ jobs:
         working-directory: lexflow-ng/portal
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v7
         with:
           node-version: '22'
       - run: npm install --ignore-scripts --no-audit --no-fund
