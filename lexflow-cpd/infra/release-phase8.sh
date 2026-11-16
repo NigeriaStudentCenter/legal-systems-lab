@@ -24,7 +24,9 @@ if [[ ! "$SUBSCRIPTION" =~ ^[a-fA-F0-9-]{36}$ ]]; then
   echo "EXPECTED_SUBSCRIPTION_ID must be the intended Azure subscription UUID" >&2; exit 2
 fi
 CURRENT_SUB="$(az account show --query id -o tsv)"
-if [[ "${CURRENT_SUB,,}" != "${SUBSCRIPTION,,}" ]]; then
+# Lower-case with tr: ${var,,} needs Bash 4, and macOS ships Bash 3.2.
+lower(){ printf '%s' "$1" | tr '[:upper:]' '[:lower:]'; }
+if [[ "$(lower "$CURRENT_SUB")" != "$(lower "$SUBSCRIPTION")" ]]; then
   echo "STOP: selected subscription differs from EXPECTED_SUBSCRIPTION_ID" >&2; exit 3
 fi
 echo "Subscription confirmed: $CURRENT_SUB"
