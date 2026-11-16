@@ -97,7 +97,7 @@ jobs:
         with:
           node-version: '22'
       - name: Authenticate through GitHub-to-Azure OIDC
-        uses: azure/login@v2
+        uses: azure/login@v3
         with:
           client-id: ${{ vars.LEXFLOW_AZURE_CLIENT_ID }}
           tenant-id: ${{ vars.LEXFLOW_AZURE_TENANT_ID }}

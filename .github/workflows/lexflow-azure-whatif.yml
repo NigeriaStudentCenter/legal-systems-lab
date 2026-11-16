@@ -14,7 +14,7 @@ jobs:
         with:
           ref: ${{ github.ref }}
       - name: Azure identity federation
-        uses: azure/login@v2
+        uses: azure/login@v3
         with:
           client-id: ${{ vars.LEXFLOW_AZURE_CLIENT_ID }}
           tenant-id: ${{ vars.LEXFLOW_AZURE_TENANT_ID }}
