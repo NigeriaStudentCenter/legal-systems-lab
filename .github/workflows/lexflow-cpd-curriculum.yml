@@ -4,6 +4,9 @@ on:
     branches: [main]
     paths:
       - lexflow-cpd/academy*.js
+      - lexflow-cpd/PHASE12-QA-REVIEW-DOSSIER.md
+      - lexflow-cpd/VIDEO-PRODUCTION-TRACKER.md
+      - lexflow-cpd/compliance.html
       - lexflow-cpd/case-*.js
       - lexflow-cpd/guided-investigations*
       - lexflow-cpd/capstone*
@@ -23,6 +26,9 @@ on:
   pull_request:
     paths:
       - lexflow-cpd/academy*.js
+      - lexflow-cpd/PHASE12-QA-REVIEW-DOSSIER.md
+      - lexflow-cpd/VIDEO-PRODUCTION-TRACKER.md
+      - lexflow-cpd/compliance.html
       - lexflow-cpd/case-*.js
       - lexflow-cpd/guided-investigations*
       - lexflow-cpd/capstone*
