@@ -91,12 +91,25 @@ Roles given by an operator for the test: `synthetic.reviewer1` = faculty, assign
 
 The learner's own page then showed: "Passed (8/10)" with feedback, the faculty attestation as approved, and the certificate with its reference.
 
+## AI tutor, switched on 16 Nov 2026
+| Item | Setting |
+|---|---|
+| Model | `gpt-4.1-mini` (2025-04-14), deployment `lexflow-cpd-tutor-gpt41mini` |
+| Where | Existing Azure OpenAI account `Bsoe` (rg `AI`, Sweden Central), which has no other deployments |
+| Data processing | Data Zone Standard: stays within the EU data zone |
+| Content controls | Microsoft `DefaultV2` filters; system prompt limits it to AI literacy with fictional cases; the API refuses wording such as "client file", "passport", "bank account" |
+| Access | `lexflowcpd-api-id` holds *Cognitive Services OpenAI User* on `Bsoe` only; no keys |
+| Limits | 10 answers per user and 50 in total per day (`TUTOR_DAILY_PER_USER`, `TUTOR_DAILY_TOTAL`), 500 output tokens per answer, 10K tokens per minute on the deployment |
+| Cost | $0.44 per million input and $1.76 per million output tokens: at most about $0.001 per answer, so at most about $1.55 a month at the daily cap |
+| Stored | Usage counts and token totals only (`cpd_tutor_usage`); never questions or answers |
+
+Live check: a real token got an answer (124 tokens); confidential wording 400; no sign-in 401. Set `enableTutor` to `false` in `dev.parameters.json` and redeploy to switch it off.
+
 ## Known limits
 - `lexflow_cpd_runtime` can open a connection to other products' databases on the shared server (their `CONNECT` is still granted to `PUBLIC`) but can read none of their tables.
 - Self-registration (`ALLOW_SELF_REGISTRATION=true` here) creates learner records only. It is acceptable in this environment because self-service sign-up is off in the tenant, so every account was made by an operator. Faculty and admin roles are set by an operator in `cpd_users`.
 - A learner can check in more than once for the same session; each entry is unverified and carries no credit.
 - The portal button for creating a learner record was not clicked in a browser; the route behind it was tested with a real token.
-- The AI tutor is off. Turning it on needs an Azure OpenAI deployment, a role for `lexflowcpd-api-id`, and a spending limit.
 - Fictional rows now in the database: four users (two learners, one faculty, one admin), one open test session, two enrolments, one self check-in, two faculty attestations (one approved, one rejected), one passed assessment, one issued certificate.
 - Faculty and admin have API routes only: their portal tabs are still demonstrations.
 - Certificate revocation was tested locally only, so the live certificate stays valid.

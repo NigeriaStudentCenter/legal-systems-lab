@@ -5,6 +5,7 @@
     "image": { "value": "ghcr.io/nigeriastudentcenter/lexflow-cpd-api@sha256:e256637fe434734634c1c692a8b36c470f80db6a1fb606f35e3f3eea41f5f17f" },
     "entraIssuer": { "value": "https://5ddfd479-a3cb-4ff7-bdd8-9d745c4309b7.ciamlogin.com/5ddfd479-a3cb-4ff7-bdd8-9d745c4309b7/v2.0" },
     "entraAudience": { "value": "4fe1be03-4e20-49d1-b52e-0f6fe5118d80" },
+    "enableTutor": { "value": true },
     "entraJwksUri": { "value": "https://lexflowngstaging.ciamlogin.com/5ddfd479-a3cb-4ff7-bdd8-9d745c4309b7/discovery/v2.0/keys" }
   }
 }
