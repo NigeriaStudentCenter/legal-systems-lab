@@ -1,0 +1,33 @@
+name: LexFlow CPD curriculum checks
+on:
+  push:
+    branches: [main]
+    paths:
+      - lexflow-cpd/academy*.js
+      - lexflow-cpd/academy*.html
+      - lexflow-cpd/course.html
+      - lexflow-cpd/index.html
+      - .github/workflows/lexflow-cpd-curriculum.yml
+  pull_request:
+    paths:
+      - lexflow-cpd/academy*.js
+      - lexflow-cpd/academy*.html
+      - lexflow-cpd/course.html
+      - lexflow-cpd/index.html
+      - .github/workflows/lexflow-cpd-curriculum.yml
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: JavaScript syntax
+        run: |
+          for file in lexflow-cpd/academy*.js; do node --check "$file"; done
+      - name: Curriculum and links
+        run: node lexflow-cpd/academy-check.mjs
