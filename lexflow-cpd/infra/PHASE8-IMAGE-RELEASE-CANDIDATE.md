@@ -1,5 +1,7 @@
 # LexFlow CPD Phase 8 — verified image release candidate
 
+> **Superseded and released on 16 Nov 2026.** The candidate below was replaced by `sha256:9bffed4c…` (commit `a788003`, which adds Node 26 and dependency upgrades on top of this source) and released through this sequence. See `DEV-DEPLOYMENT.md` for the gates and live checks.
+
 **Build and tests:** GitHub Actions run [43833237206](https://github.com/NigeriaStudentCenter/legal-systems-lab/actions/runs/43833237206) completed successfully on 16 November 2026.
 **Source SHA:** `26b8b2dedc6b14e981967a8dc2efcc2e04c37132`.
 **Published immutable image:**

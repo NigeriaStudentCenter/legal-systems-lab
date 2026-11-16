@@ -134,6 +134,32 @@ Image `sha256:05ccbef5…` from commit `0386084`: tests, `npm audit` and a Trivy
 | Portal app token in the browser (staff page as admin) | Data loads |
 | AI tutor; public certificate verification | Answer; valid with name |
 
+## Release of 16 Nov 2026: capstone, runtime upgrades (Phase 8)
+Image `sha256:9bffed4c…` from commit `a788003`: Node 26 LTS (both image stages pinned by digest), Express 5, jose 6, express-rate-limit 8, the 100-point capstone, and the earlier hardening. Tests on Node 26, `npm audit` and the Trivy scan passed in GitHub. Previous image for rollback: `sha256:05ccbef5…`.
+
+Released with `infra/release-phase8.sh` after each gate was checked:
+
+| Gate | Evidence |
+|---|---|
+| Migration 003 | Applied by a Microsoft Entra administrator (file from commit `b9a5fd4`); `SELECT, INSERT, UPDATE` on `cpd_capstone_submissions` and `cpd_capstone_decisions` granted to `lexflow_cpd_runtime`; `TEMP` on the database revoked from `PUBLIC` |
+| Runtime grants audit | `infra/check-phase8-runtime-grants.sql` run as `lexflow_cpd_runtime` over verified TLS: every row PASS; creating a temporary table refused |
+| CI | Image workflow green for `a788003` |
+| What-if | Only the image changes; the rest is read-only properties and two role assignments what-if cannot resolve |
+| Release approval | Given by BSOE in the working session |
+
+The script's own post-release checks passed (image matches, `/healthz` and `/readyz` 200, `/api/capstone/my` 401 without sign-in).
+
+Live checks with real tokens, 26 of 26 passed:
+
+| Area | Checks |
+|---|---|
+| Regression | Health, readiness, 404, malformed JSON 400, wrong-API token 401, learner record, admin queue, certificate verification, rate-limit headers present |
+| Capstone (learner) | Enrol in a new fictional session; answers too short 400; confidential wording 400; admin cannot submit 403; submit 201; second while pending 409 |
+| Capstone (faculty) | Learner and admin cannot open the queue 403; faculty sees it with the learner's name; pass below 70 refused; mark above a dimension maximum refused; return for revision; decision is final; resubmission; pass at 80/100 |
+| Capstone (result) | Learner sees `passed 80` and `returned 64`; `certificateEligible` stays false |
+
+Operator data added: a second fictional session ("FICTIONAL CAPSTONE TEST SESSION") with `synthetic.reviewer1` as faculty. The capstone pages were not tested in a browser.
+
 ## Known limits
 - `lexflow_cpd_runtime` can open a connection to other products' databases on the shared server (their `CONNECT` is still granted to `PUBLIC`) but can read none of their tables.
 - Self-registration (`ALLOW_SELF_REGISTRATION=true` here) creates learner records only. It is acceptable in this environment because self-service sign-up is off in the tenant, so every account was made by an operator. Faculty and admin roles are set by an operator in `cpd_users`.

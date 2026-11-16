@@ -2,7 +2,7 @@
   "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
   "contentVersion": "1.0.0.0",
   "parameters": {
-    "image": { "value": "ghcr.io/nigeriastudentcenter/lexflow-cpd-api@sha256:05ccbef54926cae0d8896ee9b60eb49cf4e15def1f1b61b751f8e77b90e52175" },
+    "image": { "value": "ghcr.io/nigeriastudentcenter/lexflow-cpd-api@sha256:9bffed4cf0676ef3c336fe006201bad0937a87269973f13f2f13480de8478567" },
     "entraIssuer": { "value": "https://5ddfd479-a3cb-4ff7-bdd8-9d745c4309b7.ciamlogin.com/5ddfd479-a3cb-4ff7-bdd8-9d745c4309b7/v2.0" },
     "entraAudience": { "value": "4fe1be03-4e20-49d1-b52e-0f6fe5118d80" },
     "entraTenantId": { "value": "5ddfd479-a3cb-4ff7-bdd8-9d745c4309b7" },
