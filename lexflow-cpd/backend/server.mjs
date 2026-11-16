@@ -57,7 +57,9 @@ const app=express();app.disable("x-powered-by");
 // One trusted hop: the Azure Container Apps ingress. Without this every caller shares the
 // ingress address and therefore one rate-limit bucket.
 app.set("trust proxy",1);
-app.use(helmet());app.use(express.json({limit:"12kb"}));
+app.use(helmet());// Six bounded capstone answers allow up to 24,000 characters plus JSON metadata.
+// Keep a firm request limit slightly above the maximum validated capstone payload.
+app.use(express.json({limit:"32kb"}));
 app.use(rateLimit({windowMs:60000,limit:Number(process.env.RATE_LIMIT_PER_MINUTE||60),standardHeaders:"draft-7",legacyHeaders:false}));
 app.use((req,res,next)=>{
   const allowed=process.env.PUBLIC_WEB_ORIGIN;
