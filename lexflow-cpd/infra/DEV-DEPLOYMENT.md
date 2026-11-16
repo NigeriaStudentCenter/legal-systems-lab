@@ -1,6 +1,6 @@
 # LexFlow CPD API: development environment as deployed (16 Nov 2026)
 
-**Fictional data only.** No real learner, attendance or certificate record may be stored here. The API awards zero NBA-ICLE credits and certificate issuing answers 501.
+**Fictional data only.** No real learner, attendance or certificate record may be stored here. The API awards zero NBA-ICLE credits. BSOE certificate issuance is available under independent fictional attendance and assessment approval controls (see later sections); it is not NBA-ICLE accreditation.
 
 ## What exists
 | Piece | Name | Shared? |
