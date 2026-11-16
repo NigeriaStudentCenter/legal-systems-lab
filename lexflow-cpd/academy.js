@@ -29,6 +29,7 @@ function show(index){
  $("lessonOutcome").textContent=l.objective;$("lessonText").textContent=l.concept;
  $("demoText").textContent=l.demo;$("workLabel").textContent="Workbook task: "+l.practice;
  $("workbook").value=saved.answers[l.id]||"";
+ $("lessonTutorLink").href="portal.html?lessonId="+encodeURIComponent(l.id)+"#learner";
  $("questionText").textContent=l.checkpoint.q;
  const answerRoot=$("answers");answerRoot.replaceChildren();
  l.checkpoint.a.forEach((a,i)=>{
