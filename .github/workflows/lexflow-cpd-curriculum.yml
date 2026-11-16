@@ -15,6 +15,10 @@ on:
       - lexflow-cpd/case-*.html
       - lexflow-cpd/course.html
       - lexflow-cpd/index.html
+      - lexflow-cpd/portal.html
+      - lexflow-cpd/auth.js
+      - lexflow-cpd/staff.html
+      - lexflow-cpd/staff.js
       - .github/workflows/lexflow-cpd-curriculum.yml
   pull_request:
     paths:
@@ -43,6 +47,6 @@ jobs:
           node-version: 22
       - name: JavaScript syntax
         run: |
-          for file in lexflow-cpd/academy*.js lexflow-cpd/case-*.js lexflow-cpd/guided-investigations*.js lexflow-cpd/capstone*.js lexflow-cpd/instructor-guide.js lexflow-cpd/backend/tutor-*.mjs; do node --check "$file"; done
+          for file in lexflow-cpd/academy*.js lexflow-cpd/case-*.js lexflow-cpd/guided-investigations*.js lexflow-cpd/capstone*.js lexflow-cpd/instructor-guide.js lexflow-cpd/auth.js lexflow-cpd/staff.js lexflow-cpd/backend/tutor-*.mjs; do node --check "$file"; done
       - name: Curriculum and links
         run: node lexflow-cpd/academy-check.mjs
