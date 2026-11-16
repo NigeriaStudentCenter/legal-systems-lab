@@ -1,0 +1,55 @@
+# LexFlow CPD API: development environment as deployed (16 Nov 2026)
+
+**Fictional data only.** No real learner, attendance or certificate record may be stored here. The API awards zero NBA-ICLE credits and certificate issuing answers 501.
+
+## What exists
+| Piece | Name | Shared? |
+|---|---|---|
+| Resource group | `rg-lexflow-cpd-dev` (West Europe) | Dedicated |
+| API | Container app `lexflowcpd-api`, scales to zero, at most one replica | Dedicated |
+| Runtime identity | `lexflowcpd-api-id`; its only permission is reading the one secret below | Dedicated |
+| Container Apps environment and logs | `lexflowstg-cae`, `lexflowstg-logs` in `lexflow-staging-rg` | **Shared with LexFlow NG staging** |
+| Key Vault | `lexflowstg-kv-f88b66`, secret `cpd-database-url` | **Shared vault**, own secret |
+| Database | `lexflow_cpd` on server `estatecopilot-db` | **Shared server**, own database |
+| Runtime DB login | `lexflow_cpd_runtime`: SELECT/INSERT/UPDATE on the eight `cpd_*` tables; no DELETE, no DDL; 12 connections | Dedicated |
+| Image | `ghcr.io/nigeriastudentcenter/lexflow-cpd-api`, pinned by digest in `dev.parameters.json` | GitHub registry (public) |
+| Sign-in | `LexFlow-CPD-API` (`4fe1be03-…`) in the LexFlow NG **Staging** external tenant; see `../IDENTITY-SETUP.md` | Shared tenant |
+
+API address: `https://lexflowcpd-api.calmdune-686822d1.westeurope.azurecontainerapps.io`
+
+Extra cost is close to nothing: the app is idle at zero replicas and everything else already existed. The Azure subscription has a spending cap, so price anything new before adding it.
+
+## How it was put together
+1. `sql/001_initial.sql` (commit `7daf747`) applied to `lexflow_cpd` by a Microsoft Entra administrator of the server, then the grants in `../backend/sql/README.md`. `CONNECT` on the database is revoked from `PUBLIC`.
+2. Image built by the workflow `LexFlow CPD API image`, which runs the 12 integration tests first. It deploys nothing.
+3. `az deployment group create -g rg-lexflow-cpd-dev --template-file lexflow-cpd/infra/dev.bicep --parameters @lexflow-cpd/infra/dev.parameters.json`, run by an operator.
+
+To release new code: merge to `main`, take the digest from the workflow summary, put it in `dev.parameters.json`, and run step 3 again.
+
+## Checked on 16 Nov 2026
+| Check | Result |
+|---|---|
+| Local syntax check and 12 integration tests; the same 12 in GitHub | Pass |
+| `/healthz`, and `/readyz` (reaches the database over verified TLS) | 200 |
+| `/api/me` with no token, a malformed token, a tampered real token | 401 |
+| `/api/me` with a real token issued for the *other* LexFlow API | 401 |
+| `/api/me` with a real token, user not in `cpd_users` | 403 |
+| Same after an operator added the fictional user as `learner` | 200, role `learner` |
+| `/api/sessions` | 200, empty |
+| Admin report as a learner | 403 |
+| Check-in with no enrolment | 409 |
+| AI tutor | 503, not configured |
+| Cross-origin preflight from `https://legal.bsoedu.org` / from elsewhere | 204 / 403 |
+| Runtime login: DELETE, CREATE TABLE, DROP TABLE; connect to `lexflow_staging` | All refused |
+
+The real tokens came from the fictional account `synthetic.applicant1` through the password-only test client `996d77d8-…`, which was granted the CPD scope for this purpose. That client must be deleted before the tenant holds any real account.
+
+## Known limits
+- `lexflow_cpd_runtime` can open a connection to other products' databases on the shared server (their `CONNECT` is still granted to `PUBLIC`) but can read none of their tables.
+- No browser sign-in has been tested: `../auth-config.js` still has no API address, so the portal's sign-in button is disabled.
+- Users reach the API only after an operator inserts them into `cpd_users`; there is no enrolment or provisioning endpoint yet.
+- The AI tutor is off. Turning it on needs an Azure OpenAI deployment, a role for `lexflowcpd-api-id`, and a spending limit.
+- One fictional row exists in `cpd_users`.
+
+## Remove everything
+Delete `rg-lexflow-cpd-dev`; delete the Key Vault secret `cpd-database-url`; then `DROP DATABASE lexflow_cpd; DROP ROLE lexflow_cpd_runtime;`.

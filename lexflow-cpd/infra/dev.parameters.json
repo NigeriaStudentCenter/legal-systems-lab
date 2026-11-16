@@ -1,0 +1,10 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "image": { "value": "ghcr.io/nigeriastudentcenter/lexflow-cpd-api@sha256:d7d1ef652929dae31d3048de24ba89db54157aa49588969c6c8749132125ee67" },
+    "entraIssuer": { "value": "https://5ddfd479-a3cb-4ff7-bdd8-9d745c4309b7.ciamlogin.com/5ddfd479-a3cb-4ff7-bdd8-9d745c4309b7/v2.0" },
+    "entraAudience": { "value": "4fe1be03-4e20-49d1-b52e-0f6fe5118d80" },
+    "entraJwksUri": { "value": "https://lexflowngstaging.ciamlogin.com/5ddfd479-a3cb-4ff7-bdd8-9d745c4309b7/discovery/v2.0/keys" }
+  }
+}
