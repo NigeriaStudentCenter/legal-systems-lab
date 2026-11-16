@@ -99,7 +99,7 @@ before(async()=>{
   child=spawn(process.execPath,[join(here,"..","server.mjs")],{env:{...process.env,
     DATABASE_URL:runtimeUrl,DATABASE_SSL:"true",NODE_EXTRA_CA_CERTS:join(tmp,"cert.pem"),
     ENTRA_ISSUER:ISSUER,ENTRA_AUDIENCE:AUDIENCE,ENTRA_JWKS_URI:`http://127.0.0.1:${jwksPort}/keys`,
-    PUBLIC_WEB_ORIGIN:ORIGIN,AZURE_OPENAI_ENDPOINT:"",AZURE_OPENAI_DEPLOYMENT:""}});
+    PUBLIC_WEB_ORIGIN:ORIGIN,ALLOW_SELF_REGISTRATION:"true",AZURE_OPENAI_ENDPOINT:"",AZURE_OPENAI_DEPLOYMENT:""}});
   child.stdout.on("data",d=>logs+=d);child.stderr.on("data",d=>logs+=d);
   for(let i=0;i<50;i++){
     try{if((await fetch(API+"/healthz")).ok)break}catch{}
@@ -213,4 +213,32 @@ test("the runtime login cannot delete rows or change the schema",async()=>{
 test("database rules hold: credits need an approval reference, attestations need evidence",async()=>{
   await assert.rejects(db.query("INSERT INTO cpd_course_approvals(id,course_version,status,credits,verified_by) VALUES($1,'v1','approved',2,'x')",[randomUUID()]),/violates check/);
   await assert.rejects(db.query("INSERT INTO cpd_attendance_events(id,session_id,learner_id,event_type) VALUES($1,$2,$3,'faculty-attestation')",[randomUUID(),ids.running,ids.learner]),/violates check/);
+});
+
+test("self-registration makes a learner only, once, and never revives an inactive account",async()=>{
+  assert.equal((await call("POST","/api/register")).status,401);
+  const first=await call("POST","/api/register",{as:"newcomer-0001"});
+  assert.equal(first.status,201);assert.deepEqual(first.json,{id:"newcomer-0001",role:"learner"});
+  assert.equal((await call("POST","/api/register",{as:"newcomer-0001"})).status,200,"repeat is harmless");
+  assert.equal((await call("POST","/api/register",{as:ids.other})).status,403,"inactive account stays out");
+  const admin=await call("POST","/api/register",{as:ids.admin});
+  assert.equal(admin.json.role,"admin","an existing role is reported, never changed");
+  assert.equal((await call("GET","/api/me",{as:"newcomer-0001"})).status,200);
+  const audit=await db.query("SELECT count(*)::int n FROM cpd_audit_events WHERE action='self-registered'");
+  assert.equal(audit.rows[0].n,1);
+});
+
+test("a learner can enrol in an open public session, and sees only their own record",async()=>{
+  assert.equal((await call("POST","/api/enrolments",{as:"newcomer-0001",body:{sessionId:ids.hidden}})).status,409,"non-public session");
+  assert.equal((await call("POST","/api/enrolments",{as:ids.faculty,body:{sessionId:ids.running}})).status,403);
+  const made=await call("POST","/api/enrolments",{as:"newcomer-0001",body:{sessionId:ids.running}});
+  assert.equal(made.status,201);assert.equal(made.json.status,"enrolled");
+  assert.equal((await call("POST","/api/enrolments",{as:"newcomer-0001",body:{sessionId:ids.running}})).status,200);
+  const mine=await call("GET","/api/me/record",{as:"newcomer-0001"});
+  assert.equal(mine.status,200);assert.equal(mine.json.enrolments.length,1);
+  assert.equal(mine.json.attendance.length,0);assert.equal(mine.json.certificates.length,0);assert.equal(mine.json.nbaCredits,0);
+  const first=await call("GET","/api/me/record",{as:ids.learner});
+  assert.equal(first.json.attendance.length,2);assert.equal(first.json.certificates.length,1);
+  assert.equal(JSON.stringify(first.json).includes("newcomer"),false);
+  assert.equal(JSON.stringify(first.json).includes("Fictional register entry"),false,"faculty evidence is not shown to the learner");
 });

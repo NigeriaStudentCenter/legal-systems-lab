@@ -17,6 +17,8 @@ param entraAudience string
 param entraJwksUri string
 @description('Exact browser origin of the Academy site, for CORS')
 param publicWebOrigin string = 'https://legal.bsoedu.org'
+@allowed(['true', 'false'])
+param allowSelfRegistration string = 'true'
 
 var tags = { project: 'lexflow-cpd', environment: 'dev', dataClassification: 'fictional-only' }
 
@@ -81,6 +83,9 @@ resource api 'Microsoft.App/containerApps@2024-03-01' = {
             { name: 'ENTRA_ISSUER', value: entraIssuer }
             { name: 'ENTRA_AUDIENCE', value: entraAudience }
             { name: 'ENTRA_JWKS_URI', value: entraJwksUri }
+            // Signed-in users may create their own LEARNER record. Acceptable here only because
+            // the tenant has self-service sign-up off, so every account was made by an operator.
+            { name: 'ALLOW_SELF_REGISTRATION', value: allowSelfRegistration }
             // AZURE_OPENAI_* deliberately unset: the AI tutor answers 503 until it is
             // given a deployment and a spending limit.
           ]
