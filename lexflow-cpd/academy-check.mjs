@@ -55,4 +55,13 @@ assert.ok(guided.includes("guided-investigations.js")&&guided.includes("NBA-ICLE
 const capstonePage=readFileSync(new URL("capstone.html",import.meta.url),"utf8");
 assert.ok(capstonePage.includes("capstone.js")&&capstonePage.includes("faculty"));
 assert.ok(readFileSync(new URL("instructor-guide.html",import.meta.url),"utf8").includes("instructor-guide.js"));
+const portal=readFileSync(new URL("portal.html",import.meta.url),"utf8");
+const staff=readFileSync(new URL("staff.html",import.meta.url),"utf8");
+const auth=readFileSync(new URL("auth.js",import.meta.url),"utf8");
+const staffJs=readFileSync(new URL("staff.js",import.meta.url),"utf8");
+assert.ok(portal.includes('id="liveCapstone"'),"Authenticated portal must show capstone submission");
+assert.ok(staff.includes('id="facultyCapstones"'),"Faculty console must show human capstone marking");
+assert.ok(auth.includes('/api/capstone/submissions'),"Learner page must send capstone to secure API only on explicit action");
+assert.ok(staffJs.includes('/api/faculty/capstones/'),"Faculty page must use secured capstone decision endpoint");
+assert.ok(existsSync(new URL("backend/sql/003_capstone_assessment.sql",import.meta.url)),"Operator migration 003 is required");
 console.log("Checked five modules, twenty lessons, five simulations, five cases, 25 guided stages, a 100-point capstone, instructor materials and lesson contexts.");
