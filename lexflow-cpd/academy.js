@@ -53,6 +53,7 @@ $("checkAnswer").addEventListener("click",()=>{
  }else {$("questionFeedback").textContent="Not quite. Review the lesson and try again. "+l.checkpoint.why}
 });
 $("previousLesson").addEventListener("click",()=>show(active-1));$("nextLesson").addEventListener("click",()=>show(active+1));
+$("openCase").addEventListener("click",()=>{location.href="case-lab.html#case-"+(lessons[active].mi+1)});
 $("openSimulation").addEventListener("click",()=>{
  const m=lessons[active].mi;
  location.href="academy-simulations.html#scenario-"+(m+1);
