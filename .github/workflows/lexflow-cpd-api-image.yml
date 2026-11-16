@@ -44,7 +44,7 @@ jobs:
       - name: Validate course-grounded AI tutor policy and lesson alignment
         run: node --test test/tutor-curriculum.test.mjs
       - name: Validate bounded case tutor stages and capstone contracts
-        run: node --test test/case-investigations.test.mjs
+        run: node --test test/case-investigations.test.mjs test/capstone-policy.test.mjs
       - name: No known high or critical vulnerabilities in runtime dependencies
         run: npm audit --omit=dev --audit-level=high
       - run: npm test
