@@ -402,6 +402,7 @@ test("secure capstone: restricted learner submission, six-part faculty marking a
  const answers=Object.fromEntries(["scope","research","privacy","governance","evaluation","recommendation"].map(k=>[k,("Fictional evidence, verification and responsible review for "+k+". ").repeat(4)]));
  const marks={scope:11,research:15,privacy:16,governance:12,evaluation:10,recommendation:12};
  const sessionId=ids.running;
+ const beforeCertificates=(await db.query("SELECT count(*)::int n FROM cpd_certificates WHERE learner_id=$1",[ids.learner])).rows[0].n;
  assert.equal((await call("POST","/api/capstone/submissions",{body:{sessionId,answers}})).status,401);
  assert.equal((await call("POST","/api/capstone/submissions",{as:ids.faculty,body:{sessionId,answers}})).status,403);
  assert.equal((await call("POST","/api/capstone/submissions",{as:ids.learner,body:{sessionId,answers:{scope:"incomplete"}}})).status,400);
@@ -427,7 +428,7 @@ test("secure capstone: restricted learner submission, six-part faculty marking a
  assert.equal(outcome.status,"passed");assert.equal(outcome.total,76);
  const legacy=(await call("GET","/api/me/record",{as:ids.learner})).json;
  assert.equal(legacy.enrolments[0].assessment_verified,false,"capstone cannot change original certificate qualification");
- assert.equal(legacy.certificates.length,0);
+ assert.equal(legacy.certificates.length,beforeCertificates,"capstone does not issue or alter certificates");
  await assert.rejects(runtime.query("DELETE FROM cpd_capstone_submissions"),/permission denied/);
  await assert.rejects(runtime.query("CREATE TABLE runtime_capstone_ddl_test (id integer)"),/permission denied/);
 });
