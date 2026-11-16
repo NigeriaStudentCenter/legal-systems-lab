@@ -18,14 +18,14 @@ Mandatory database settings: `DATABASE_URL` (supply securely as a Container Apps
 
 ### Database schema and migration responsibility
 
-Read [sql/README.md](sql/README.md). Apply `sql/001_initial.sql`, followed by `sql/002_review_assessment_certificates.sql`, using a separate migration identity to a new PostgreSQL 15+ database through a *separate, operator-controlled DDL migration identity*. The application uses **SELECT, INSERT, UPDATE only** on specified CPD tables. It must have no CREATE, ALTER, DROP, TRUNCATE, DELETE, ownership or schema-management rights. Configure secure runtime grants with the privileged operator, not through the app.
+Read [sql/README.md](sql/README.md). Apply `sql/001_initial.sql`, followed by `sql/002_review_assessment_certificates.sql` and `sql/003_capstone_assessment.sql`, using a separate migration identity to a new PostgreSQL 15+ database through a *separate, operator-controlled DDL migration identity*. The application uses **SELECT, INSERT, UPDATE only** on specified CPD tables. It must have no CREATE, ALTER, DROP, TRUNCATE, DELETE, ownership or schema-management rights. Configure secure runtime grants with the privileged operator, not through the app.
 
 The SQL tables cover `cpd_users`, `cpd_course_sessions`, `cpd_session_faculty`, `cpd_enrolments`, `cpd_attendance_events`, `cpd_course_approvals`, `cpd_certificates`, `cpd_audit_events`, and migration-002 review, assessment and tutor metering tables. Fictional learners may self-register in the development tenant when enabled, but faculty/admin roles must be independently provisioned by an authorised operator.
 
 ### Azure Container Apps deployment
 
 1. Provision Azure Database for PostgreSQL Flexible Server (or another approved managed PostgreSQL service), database and network access. Set TLS to require certificate validation.
-2. Apply migrations 001 and 002 using a separate migration operator; set least-privilege runtime grants.
+2. Apply migrations 001, 002 and 003 in order using a separate migration operator; set least-privilege runtime grants.
 3. Build the Dockerfile from the `backend/` directory (use an immutable image tag in your container registry).
 4. Create an Azure Container Apps environment and the `lexflow-cpd-api` Container App with external HTTPS ingress, target port **8080**, appropriately sized resources and health/readiness probes.
 5. Store `DATABASE_URL` as a Container Apps secret; map via secretRef. Configure `DATABASE_SSL=true` and the Entra settings. Assign a managed identity and Azure AI permissions if using the tutor.
@@ -49,3 +49,7 @@ The AI tutor remains an educational coach, not a legal source, evaluator or cert
 
 The public `guided-investigations.html` and `capstone.html` are browser-local educational activities. Their local answers are not transferred to the authenticated backend as assessments unless the participant separately submits through the actual approved API and faculty process.
 
+
+### Secure professional capstone (Phase 8, GitHub source only)
+
+`sql/003_capstone_assessment.sql` adds separate capstone submissions and six-part human decisions for an active enrolled fictional learner and session-assigned faculty. Run migration 003 with an authorised DDL operator; provision runtime SELECT/INSERT/UPDATE on **only** the two added tables and do not grant CREATE/ALTER/DELETE. The existing 10-point assessment and certificate eligibility system is not modified by 100-point capstone decisions. See [Phase 8 release](../infra/PHASE8-CAPSTONE-RELEASE.md) for requirements and acceptance checks. No database migration runs at startup; GitHub push does not deploy Azure.
