@@ -143,14 +143,33 @@ if(!valid()){
       }catch{live("The API could not be reached.")}
     }
     el("refreshAction")?.addEventListener("click",loadLive);
-    const deepLinkParams=new URLSearchParams(location.search);
+    // An Entra redirect returns to the fixed registered portal URL and drops the
+    // incoming case/lesson query. Preserve only a bounded selector, never workbook data.
+    const incomingParams=new URLSearchParams(location.search);
+    const incomingCase=incomingParams.get("caseId"), incomingStage=incomingParams.get("stage");
+    const incomingLesson=incomingParams.get("lessonId");
+    const inboundValid=/^(authority|amendment|contract|privacy|pilot)$/.test(incomingCase||"")&&/^[0-4]$/.test(incomingStage||"");
+    const lessonValid=/^[0-4]-[0-3]$/.test(incomingLesson||"");
+    if(inboundValid||lessonValid){
+      try{sessionStorage.setItem("lexflow-pending-tutor-selector",JSON.stringify({
+        query:inboundValid?"caseId="+encodeURIComponent(incomingCase)+"&stage="+incomingStage:"lessonId="+encodeURIComponent(incomingLesson),
+        expires:Date.now()+10*60*1000
+      }))}catch{}
+    }
+    let pendingSelector="";
+    try{
+      const savedContext=JSON.parse(sessionStorage.getItem("lexflow-pending-tutor-selector")||"null");
+      if(savedContext?.expires>Date.now())pendingSelector=savedContext.query;
+      else sessionStorage.removeItem("lexflow-pending-tutor-selector");
+    }catch{}
+    const deepLinkParams=new URLSearchParams(inboundValid||lessonValid?location.search:pendingSelector);
     const caseChoice=deepLinkParams.get("caseId");
     const stageChoice=deepLinkParams.get("stage");
     const validCase=/^(authority|amendment|contract|privacy|pilot)$/.test(caseChoice||"")&&/^[0-4]$/.test(stageChoice||"");
     if(validCase){
       el("tutorQuestion").placeholder="Investigate "+caseChoice+" — stage "+(Number(stageChoice)+1)+". Ask a question using fictional facts only.";
     }
-    const lessonChoice=new URLSearchParams(location.search).get("lessonId");
+    const lessonChoice=deepLinkParams.get("lessonId");
     if(/^[0-4]-[0-3]$/.test(lessonChoice||"")){
       const note=el("tutorQuestion");
       note.placeholder="Ask about lesson "+lessonChoice+": explain a concept using a fictional scenario.";
@@ -158,11 +177,12 @@ if(!valid()){
     el("tutorAsk")?.addEventListener("click",async()=>{
       const out=el("tutorAnswer");out.hidden=false;out.textContent="Thinking...";
       try{
-        const requestedLesson=new URLSearchParams(location.search).get("lessonId");
+        const requestedLesson=deepLinkParams.get("lessonId");
         const validLesson=/^[0-4]-[0-3]$/.test(requestedLesson||"")?requestedLesson:null;
         const tutorContext=validCase?{caseId:caseChoice,investigationStage:Number(stageChoice)}:(validLesson?{lessonId:validLesson}:{});
         const r=await api("POST","/api/tutor",{question:el("tutorQuestion").value,...tutorContext});if(!r){out.textContent="";return}
         const d=await r.json().catch(()=>({}));
+        if(r.ok){try{sessionStorage.removeItem("lexflow-pending-tutor-selector")}catch{}}
         out.textContent=r.ok?d.answer+"\n\n"+d.warning:"Not answered: "+String(d.error||("HTTP "+r.status))+".";
       }catch{out.textContent="The tutor could not be reached."}
     });
