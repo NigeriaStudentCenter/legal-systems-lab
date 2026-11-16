@@ -19,6 +19,14 @@ param entraJwksUri string
 param publicWebOrigin string = 'https://legal.bsoedu.org'
 @allowed(['true', 'false'])
 param allowSelfRegistration string = 'true'
+@description('Turn the AI tutor on: deploys gpt-4.1-mini into the Bsoe account and lets this API call it')
+param enableTutor bool = false
+param tutorResourceGroup string = 'AI'
+param tutorAccountName string = 'Bsoe'
+param tutorDeploymentName string = 'lexflow-cpd-tutor-gpt41mini'
+@description('Answers per day across all users; at most about $0.001 each')
+param tutorDailyTotal int = 50
+param tutorDailyPerUser int = 10
 
 var tags = { project: 'lexflow-cpd', environment: 'dev', dataClassification: 'fictional-only' }
 
@@ -31,6 +39,16 @@ resource runtime 'Microsoft.ManagedIdentity/userAssignedIdentities@2023-01-31' =
   name: 'lexflowcpd-api-id'
   location: location
   tags: tags
+}
+
+module tutor 'tutor-openai.bicep' = if (enableTutor) {
+  name: 'cpd-tutor-openai'
+  scope: resourceGroup(tutorResourceGroup)
+  params: {
+    accountName: tutorAccountName
+    deploymentName: tutorDeploymentName
+    principalId: runtime.properties.principalId
+  }
 }
 
 module secretRead 'kv-secret-reader.bicep' = {
@@ -75,7 +93,7 @@ resource api 'Microsoft.App/containerApps@2024-03-01' = {
           name: 'lexflow-cpd-api'
           image: image
           resources: { cpu: json('0.25'), memory: '0.5Gi' }
-          env: [
+          env: concat([
             { name: 'NODE_ENV', value: 'production' }
             { name: 'DATABASE_URL', secretRef: 'database-url' }
             { name: 'DATABASE_SSL', value: 'true' }
@@ -86,9 +104,14 @@ resource api 'Microsoft.App/containerApps@2024-03-01' = {
             // Signed-in users may create their own LEARNER record. Acceptable here only because
             // the tenant has self-service sign-up off, so every account was made by an operator.
             { name: 'ALLOW_SELF_REGISTRATION', value: allowSelfRegistration }
-            // AZURE_OPENAI_* deliberately unset: the AI tutor answers 503 until it is
-            // given a deployment and a spending limit.
-          ]
+            // Which managed identity DefaultAzureCredential uses to call Azure OpenAI.
+            { name: 'AZURE_CLIENT_ID', value: runtime.properties.clientId }
+          ], enableTutor ? [
+            { name: 'AZURE_OPENAI_ENDPOINT', value: 'https://${toLower(tutorAccountName)}.openai.azure.com/' }
+            { name: 'AZURE_OPENAI_DEPLOYMENT', value: tutorDeploymentName }
+            { name: 'TUTOR_DAILY_TOTAL', value: string(tutorDailyTotal) }
+            { name: 'TUTOR_DAILY_PER_USER', value: string(tutorDailyPerUser) }
+          ] : [])
           probes: [
             { type: 'Liveness', httpGet: { path: '/healthz', port: 8080 }, periodSeconds: 30 }
             { type: 'Readiness', httpGet: { path: '/readyz', port: 8080 }, periodSeconds: 30 }
@@ -98,8 +121,8 @@ resource api 'Microsoft.App/containerApps@2024-03-01' = {
       scale: { minReplicas: 0, maxReplicas: 1 }
     }
   }
-  dependsOn: [secretRead]
+  dependsOn: [secretRead, tutor]
 }
 
 output apiUrl string = 'https://${api.properties.configuration.ingress.fqdn}'
-output warning string = 'FICTIONAL DATA ONLY. Shared database server. AI tutor off.'
+output warning string = enableTutor ? 'FICTIONAL DATA ONLY. Shared database server. AI tutor ON with daily caps.' : 'FICTIONAL DATA ONLY. Shared database server. AI tutor off.'

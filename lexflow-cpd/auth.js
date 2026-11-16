@@ -143,6 +143,14 @@ if(!valid()){
       }catch{live("The API could not be reached.")}
     }
     el("refreshAction")?.addEventListener("click",loadLive);
+    el("tutorAsk")?.addEventListener("click",async()=>{
+      const out=el("tutorAnswer");out.hidden=false;out.textContent="Thinking...";
+      try{
+        const r=await api("POST","/api/tutor",{question:el("tutorQuestion").value});if(!r){out.textContent="";return}
+        const d=await r.json().catch(()=>({}));
+        out.textContent=r.ok?d.answer+"\n\n"+d.warning:"Not answered: "+String(d.error||("HTTP "+r.status))+".";
+      }catch{out.textContent="The tutor could not be reached."}
+    });
     el("registerAction")?.addEventListener("click",async()=>{
       live("Creating your learner record...");
       try{
