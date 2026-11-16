@@ -7,6 +7,7 @@ const item=(tag,content)=>{const e=document.createElement(tag);if(content!==unde
 function show(index){
  active=Math.max(0,Math.min(CASES.length-1,index));const c=CASES[active];history.replaceState(null,"","#case-"+(active+1));
  $("caseNumber").textContent="Case "+(active+1)+" of "+CASES.length+" · Module "+(c.module+1);
+ $("guidedCaseLink").href="guided-investigations.html#"+c.id+"-1";
  $("caseTitle").textContent=c.title;$("caseBrief").textContent=c.brief;$("caseMission").textContent=c.mission;$("model").textContent=c.model;
  const docs=$("documents");docs.replaceChildren();for(const m of c.materials){const article=item("article");article.className="paper";article.append(item("h3",m.title),item("p",m.text));docs.append(article)}
  $("work").value=state[c.id]?.answer||"";$("saveNotice").textContent="";
