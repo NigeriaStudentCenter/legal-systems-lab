@@ -16,6 +16,7 @@ import pg from "pg";
 import {createRemoteJWKSet,jwtVerify} from "jose";
 import {DefaultAzureCredential,getBearerTokenProvider} from "@azure/identity";
 import {randomUUID,createHash} from "node:crypto";
+import {resolveLesson,makeTutorMessages,COURSE_VERSION} from "./tutor-curriculum.mjs";
 
 const required=["DATABASE_URL","ENTRA_ISSUER","ENTRA_AUDIENCE","ENTRA_JWKS_URI"];
 for(const key of required){if(!process.env[key]){console.error("Missing "+key);process.exit(1)}}
@@ -387,6 +388,11 @@ app.get("/api/reports/attendance",auth,allow("admin"),async(req,res)=>{
 /* ---------- AI tutor: off until AZURE_OPENAI_* is set; daily caps; nothing stored but counts ---------- */
 app.post("/api/tutor",auth,async(req,res)=>{
   const question=value(req.body?.question,1000);
+  const lessonId=req.body?.lessonId;
+  if(lessonId!==undefined&&lessonId!==null&&lessonId!==""){
+    if(typeof lessonId!=="string"||!resolveLesson(lessonId))
+      return error(res,400,"Unknown course lesson");
+  }
   if(!question)return error(res,400,"Question required");
   if(CONFIDENTIAL.test(question))return error(res,400,"Do not submit confidential data");
   if(!process.env.AZURE_OPENAI_ENDPOINT||!process.env.AZURE_OPENAI_DEPLOYMENT)
@@ -418,15 +424,15 @@ app.post("/api/tutor",auth,async(req,res)=>{
       response=await fetch(url,{method:"POST",signal:controller.signal,headers:{
         Authorization:"Bearer "+token,"Content-Type":"application/json"
       },body:JSON.stringify({temperature:0.2,max_tokens:500,messages:[
-        {role:"system",content:"You teach AI literacy to Nigerian lawyers with fictional cases only. Do not invent citations or provide personalised legal advice. Require primary-law verification. Do not handle client secrets or regard tutor chat as CPD attendance."},
-        {role:"user",content:question}
+        ...makeTutorMessages(question,lessonId)
       ]})});
     }finally{clearTimeout(timer)}
     if(!response.ok){await finish("failed");return error(res,502,"AI provider unavailable")}
     const data=await response.json();
     await finish("answered",data.usage);
     return res.json({answer:data.choices?.[0]?.message?.content||"No response",
-      warning:"Education only. Independently verify legal sources."});
+      courseVersion:COURSE_VERSION,lessonId:lessonId||null,
+      warning:"Educational guidance only. Verify primary legal sources; no NBA-ICLE credits are conferred."});
   }catch{await finish("failed");return error(res,503,"Tutor unavailable")}
 });
 app.use((req,res)=>error(res,404,"Not found"));
