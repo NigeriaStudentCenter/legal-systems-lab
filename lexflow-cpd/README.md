@@ -17,6 +17,7 @@ A distinct learning section of NigeriaStudentCenter/legal-systems-lab.
 - [Authenticated fictional learner development portal and Azure tutor](portal.html)
 - [Faculty and compliance development workspace](staff.html)
 - [Accreditation and governance](compliance.html)
+- [Phase 12 consolidated QA review dossier](PHASE12-QA-REVIEW-DOSSIER.md) — independent reviewer approval outstanding
 
 ## Flagship curriculum v1
 
@@ -28,7 +29,7 @@ The [animation preproduction pack](INSTRUCTOR-ANIMATIONS.md) includes five origi
 
 ## Azure development integration (reported testing on 16 Nov 2026)
 
-The version-controlled record [infra/DEV-DEPLOYMENT.md](infra/DEV-DEPLOYMENT.md) documents a fictional-data Container Apps development deployment, PostgreSQL migrations 001 and 002, Microsoft Entra role testing, faculty evaluation, independent attendance review, BSOE certificate creation/revocation logic, and managed-identity Azure AI tutor tests. Do not treat a repository record as a fresh direct Azure control-plane verification; verify running revision, authentication, logs and health independently.
+The version-controlled record [infra/DEV-DEPLOYMENT.md](infra/DEV-DEPLOYMENT.md) documents a fictional-data Container Apps development deployment, PostgreSQL migrations 001, 002 and 003, Microsoft Entra role testing, faculty evaluation, independent attendance review, BSOE certificate creation/revocation logic, and managed-identity Azure AI tutor tests. Do not treat a repository record as a fresh direct Azure control-plane verification; verify running revision, authentication, logs and health independently.
 
 - Source: [backend/](backend/)
 - Deployment Bicep: [infra/dev.bicep](infra/dev.bicep)
@@ -56,3 +57,7 @@ Curriculum, guided investigation, capstone, instructor and server-side tutor sou
 New `backend/sql/003_capstone_assessment.sql` defines learner capstone submissions and six-dimension faculty decisions. It must be applied by an authorised migration operator before releasing the updated Azure image. The runtime identity remains limited to SELECT, INSERT and UPDATE, with no DDL or DELETE; `auth-config.js` is untouched.
 
 Protected API endpoints include `GET /api/capstone/my`, `POST /api/capstone/submissions`, `GET /api/faculty/capstones`, and `POST /api/faculty/capstones/:id/decision`. All are Entra-authenticated, with role permissions and server-side enrolment/faculty assignment checks. Capstone submissions do not trigger certificate issue or NBA-ICLE credit awards. The detailed operator-runbook is [Phase 8 capstone release](infra/PHASE8-CAPSTONE-RELEASE.md).
+
+## Phase 12 consolidated quality review status
+
+An evidence-based source and regulatory desk review has been performed and documented in [Phase 12 QA dossier](PHASE12-QA-REVIEW-DOSSIER.md). It **does not** constitute an independent Nigerian legal practitioner/assessment/accessibility sign-off. One of five teaching videos is completed; modules 2–5 failed at HeyGen because video credits were exhausted (`paid_tier_quota_exceeded`). The reviewed expert approval, actual media acceptance, measured learning hours, complete browser accessibility and production privacy controls remain launch blockers. Phase 8 Azure development deployment is documented with migration 003 and 26/26 authenticated API checks in [DEV-DEPLOYMENT.md](infra/DEV-DEPLOYMENT.md). Do not call the current development programme accredited.
