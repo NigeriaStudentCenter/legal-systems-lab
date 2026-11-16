@@ -35,9 +35,9 @@ GRANT SELECT, INSERT, UPDATE ON TABLE
 TO lexflow_cpd_runtime;
 ```
 3. Verify runtime identity has no CREATE/ALTER ownership rights, no DELETE, and no TRUNCATE. Capstone tables must not be owned by the runtime login.
-4. Check GitHub's `lexflow-cpd-api-image.yml` workflow passed tests, `npm audit` and Trivy. Obtain a new **immutable** digest, not a mutable tag.
+4. Check GitHub's `lexflow-cpd-api-image.yml` workflow passed tests, `npm audit` and Trivy. Obtain a new **immutable** digest, not a mutable tag. The current committed `infra/dev.parameters.json` still contains an **older** image digest; do not mistake that recorded reference for the Phase 8 build.
 5. Have the Azure operator deploy the approved digest through existing `infra/dev.bicep` to the existing `rg-lexflow-cpd-dev`, port 8080.
-6. Check live `/healthz` = 200 and `/readyz` = 200; confirm the running revision digest matches.
+6. Check live `/healthz` = 200 and `/readyz` = 200; confirm the running revision digest matches. The Phase 8 `/readyz` now performs read-only queries against **both capstone tables** as well as the users table. If migration 003 or runtime grants are absent, readiness returns 503.
 7. Use **fictional** Entra learner and assigned faculty accounts. Verify unauthenticated 401, wrong roles 403, invalid payload 400, second pending submission 409, assigned faculty marking, rejection of unassigned faculty, and readback of marks.
 8. Check that capstone grading creates **no** BSOE completion certificate or NBA-ICLE credit. Verify the pre-existing 10-point assessment plus independent attendance controls still gate certificate issuance.
 9. Confirm the learner's browser explicitly asks consent before transmission; workbook exports remain local until the learner submits.
@@ -47,3 +47,30 @@ TO lexflow_cpd_runtime;
 The five HeyGen video sessions in `VIDEO-PRODUCTION-TRACKER.md` are distinct; do not regenerate or pay twice merely to inspect status. Preserve the request for **one consolidated academic/legal/accessibility review after all instructional and media production**, rather than intermittent reviews.
 
 No changes to `auth-config.js`, Azure managed-identity role assignments, Cosmos, or database settings were made by the capstone code itself.
+
+## Read-only preflight scripts (new)
+
+**Before the release**, check that you have selected the correct Azure subscription. The scripts do not change cloud infrastructure or the database.
+
+```bash
+az login
+az account set --subscription "<BSOE SUBSCRIPTION ID>"
+EXPECTED_IMAGE="ghcr.io/nigeriastudentcenter/lexflow-cpd-api@sha256:<APPROVED_DIGEST>" \\
+  bash lexflow-cpd/infra/check-phase8-azure.sh
+```
+
+The script checks the actual Azure Container App's ingress port, running immutable image, `/healthz`, `/readyz`, and unauthenticated rejection from `/api/capstone/my`. A different image is reported as **not yet deployed** without changing it. The script cannot directly prove migration 003 was applied or that every PostgreSQL permission is correct.
+
+For a **separate restricted runtime database login**, run the read-only SQL report after an authorised operator has applied migration 003 and explicit grants. Use secure PG environment variables/connection configuration rather than printing a password-bearing URL:
+
+```bash
+psql -X -v ON_ERROR_STOP=1 -f lexflow-cpd/infra/check-phase8-runtime-grants.sql
+```
+
+Every row must say `PASS`; a `FAIL` blocks release. The database role must not own the new tables, and must have no DELETE/TRUNCATE, schema CREATE, database CREATE, or database TEMP privileges. For the strict no-DDL policy, the migration operator may need to revoke database TEMP from PUBLIC after checking impact on other database users. The operator must grant only SELECT, INSERT, UPDATE on the two new capstone tables.
+
+**Important:** The read-only preflight cannot magically deploy the backend, apply migrations, or prove a GitHub Actions image has been approved. The real operator-controlled rollout still requires fresh CI results, migration evidence and an immutable digest.
+
+## Request-size compatibility
+
+Capstone JSON may contain six substantial sections. The API now accepts requests up to **32 KB** rather than the old 12 KB limit, while checking the six bounded answer strings and total content size at the application layer. A new test verifies a valid request larger than 12 KB is handled by the capstone application rather than rejected by Express as HTTP 413. Do not interpret permissive request parsing as permission to upload real client files or personally identifying details.
