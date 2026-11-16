@@ -5,10 +5,10 @@
 | Module | Video title | Session | Verified status | Acceptance action |
 |---|---|---|---|---|
 | 1 | Stop the invented authority | [HeyGen session](https://app.heygen.com/video-agent/d5ca30bbcb6e438f992cdf86a3321d2a) | **Completed**; video ID `7b13a8e6cd204fcbb2fc3e5cdda59e79`, duration 76.2 s, 16:9, captions reported | Faculty must watch, verify fictional labels, approve captions/transcript and store a durable authorised copy |
-| 2 | When law changes: amendment timeline | [HeyGen session](https://app.heygen.com/video-agent/f7db88371e8d4bb5b10a166f658ecc51) | **Failed**; no completed media verified | Investigate failure or resume inside existing session after credits are available; avoid duplicate charge |
-| 3 | Hidden errors in an AI contract | [HeyGen session](https://app.heygen.com/video-agent/9b54e9f0759143b3ba98b74dcd53d4b1) | **Failed**; no completed media verified | Diagnose and continue existing session |
-| 4 | Protect confidential client information | [HeyGen session](https://app.heygen.com/video-agent/43555257baf0407185aa7774131fbf6d) | **Failed**; no completed media verified | Diagnose and continue existing session |
-| 5 | Responsible law-firm AI pilot | [HeyGen session](https://app.heygen.com/video-agent/a965cc6dde1543948ff83641f55bffbe) | **Failed**; no completed media verified | Diagnose and continue existing session |
+| 2 | When law changes: amendment timeline | [HeyGen session](https://app.heygen.com/video-agent/f7db88371e8d4bb5b10a166f658ecc51) | **Failed: paid_tier_quota_exceeded**; no completed media verified | Credits exhausted. Check the existing job's restart/resume controls after credit is added; avoid duplicate charge |
+| 3 | Hidden errors in an AI contract | [HeyGen session](https://app.heygen.com/video-agent/9b54e9f0759143b3ba98b74dcd53d4b1) | **Failed: paid_tier_quota_exceeded**; no completed media verified | Credits exhausted. Continue existing session if HeyGen permits; do not create duplicate paid renders |
+| 4 | Protect confidential client information | [HeyGen session](https://app.heygen.com/video-agent/43555257baf0407185aa7774131fbf6d) | **Failed: paid_tier_quota_exceeded**; no completed media verified | Diagnose and continue existing session |
+| 5 | Responsible law-firm AI pilot | [HeyGen session](https://app.heygen.com/video-agent/a965cc6dde1543948ff83641f55bffbe) | **Failed: paid_tier_quota_exceeded**; no completed media verified | Diagnose and continue existing session |
 
 Completed module 1 video page: https://app.heygen.com/videos/7b13a8e6cd204fcbb2fc3e5cdda59e79
 
