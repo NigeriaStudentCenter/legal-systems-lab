@@ -122,6 +122,18 @@ Live check: a real token got an answer (124 tokens); confidential wording 400; n
 
 Found and fixed afterwards: the success message was overwritten when the page reloaded, and completions did not show who already held a certificate.
 
+## Release of 16 Nov 2026: hardened tokens and image
+Image `sha256:05ccbef5…` from commit `0386084`: tests, `npm audit` and a Trivy scan (no fixable high or critical findings) passed before publication. The runtime image no longer contains npm. Settings `ENTRA_TENANT_ID` and `ALLOWED_CLIENT_IDS` (portal app, plus the password-only test client in dev only).
+
+| Live check | Result |
+|---|---|
+| Real learner token from an approved app | 200 |
+| Admin token on an admin route; learner token on it | 200; 403 |
+| Real token issued for the other LexFlow API | 401 |
+| No token | 401 |
+| Portal app token in the browser (staff page as admin) | Data loads |
+| AI tutor; public certificate verification | Answer; valid with name |
+
 ## Known limits
 - `lexflow_cpd_runtime` can open a connection to other products' databases on the shared server (their `CONNECT` is still granted to `PUBLIC`) but can read none of their tables.
 - Self-registration (`ALLOW_SELF_REGISTRATION=true` here) creates learner records only. It is acceptable in this environment because self-service sign-up is off in the tenant, so every account was made by an operator. Faculty and admin roles are set by an operator in `cpd_users`.
