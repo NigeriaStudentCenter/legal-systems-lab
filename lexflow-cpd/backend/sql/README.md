@@ -35,6 +35,17 @@ GRANT SELECT, INSERT, UPDATE ON TABLE
 TO lexflow_cpd_runtime;
 ```
 
+A PostgreSQL database may grant `TEMPORARY` to `PUBLIC` by default. If the runtime must have **no DDL at all**, the migration operator should revoke TEMP from PUBLIC in the dedicated CPD database and explicitly grant it only to privileged roles that need it:
+
+```sql
+-- Migration operator only. Check other consumers of the database first.
+REVOKE TEMPORARY ON DATABASE lexflow_cpd FROM PUBLIC;
+REVOKE CREATE ON DATABASE lexflow_cpd FROM PUBLIC;
+REVOKE CREATE ON SCHEMA public FROM PUBLIC;
+```
+
+Run the **read-only** `../../infra/check-phase8-runtime-grants.sql` as the actual runtime role to inspect table privileges, ownership, schema CREATE and database CREATE/TEMP. Any FAIL is a release blocker. The shared PostgreSQL server can host a dedicated database, but other databases/users must not be changed implicitly.
+
 Keep the operator and runtime identities distinct. Granting rights is not an application startup step. Prefer schema ownership by a non-login owner role and no broad grants on the public schema. The runtime should have a restricted search_path and no ability to create temporary tables if your policy forbids any DDL.
 
 ## Compliance
