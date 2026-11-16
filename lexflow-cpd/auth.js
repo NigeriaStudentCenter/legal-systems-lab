@@ -131,6 +131,61 @@ if(!valid()){
           ab.appendChild(box);
         }
         if(!record.enrolments.length){const p=document.createElement("p");p.className="muted";p.textContent="Enrol in a session to take its assessment.";ab.appendChild(p)}
+        const capstoneBox=el("liveCapstone");capstoneBox.replaceChildren();
+        if(role==="learner"){
+          const banner=document.createElement("p");banner.textContent="Loading protected capstone records...";capstoneBox.append(banner);
+          try{
+            const capRes=await api("GET","/api/capstone/my");
+            if(capRes?.status===404){
+              banner.textContent="The capstone submission API is not on this Azure revision. Continue drafting locally and wait for the operator-controlled release.";
+            }else if(!capRes?.ok){
+              banner.textContent="Capstone records unavailable. No answers have been sent.";
+            }else{
+              const capData=await capRes.json(),history=capData.submissions||[];
+              banner.textContent="Capstone grading is independent from certificates. "+history.length+" previous submission(s).";
+              for(const c of history){
+                const p=document.createElement("p");
+                p.textContent="Session "+c.session_id+" · "+c.status+" · "+(c.total===null||c.total===undefined?"Awaiting faculty review":c.total+"/100")+" · "+(c.feedback||"");
+                capstoneBox.append(p);
+              }
+              const eligible=record.enrolments.filter(e=>e.status==="enrolled");
+              if(eligible.length){
+                const heading=document.createElement("p");
+                heading.textContent="Submit the six-section browser-local capstone to an enrolled fictional session.";
+                capstoneBox.append(heading);
+                const select=document.createElement("select");
+                select.setAttribute("aria-label","Capstone enrolment session");
+                for(const e of eligible){const opt=document.createElement("option");opt.value=e.session_id;opt.textContent=e.course+" — "+e.session_id;select.append(opt)}
+                capstoneBox.append(select);
+                const submit=document.createElement("button");submit.type="button";submit.textContent="Review and submit saved capstone for human marking";
+                submit.addEventListener("click",async()=>{
+                  let local;
+                  try{local=JSON.parse(localStorage.getItem("lexflow-capstone-workbook-v1")||"null")}catch{}
+                  const ids=["scope","research","privacy","governance","evaluation","recommendation"];
+                  const answers=Object.fromEntries(ids.map(id=>[id,String(local?.sections?.[id]||"").trim()]));
+                  if(ids.some(id=>answers[id].length<120||answers[id].length>6000)){
+                    live("Complete all six capstone sections in capstone.html (at least 120 characters per answer) before submission.");
+                    return;
+                  }
+                  const chosen=select.value;
+                  if(!confirm("Submit this complete fictional capstone to the secure Azure API for human marking? The six written answers will be transferred; this is NOT an accredited CPD submission or certificate award."))return;
+                  live("Submitting capstone...");
+                  try{
+                    const res=await api("POST","/api/capstone/submissions",{sessionId:chosen,answers});
+                    if(!res)return;
+                    const result=await res.json().catch(()=>({}));
+                    if(!res.ok){live("Capstone not submitted: "+String(result.error||("HTTP "+res.status)));return}
+                    await loadLive();
+                    live("Capstone submitted. Faculty review remains pending; no certificate or CPD credits were issued.");
+                  }catch{live("Capstone submission failed; check the protected API before retrying.")}
+                });
+                capstoneBox.append(submit);
+              }
+            }
+          }catch{banner.textContent="Capstone API unavailable; your browser-local draft was not transferred."}
+        }else{
+          const p=document.createElement("p");p.textContent="Capstone submissions are available to learners; faculty use the protected staff workspace.";capstoneBox.append(p);
+        }
         const cb=el("liveCerts");cb.replaceChildren();
         for(const c of record.certificates||[]){
           const tr=document.createElement("tr");
