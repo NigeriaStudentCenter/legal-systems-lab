@@ -12,7 +12,7 @@ test("six-component capstone has an aligned 100-point rubric",()=>{
  assert.equal(Object.values(DIMENSIONS).reduce((a,b)=>a+b,0),100);
 });
 test("invalid capstone documents are rejected before storage",()=>{
- assert.deepEqual(validateCapstoneAnswers(answers()),answers());
+ assert.deepEqual(validateCapstoneAnswers(answers()),Object.fromEntries(Object.entries(answers()).map(([key,value])=>[key,value.trim()])));
  assert.equal(validateCapstoneAnswers({scope:"x"}),null);
  assert.equal(validateCapstoneAnswers({...answers(),privacy:"short"}),null);
  assert.equal(validateCapstoneAnswers({...answers(),injected:"any"}),null);
