@@ -47,6 +47,74 @@ if(!valid()){
         throw e;
       }
     }
+    // Live data from the protected API. Everything is written with textContent, never as HTML.
+    async function api(method,path,body){
+      const accessToken=await token();if(!accessToken)return null;
+      return fetch(cfg.apiBaseUrl.replace(/\/$/,"")+path,{method,cache:"no-store",
+        headers:{Authorization:"Bearer "+accessToken,...(body?{"Content-Type":"application/json"}:{})},
+        body:body?JSON.stringify(body):undefined});
+    }
+    const live=msg=>{el("liveStatus").textContent=msg};
+    const cell=(row,text)=>{const td=document.createElement("td");td.textContent=text;row.appendChild(td);return td};
+    const when=v=>new Date(v).toLocaleString("en-GB",{dateStyle:"medium",timeStyle:"short"});
+    const emptyRow=(body,cols,text)=>{const tr=document.createElement("tr");cell(tr,text).colSpan=cols;body.appendChild(tr)};
+    async function act(path,sessionId,done){
+      live("Working...");
+      try{
+        const r=await api("POST",path,{sessionId});if(!r)return;
+        if(r.ok){await loadLive();live(done)}
+        else{const d=await r.json().catch(()=>({}));live("Not done: "+String(d.error||("HTTP "+r.status))+".")}
+      }catch{live("The API could not be reached.")}
+    }
+    async function loadLive(){
+      if(!current()){el("liveRecord").hidden=true;return}
+      el("liveRecord").hidden=false;el("liveBody").hidden=true;el("registerAction").hidden=true;el("refreshAction").hidden=true;
+      live("Loading your record from the protected API...");
+      try{
+        const me=await api("GET","/api/me");if(!me)return;
+        if(me.status===403){el("registerAction").hidden=false;live("You are signed in, but have no learner record yet.");return}
+        if(!me.ok){live("The API returned HTTP "+me.status+".");return}
+        const role=String((await me.json()).role);
+        const [sr,rr]=await Promise.all([api("GET","/api/sessions"),api("GET","/api/me/record")]);
+        if(!sr?.ok||!rr?.ok){live("Your record could not be loaded.");return}
+        const sessions=(await sr.json()).sessions||[],record=await rr.json();
+        el("liveEnrolments").textContent=record.enrolments.length;
+        el("liveAttendance").textContent=record.attendance.length;
+        el("liveCertificates").textContent=record.certificates.filter(c=>c.status==="issued").length;
+        el("liveCredits").textContent=Number(record.nbaCredits||0);
+        const mine=new Map(record.enrolments.map(e=>[e.session_id,e.status]));
+        const sb=el("liveSessions");sb.replaceChildren();
+        for(const s of sessions){
+          const tr=document.createElement("tr");
+          cell(tr,s.course);cell(tr,when(s.starts_at));cell(tr,s.status);cell(tr,mine.get(s.id)||"not enrolled");
+          const td=cell(tr,"");
+          if(role==="learner"){
+            const b=document.createElement("button");b.type="button";
+            if(!mine.has(s.id)&&["planned","running"].includes(s.status)){
+              b.textContent="Enrol";b.addEventListener("click",()=>act("/api/enrolments",s.id,"Enrolled."));td.appendChild(b);
+            }else if(mine.get(s.id)==="enrolled"&&s.status==="running"){
+              b.textContent="Check in";b.addEventListener("click",()=>act("/api/attendance/checkin",s.id,"Check-in recorded as unverified. No credit is awarded."));td.appendChild(b);
+            }
+          }
+          sb.appendChild(tr);
+        }
+        if(!sessions.length)emptyRow(sb,5,"No open sessions.");
+        const eb=el("liveEvents");eb.replaceChildren();
+        for(const a of record.attendance){const tr=document.createElement("tr");cell(tr,when(a.occurred_at));cell(tr,a.event_type);cell(tr,a.status);eb.appendChild(tr)}
+        if(!record.attendance.length)emptyRow(eb,3,"No attendance entries.");
+        el("liveBody").hidden=false;el("refreshAction").hidden=false;
+        live("Signed-in role: "+role+".");
+      }catch{live("The API could not be reached.")}
+    }
+    el("refreshAction")?.addEventListener("click",loadLive);
+    el("registerAction")?.addEventListener("click",async()=>{
+      live("Creating your learner record...");
+      try{
+        const r=await api("POST","/api/register");if(!r)return;
+        if(r.ok)await loadLive();
+        else{const d=await r.json().catch(()=>({}));live("Not created: "+String(d.error||("HTTP "+r.status))+".")}
+      }catch{live("The API could not be reached.")}
+    });
     el("loginAction")?.addEventListener("click",async()=>{
       try{await client.loginRedirect({scopes:["openid","profile",cfg.apiScope]})}
       catch{status("Sign-in could not start. Confirm app association, authority, redirect URI and permissions.")}});
@@ -65,5 +133,6 @@ if(!valid()){
       }catch{status("The Azure API is unavailable or the cross-origin configuration is incomplete.");}
     });
     paint();
+    loadLive();
   }catch{status("Microsoft sign-in could not initialise. Check tenant registration and browser network permissions.");}
 }

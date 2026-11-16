@@ -49,17 +49,22 @@ const audit=async(actor,action,target,details={})=>query(
   "INSERT INTO cpd_audit_events(id,actor_id,action,target,details) VALUES($1,$2,$3,$4,$5::jsonb)",
   [randomUUID(),actor,action,target,JSON.stringify(details)]
 );
-async function auth(req,res,next){
+async function identify(req,res){
   const match=req.headers.authorization?.match(/^Bearer (.+)$/);
-  if(!match)return error(res,401,"Sign-in required");
+  if(!match){error(res,401,"Sign-in required");return null}
   let payload;
   try{
     ({payload}=await jwtVerify(match[1],jwks,{
       issuer:process.env.ENTRA_ISSUER,audience:process.env.ENTRA_AUDIENCE,algorithms:["RS256"]
     }));
-  }catch{return error(res,401,"Invalid access token")}
+  }catch{error(res,401,"Invalid access token");return null}
   const id=payload.oid||payload.sub;
-  if(!value(id,250))return error(res,401,"Invalid subject");
+  if(!value(id,250)){error(res,401,"Invalid subject");return null}
+  return id;
+}
+async function auth(req,res,next){
+  const id=await identify(req,res);
+  if(!id)return;
   try{
     const user=await query("SELECT id,role,active FROM cpd_users WHERE id=$1",[id]);
     if(!user.rows[0]?.active)return error(res,403,"User not provisioned");
@@ -76,6 +81,44 @@ app.get("/readyz",async(req,res)=>{
   }catch{return res.status(503).json({status:"unavailable"})}
 });
 app.get("/api/me",auth,(req,res)=>res.json(req.user));
+// Self-registration creates a LEARNER record only, for someone Microsoft Entra has already
+// authenticated. Off unless ALLOW_SELF_REGISTRATION=true. Faculty and admin roles are never
+// granted here: an operator sets those in the database.
+app.post("/api/register",async(req,res)=>{
+  const id=await identify(req,res);
+  if(!id)return;
+  if(process.env.ALLOW_SELF_REGISTRATION!=="true")return error(res,403,"Self-registration is closed");
+  try{
+    const made=await query("INSERT INTO cpd_users(id,role) VALUES($1,'learner') ON CONFLICT (id) DO NOTHING",[id]);
+    const user=await query("SELECT id,role,active FROM cpd_users WHERE id=$1",[id]);
+    if(!user.rows[0]?.active)return error(res,403,"Account is not active");
+    if(made.rowCount)await audit(id,"self-registered",id,{});
+    return res.status(made.rowCount?201:200).json({id,role:user.rows[0].role});
+  }catch{return error(res,503,"Registration unavailable")}
+});
+app.post("/api/enrolments",auth,allow("learner"),async(req,res)=>{
+  if(!isUUID(req.body?.sessionId))return error(res,400,"Valid sessionId required");
+  try{
+    const open=await query("SELECT 1 FROM cpd_course_sessions WHERE id=$1 AND public=true AND status IN ('planned','running') AND ends_at>now()",[req.body.sessionId]);
+    if(!open.rowCount)return error(res,409,"Session is not open for enrolment");
+    const made=await query("INSERT INTO cpd_enrolments(session_id,learner_id) VALUES($1,$2) ON CONFLICT (session_id,learner_id) DO NOTHING",[req.body.sessionId,req.user.id]);
+    if(made.rowCount)await audit(req.user.id,"self-enrolled",req.body.sessionId,{});
+    const row=await query("SELECT status FROM cpd_enrolments WHERE session_id=$1 AND learner_id=$2",[req.body.sessionId,req.user.id]);
+    return res.status(made.rowCount?201:200).json({sessionId:req.body.sessionId,status:row.rows[0].status});
+  }catch{return error(res,503,"Enrolment unavailable")}
+});
+// A learner's own record only. Credits come solely from an approved certificate row.
+app.get("/api/me/record",auth,async(req,res)=>{
+  try{
+    const [enrolments,attendance,certificates]=await Promise.all([
+      query("SELECT e.session_id,s.course,s.starts_at,s.ends_at,s.status AS session_status,e.status,e.assessment_verified FROM cpd_enrolments e JOIN cpd_course_sessions s ON s.id=e.session_id WHERE e.learner_id=$1 ORDER BY s.starts_at DESC LIMIT 200",[req.user.id]),
+      query("SELECT id,session_id,event_type,status,occurred_at FROM cpd_attendance_events WHERE learner_id=$1 ORDER BY occurred_at DESC LIMIT 200",[req.user.id]),
+      query("SELECT session_id,course,issued_at,status,nba_credits FROM cpd_certificates WHERE learner_id=$1 ORDER BY issued_at DESC LIMIT 200",[req.user.id])
+    ]);
+    const credits=certificates.rows.filter(c=>c.status==="issued").reduce((n,c)=>n+Number(c.nba_credits),0);
+    return res.json({enrolments:enrolments.rows,attendance:attendance.rows,certificates:certificates.rows,nbaCredits:credits});
+  }catch{return error(res,503,"Record unavailable")}
+});
 app.get("/api/sessions",auth,async(req,res)=>{
   try{
     const result=await query("SELECT id,course,starts_at,ends_at,status FROM cpd_course_sessions WHERE public=true ORDER BY starts_at DESC LIMIT 100");
