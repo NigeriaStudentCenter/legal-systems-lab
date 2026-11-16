@@ -64,4 +64,14 @@ assert.ok(staff.includes('id="facultyCapstones"'),"Faculty console must show hum
 assert.ok(auth.includes('/api/capstone/submissions'),"Learner page must send capstone to secure API only on explicit action");
 assert.ok(staffJs.includes('/api/faculty/capstones/'),"Faculty page must use secured capstone decision endpoint");
 assert.ok(existsSync(new URL("backend/sql/003_capstone_assessment.sql",import.meta.url)),"Operator migration 003 is required");
+const legalRefs=SOURCES.map(s=>s.name+" "+s.url).join(" | ");
+assert.ok(legalRefs.includes("Data Protection Act 2023"),"NDPA primary reference is required");
+assert.ok(legalRefs.includes("GAID")&&legalRefs.includes("2025"),"NDPC implementation directive reference is required");
+assert.ok(legalRefs.includes("Professional Conduct"),"Professional conduct rules reference is required");
+assert.ok(legalRefs.includes("NBA-ICLE")&&legalRefs.includes("2025"),"MCPD Rules source required");
+const qa=readFileSync(new URL("PHASE12-QA-REVIEW-DOSSIER.md",import.meta.url),"utf8");
+assert.ok(qa.includes("FINAL EXPERT SIGN-OFF NOT GRANTED")&&qa.includes("P12-001"),"Do not imply expert signoff before review");
+const videoLog=readFileSync(new URL("VIDEO-PRODUCTION-TRACKER.md",import.meta.url),"utf8");
+assert.ok(videoLog.includes("paid_tier_quota_exceeded"),"Preserve actual failed HeyGen status until recovery");
+assert.ok(readFileSync(new URL("compliance.html",import.meta.url),"utf8").includes("PHASE12-QA-REVIEW-DOSSIER.md"),"Governance page must link to QA results");
 console.log("Checked five modules, twenty lessons, five simulations, five cases, 25 guided stages, a 100-point capstone, instructor materials and lesson contexts.");
