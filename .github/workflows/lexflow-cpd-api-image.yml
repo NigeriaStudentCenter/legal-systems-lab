@@ -41,8 +41,13 @@ jobs:
           node-version: 22
       - run: npm ci --no-audit --no-fund
       - run: npm run check
-      - name: Check read-only Azure release script syntax
-        run: bash -n ../infra/check-phase8-azure.sh
+      - name: Syntax check all Azure release scripts
+        run: |
+          bash -n ../infra/check-phase8-azure.sh
+          bash -n ../infra/release-phase8.sh
+          bash -n ../infra/test-phase8-release.sh
+      - name: Rehearse Azure release safety gates using offline CLI mock
+        run: bash ../infra/test-phase8-release.sh
       - name: Validate course-grounded AI tutor policy and lesson alignment
         run: node --test test/tutor-curriculum.test.mjs
       - name: Validate bounded case tutor stages and capstone contracts
