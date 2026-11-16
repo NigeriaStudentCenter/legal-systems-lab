@@ -62,11 +62,13 @@ before(async()=>{
   db=new pg.Client({connectionString:u.href});await db.connect();
   await db.query(readFileSync(join(here,"..","sql","001_initial.sql"),"utf8"));
   await db.query(readFileSync(join(here,"..","sql","002_review_assessment_certificates.sql"),"utf8"));
+  await db.query(readFileSync(join(here,"..","sql","003_capstone_assessment.sql"),"utf8"));
   // The grants an operator applies, exactly as listed in sql/README.md.
   await db.query(`REVOKE CREATE ON SCHEMA public FROM PUBLIC; GRANT USAGE ON SCHEMA public TO ${ROLE};
     GRANT SELECT, INSERT, UPDATE ON TABLE cpd_users, cpd_course_sessions, cpd_session_faculty, cpd_enrolments,
       cpd_attendance_events, cpd_course_approvals, cpd_certificates, cpd_audit_events,
-      cpd_attendance_reviews, cpd_assessment_submissions, cpd_assessment_decisions, cpd_tutor_usage TO ${ROLE}`);
+      cpd_attendance_reviews, cpd_assessment_submissions, cpd_assessment_decisions, cpd_tutor_usage,
+      cpd_capstone_submissions, cpd_capstone_decisions TO ${ROLE}`);
   await db.query(`INSERT INTO cpd_users(id,role,active) VALUES
     ($1,'learner',true),($2,'learner',false),($3,'faculty',true),($4,'faculty',true),($5,'admin',true)`,
     [ids.learner,ids.other,ids.faculty,ids.faculty2,ids.admin]);
