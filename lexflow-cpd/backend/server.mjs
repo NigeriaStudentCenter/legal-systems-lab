@@ -115,7 +115,11 @@ const allow=(...roles)=>(req,res,next)=>roles.includes(req.user.role)?next():err
 app.get("/healthz",(req,res)=>res.status(200).json({status:"alive"}));
 app.get("/readyz",async(req,res)=>{
   try{
-    await query("SELECT 1 FROM cpd_users LIMIT 1");
+    await Promise.all([
+      query("SELECT 1 FROM cpd_users LIMIT 1"),
+      query("SELECT 1 FROM cpd_capstone_submissions LIMIT 1"),
+      query("SELECT 1 FROM cpd_capstone_decisions LIMIT 1")
+    ]);
     return res.status(200).json({status:"ready"});
   }catch{return res.status(503).json({status:"unavailable"})}
 });
