@@ -1,9 +1,8 @@
-// LexFlow CPD curriculum v1. Author-reviewed educational content; never substitute for current legal authorities.
 export const SOURCES=[
-  {name:"Nigeria Data Protection Act 2023 (official NDPC text)",url:"https://ndpc.gov.ng/wp-content/uploads/2024/03/Nigeria_Data_Protection_Act_2023.pdf"},
-  {name:"NDPC General Application and Implementation Directive 2025",url:"https://ndpc.gov.ng/wp-content/uploads/2025/03/NDP-ACT-GAID-2025-MARCH-20TH.pdf"},
-  {name:"Rules of Professional Conduct for Legal Practitioners 2023 (reference text)",url:"https://www.judy.legal/legislation/akn/ng/act/si/2023/32"},
-  {name:"NBA MCPD Rules announcement",url:"https://blog.nigerianbar.org.ng/2025/03/15/nigerian-bar-association-introduces-mandatory-continuing-professional-development-rules/"}
+  {name:"Nigeria Data Protection Act 2023 — official federal PDF",url:"https://cert.gov.ng/ngcert/resources/Nigeria_Data_Protection_Act_2023.pdf"},
+  {name:"Nigeria Data Protection Commission (NDPC)",url:"https://ndpc.gov.ng/"},
+  {name:"NBA official explanation of Mandatory CPD requirements (2025)",url:"https://blog.nigerianbar.org.ng/2025/06/20/setting-the-record-straight-on-mandatory-cpd-requirement-and-the-right-to-practice-law/"},
+  {name:"NBA-ICLE MCPD Rules 2025 — published rules",url:"https://www.nbaicle.org/_files/ugd/81a65d_03fc1c9b473a4c6c8ebb26d02debfcc2.pdf?index=true"}
 ];
 export const MODULES=[
  {name:"AI foundations and professional judgment",objective:"Distinguish language-model assistance from verified legal analysis.",lessons:[
