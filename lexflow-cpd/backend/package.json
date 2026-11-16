@@ -17,6 +17,6 @@
     "jose": "^5.9.6",
     "express": "^4.21.2",
     "helmet": "^8.0.0",
-    "express-rate-limit": "^7.5.0"
+    "express-rate-limit": "^8.7.4"
   }
 }
