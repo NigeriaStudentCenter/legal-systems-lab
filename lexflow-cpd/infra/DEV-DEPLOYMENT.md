@@ -53,13 +53,29 @@ The real tokens came from the fictional account `synthetic.applicant1` through t
 | A person signs in as the fictional learner | Returned to the portal: "Signed in: Synthetic Applicant One (TEST)" |
 | Click Check protected API access | "Azure API authenticated. Assigned role: learner." |
 
-This needed one fix first: `portal.js` used to overwrite the address fragment that carries Microsoft's response. Cosmetic fault still open: the Sign in button stays visible after sign-in, because the page's button styling overrides the `hidden` attribute.
+This needed one fix first: `portal.js` used to overwrite the address fragment that carries Microsoft's response. The Sign in button staying visible after sign-in was fixed in the next release.
+
+## Release of 16 Nov 2026: learner registration, enrolment and live record
+Image `sha256:b08ae65c…` from commit `d069d1c` (14 integration tests passed in GitHub before the build).
+
+| Check on the live site or API | Result |
+|---|---|
+| Signed-in page: Sign in button hidden, Sign out shown | Pass |
+| Page lists the open fictional session from the API | Pass |
+| Click Enrol | "Enrolled.", enrolments 1, button becomes Check in |
+| Click Check in | "Check-in recorded as unverified. No credit is awarded.", attendance 1, credits 0 |
+| `POST /api/register` with no token | 401 |
+| Second fictional account: `/api/me` before, register, register again, `/api/me` after | 403, 201 learner, 200, 200 |
+| That account's own record | Empty, credits 0 |
+| Audit trail | One each of `self-registered`, `self-enrolled`, `self-checkin` |
 
 ## Known limits
 - `lexflow_cpd_runtime` can open a connection to other products' databases on the shared server (their `CONNECT` is still granted to `PUBLIC`) but can read none of their tables.
-- Users reach the API only after an operator inserts them into `cpd_users`; there is no enrolment or provisioning endpoint yet.
+- Self-registration (`ALLOW_SELF_REGISTRATION=true` here) creates learner records only. It is acceptable in this environment because self-service sign-up is off in the tenant, so every account was made by an operator. Faculty and admin roles are set by an operator in `cpd_users`.
+- A learner can check in more than once for the same session; each entry is unverified and carries no credit.
+- The portal button for creating a learner record was not clicked in a browser; the route behind it was tested with a real token.
 - The AI tutor is off. Turning it on needs an Azure OpenAI deployment, a role for `lexflowcpd-api-id`, and a spending limit.
-- One fictional row exists in `cpd_users`.
+- Fictional rows now in the database: two learners, one open test session, one enrolment, one self check-in.
 
 ## Remove everything
 Delete `rg-lexflow-cpd-dev`; delete the Key Vault secret `cpd-database-url`; then `DROP DATABASE lexflow_cpd; DROP ROLE lexflow_cpd_runtime;`.
