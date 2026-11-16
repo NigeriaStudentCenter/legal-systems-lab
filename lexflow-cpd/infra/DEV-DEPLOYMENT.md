@@ -69,13 +69,38 @@ Image `sha256:b08ae65c…` from commit `d069d1c` (14 integration tests passed in
 | That account's own record | Empty, credits 0 |
 | Audit trail | One each of `self-registered`, `self-enrolled`, `self-checkin` |
 
+## Release of 16 Nov 2026: attendance review, assessment marking, certificates
+Image `sha256:e256637f…` from commit `b65028f` (20 integration tests passed in GitHub). `sql/002_review_assessment_certificates.sql` (commit `83c57d5`) applied by a Microsoft Entra administrator before the image switch, then `SELECT, INSERT, UPDATE` on the four new tables granted to `lexflow_cpd_runtime`.
+
+Roles given by an operator for the test: `synthetic.reviewer1` = faculty, assigned to the test session; `synthetic.reviewer2` = admin.
+
+27 of 27 live checks passed with real tokens, including:
+
+| Check | Result |
+|---|---|
+| Learner submits assessment; faculty sees it with the learner's name | 201, 200 |
+| Faculty pass below 7/10; admin tries to mark | 400, 403 |
+| Faculty passes the learner 8/10 | 201 |
+| Certificate before attendance is approved | 409 |
+| Admin tries to attest; faculty tries to approve own attestation | 403, 403 |
+| Rejection without a reason; with a reason | 400, 201 |
+| Admin approves the other attestation; completions show one eligible learner | 201, 200 |
+| Certificate for the learner without a passed assessment; faculty tries to issue | 409, 403 |
+| Admin issues; issues again | 201 (0 credits), 409 |
+| Public verification by reference, no sign-in | valid, with name and course |
+
+The learner's own page then showed: "Passed (8/10)" with feedback, the faculty attestation as approved, and the certificate with its reference.
+
 ## Known limits
 - `lexflow_cpd_runtime` can open a connection to other products' databases on the shared server (their `CONNECT` is still granted to `PUBLIC`) but can read none of their tables.
 - Self-registration (`ALLOW_SELF_REGISTRATION=true` here) creates learner records only. It is acceptable in this environment because self-service sign-up is off in the tenant, so every account was made by an operator. Faculty and admin roles are set by an operator in `cpd_users`.
 - A learner can check in more than once for the same session; each entry is unverified and carries no credit.
 - The portal button for creating a learner record was not clicked in a browser; the route behind it was tested with a real token.
 - The AI tutor is off. Turning it on needs an Azure OpenAI deployment, a role for `lexflowcpd-api-id`, and a spending limit.
-- Fictional rows now in the database: two learners, one open test session, one enrolment, one self check-in.
+- Fictional rows now in the database: four users (two learners, one faculty, one admin), one open test session, two enrolments, one self check-in, two faculty attestations (one approved, one rejected), one passed assessment, one issued certificate.
+- Faculty and admin have API routes only: their portal tabs are still demonstrations.
+- Certificate revocation was tested locally only, so the live certificate stays valid.
+- The learner's assessment form on the page was not clicked; the submission went through the API with a real token.
 
 ## Remove everything
 Delete `rg-lexflow-cpd-dev`; delete the Key Vault secret `cpd-database-url`; then `DROP DATABASE lexflow_cpd; DROP ROLE lexflow_cpd_runtime;`.
