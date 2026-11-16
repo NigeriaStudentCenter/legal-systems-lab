@@ -6,7 +6,8 @@ Nothing here may hold a real lawyer's record until every item under *Needs a dec
 ## Done and tested
 | Area | What exists | Evidence |
 |---|---|---|
-| Sign-in | Microsoft Entra External ID; portal and staff pages; MSAL served from this site; Content-Security-Policy on both pages | Live sign-ins 15–16 Nov |
+| Sign-in | Microsoft Entra External ID; portal and staff pages; MSAL served from this site; Content-Security-Policy on both pages | Live sign-ins as learner, faculty and admin, 16 Nov |
+| Staff workspace | Faculty marking and attestation; admin review, completions, issue, verify, revoke | Browser test of every role, 16 Nov |
 | Token checks | Signature, issuer, audience, expiry, **delegated permission `access_as_user`, tenant, approved app** | Automated tests in `backend/test/`; real tokens carry the expected claims |
 | Roles | Learner / faculty / admin, held in the database and set by an operator; learners may self-register as learners only | Tests; live 27/27 |
 | Separation of duties | Faculty attest and mark only their assigned sessions; admins review attendance and issue certificates but cannot attest; a reviewer can never approve their own attestation (database constraint) | Tests; live 27/27 |
@@ -16,7 +17,7 @@ Nothing here may hold a real lawyer's record until every item under *Needs a dec
 | Database access | Runtime login: read/insert/update on CPD tables only, no delete, no schema change; TLS 1.2+ enforced | Tests; live checks |
 | Audit | Every registration, enrolment, check-in, submission, decision, review, issue and revocation is written to `cpd_audit_events` | Tests |
 | AI tutor | gpt-4.1-mini, EU data zone, default content filters, managed identity, 50/day total and 10/user caps (at most about $1.55 a month) | Live 16 Nov |
-| Supply chain | Lockfile; base image pinned by digest; `npm audit` and Trivy image scan block a release; CodeQL; Dependabot | CI |
+| Supply chain | Lockfile; base image pinned by digest; no npm in the runtime image; `npm audit` and Trivy image scan block a release (the scan blocked one image on 16 Nov until npm was removed); CodeQL; Dependabot; scan action pinned by commit | CI |
 | Release | Image built only after tests pass; deployed by digest from `infra/dev.bicep` | `infra/DEV-DEPLOYMENT.md` |
 
 ## Engineering still to do (no decision needed)
