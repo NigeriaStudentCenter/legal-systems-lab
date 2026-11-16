@@ -4,10 +4,14 @@ on:
     branches: [main]
     paths:
       - lexflow-cpd/backend/**
+      - lexflow-cpd/academy-content.js
+      - lexflow-cpd/case-dossiers.js
       - .github/workflows/lexflow-cpd-api-image.yml
   pull_request:
     paths:
       - lexflow-cpd/backend/**
+      - lexflow-cpd/academy-content.js
+      - lexflow-cpd/case-dossiers.js
       - .github/workflows/lexflow-cpd-api-image.yml
   workflow_dispatch:
 permissions:
@@ -33,6 +37,8 @@ jobs:
           node-version: 22
       - run: npm ci --no-audit --no-fund
       - run: npm run check
+      - name: Validate course-grounded AI tutor policy and lesson alignment
+        run: node --test test/tutor-curriculum.test.mjs
       - name: No known high or critical vulnerabilities in runtime dependencies
         run: npm audit --omit=dev --audit-level=high
       - run: npm test
