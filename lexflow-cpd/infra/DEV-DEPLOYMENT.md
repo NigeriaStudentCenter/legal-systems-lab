@@ -105,13 +105,29 @@ The learner's own page then showed: "Passed (8/10)" with feedback, the faculty a
 
 Live check: a real token got an answer (124 tokens); confidential wording 400; no sign-in 401. Set `enableTutor` to `false` in `dev.parameters.json` and redeploy to switch it off.
 
+## Staff page, browser test 16 Nov 2026
+`staff.html` signed in through Microsoft as each fictional role (a person typed the passwords). The Content-Security-Policy and self-hosted sign-in library were live.
+
+| Role | Step | Result |
+|---|---|---|
+| Learner | Opens the staff page | Refused: "A learner account cannot access faculty or administrator records." |
+| Faculty | Sees the assigned session, both learners with attendance and assessment status, one pending assessment | Pass |
+| Faculty | Records a decision with no score; a pass at 5/10 | Both refused with clear messages |
+| Faculty | Pass at 8/10; attests the second learner's attendance | Recorded; attestation pending review |
+| Admin | Sees the attestation with learner, faculty and evidence; session list instead of an ID box | Pass |
+| Admin | Rejects without a reason; approves | Refused; approved and queue empty |
+| Admin | Completions; issues the certificate | Eligible learner shown; issued with 0 credits |
+| Anyone | Verifies the reference; an unknown reference | Valid with name, course, date; "No certificate found" |
+| Admin | Revokes without a reason | Refused |
+
+Found and fixed afterwards: the success message was overwritten when the page reloaded, and completions did not show who already held a certificate.
+
 ## Known limits
 - `lexflow_cpd_runtime` can open a connection to other products' databases on the shared server (their `CONNECT` is still granted to `PUBLIC`) but can read none of their tables.
 - Self-registration (`ALLOW_SELF_REGISTRATION=true` here) creates learner records only. It is acceptable in this environment because self-service sign-up is off in the tenant, so every account was made by an operator. Faculty and admin roles are set by an operator in `cpd_users`.
 - A learner can check in more than once for the same session; each entry is unverified and carries no credit.
 - The portal button for creating a learner record was not clicked in a browser; the route behind it was tested with a real token.
 - Fictional rows now in the database: four users (two learners, one faculty, one admin), one open test session, two enrolments, one self check-in, two faculty attestations (one approved, one rejected), one passed assessment, one issued certificate.
-- Faculty and admin have API routes only: their portal tabs are still demonstrations.
 - Certificate revocation was tested locally only, so the live certificate stays valid.
 - The learner's assessment form on the page was not clicked; the submission went through the API with a real token.
 
