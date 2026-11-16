@@ -102,6 +102,42 @@ if(!valid()){
         const eb=el("liveEvents");eb.replaceChildren();
         for(const a of record.attendance){const tr=document.createElement("tr");cell(tr,when(a.occurred_at));cell(tr,a.event_type);cell(tr,a.status);eb.appendChild(tr)}
         if(!record.attendance.length)emptyRow(eb,3,"No attendance entries.");
+        const ab=el("liveAssessments");ab.replaceChildren();
+        for(const e of record.enrolments){
+          const latest=(record.assessments||[]).find(a=>a.session_id===e.session_id);
+          const box=document.createElement("div");box.className="tile";box.style.margin="10px 0";
+          const h=document.createElement("b");h.textContent=e.course;
+          const p=document.createElement("p");
+          if(e.assessment_verified)p.textContent="Passed"+(latest?.score!=null?" ("+latest.score+"/10)":"")+(latest?.feedback?". Feedback: "+latest.feedback:".");
+          else if(latest?.status==="submitted")p.textContent="Submitted "+when(latest.submitted_at)+". Awaiting a faculty decision.";
+          else if(latest?.status==="failed")p.textContent="Not passed ("+latest.score+"/10). Feedback: "+latest.feedback+" You may submit again.";
+          else p.textContent="Not yet submitted.";
+          box.append(h,p);
+          if(role==="learner"&&e.status==="enrolled"&&!e.assessment_verified&&latest?.status!=="submitted"){
+            const ta=document.createElement("textarea");ta.maxLength=6000;
+            ta.placeholder="Answer the Assessment Centre scenario using fictional facts only (20 to 6000 characters).";
+            ta.setAttribute("aria-label","Assessment answer for "+e.course);
+            const b=document.createElement("button");b.type="button";b.textContent="Submit for faculty marking";
+            b.addEventListener("click",async()=>{
+              live("Submitting...");
+              try{
+                const r=await api("POST","/api/assessments",{sessionId:e.session_id,response:ta.value});if(!r)return;
+                if(r.ok){await loadLive();live("Submitted for faculty marking.")}
+                else{const d=await r.json().catch(()=>({}));live("Not submitted: "+String(d.error||("HTTP "+r.status))+".")}
+              }catch{live("The API could not be reached.")}
+            });
+            box.append(ta,b);
+          }
+          ab.appendChild(box);
+        }
+        if(!record.enrolments.length){const p=document.createElement("p");p.className="muted";p.textContent="Enrol in a session to take its assessment.";ab.appendChild(p)}
+        const cb=el("liveCerts");cb.replaceChildren();
+        for(const c of record.certificates||[]){
+          const tr=document.createElement("tr");
+          cell(tr,c.course);cell(tr,when(c.issued_at));cell(tr,c.reference||"(no reference)");
+          cell(tr,c.status==="issued"?"valid":"revoked");cell(tr,String(Number(c.nba_credits)));cb.appendChild(tr);
+        }
+        if(!(record.certificates||[]).length)emptyRow(cb,5,"No certificates yet.");
         el("liveBody").hidden=false;el("refreshAction").hidden=false;
         live("Signed-in role: "+role+".");
       }catch{live("The API could not be reached.")}
