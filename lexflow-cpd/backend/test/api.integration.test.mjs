@@ -410,6 +410,13 @@ test("secure capstone: restricted learner submission, six-part faculty marking a
  assert.equal(created.status,201);assert.equal(created.json.certificateEligible,false);
  const id=created.json.id;
  assert.equal((await call("POST","/api/capstone/submissions",{as:ids.learner,body:{sessionId,answers}})).status,409);
+ // Nearly 15 KB of JSON is legal for the six-part capstone. A duplicate must return
+ // the expected database conflict, not Express' previous 12 KB HTTP 413 limit.
+ const larger=Object.fromEntries(Object.keys(answers).map(k=>[k,"Fictional professional analysis. ".repeat(85)]));
+ const size=Buffer.byteLength(JSON.stringify({sessionId,answers:larger}));
+ assert.ok(size>12*1024&&size<32*1024);
+ const duplicateLarge=await call("POST","/api/capstone/submissions",{as:ids.learner,body:{sessionId,answers:larger}});
+ assert.equal(duplicateLarge.status,409,"valid larger capstone JSON must not be blocked by body parser");
  const mine=await call("GET","/api/capstone/my",{as:ids.learner});
  assert.equal(mine.status,200);assert.equal(mine.json.submissions.find(x=>x.id===id).status,"submitted");
  assert.equal((await call("GET","/api/faculty/capstones",{as:ids.learner})).status,403);
