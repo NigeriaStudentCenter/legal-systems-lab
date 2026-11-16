@@ -6,7 +6,7 @@
 #   EXPECTED_SUBSCRIPTION_ID=<uuid> bash lexflow-cpd/infra/release-phase8.sh
 # To apply, in addition set:
 #   APPLY_PHASE8=YES MIGRATION_003_CONFIRMED=YES DB_RUNTIME_GRANTS_AUDITED=YES \
-#   GITHUB_TESTS_PASSED=YES RELEASE_APPROVAL=YES
+#   GITHUB_TESTS_PASSED=YES WHAT_IF_REVIEWED=YES RELEASE_APPROVAL=YES
 # No secrets, connection strings, login tokens or identity credentials are printed.
 set -euo pipefail
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
@@ -33,17 +33,18 @@ echo "Approved image: $IMAGE"
 az group show -n "$RG" --query '{name:name,location:location,state:properties.provisioningState}' -o json >/dev/null
 ORIGINAL="$(az containerapp show -g "$RG" -n "$APP" --query properties.template.containers[0].image -o tsv)"
 echo "Current image: $ORIGINAL"
-echo "Checking proposed changes with Azure Resource Manager (read-only what-if)..."
+echo "Checking proposed changes with Azure Resource Manager (read-only what-if)."
+echo "Review ALL listed resource changes, including identity and Key Vault scopes; the deployment template may update more than the API image."
 az deployment group what-if \
   --resource-group "$RG" \
   --template-file "$TEMPLATE" \
   --parameters "@$PARAMETERS" image="$IMAGE" \
-  --result-format ResourceIdOnly
+  --result-format FullResourcePayloads
 if [[ "${APPLY_PHASE8:-NO}" != "YES" ]]; then
   echo "WHAT-IF COMPLETE. No deployment performed. Set APPLY_PHASE8=YES with all safeguards to apply."
   exit 0
 fi
-for name in MIGRATION_003_CONFIRMED DB_RUNTIME_GRANTS_AUDITED GITHUB_TESTS_PASSED RELEASE_APPROVAL; do
+for name in MIGRATION_003_CONFIRMED DB_RUNTIME_GRANTS_AUDITED GITHUB_TESTS_PASSED WHAT_IF_REVIEWED RELEASE_APPROVAL; do
   if [[ "${!name:-}" != "YES" ]]; then
     echo "STOP: $name=YES must be explicitly attested by an authorised operator" >&2
     exit 3
@@ -52,7 +53,7 @@ done
 if [[ "$IMAGE" == "$ORIGINAL" ]]; then
   echo "Approved image already selected in Azure; no new revision is required."
 else
-  echo "Operator-approved Azure Bicep deployment with immutable digest..."
+  echo "Operator-attested Azure Bicep deployment with immutable digest and reviewed resource diff..."
   az deployment group create \
     --resource-group "$RG" \
     --template-file "$TEMPLATE" \
