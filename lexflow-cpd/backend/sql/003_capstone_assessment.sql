@@ -11,7 +11,7 @@ CREATE TABLE cpd_capstone_submissions (
   status text NOT NULL DEFAULT 'submitted' CHECK(status IN ('submitted','returned','passed','failed')),
   submitted_at timestamptz NOT NULL DEFAULT now(),
   decided_at timestamptz,
-  CHECK ((status='submitted' AND decided_at IS NULL) OR status<>'submitted')
+  CHECK ((status='submitted' AND decided_at IS NULL) OR (status<>'submitted' AND decided_at IS NOT NULL))
 );
 CREATE UNIQUE INDEX cpd_capstone_one_pending
  ON cpd_capstone_submissions(session_id,learner_id) WHERE status='submitted';
