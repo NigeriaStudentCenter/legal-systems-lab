@@ -39,6 +39,13 @@ async function tx(work){
   finally{client.release()}
 }
 const jwks=createRemoteJWKSet(new URL(process.env.ENTRA_JWKS_URI));
+// Beyond signature, issuer, audience and expiry, a token must: be a delegated (user) token for
+// the access_as_user permission, come from the expected tenant, and be held by an approved app.
+const REQUIRED_SCOPE="access_as_user";
+const TENANT_ID=process.env.ENTRA_TENANT_ID||"";
+const CLIENT_IDS=(process.env.ALLOWED_CLIENT_IDS||"").split(",").map(s=>s.trim()).filter(Boolean);
+if(process.env.NODE_ENV==="production"&&(!TENANT_ID||!CLIENT_IDS.length)){
+  console.error("ENTRA_TENANT_ID and ALLOWED_CLIENT_IDS are required in production");process.exit(1)}
 const credential=new DefaultAzureCredential();
 const PASS_MARK=7; // Mirrors the database constraint pass_needs_pass_mark.
 const TUTOR_PER_USER=Number(process.env.TUTOR_DAILY_PER_USER||20);
@@ -79,6 +86,10 @@ async function identify(req,res){
       issuer:process.env.ENTRA_ISSUER,audience:process.env.ENTRA_AUDIENCE,algorithms:["RS256"]
     }));
   }catch{error(res,401,"Invalid access token");return null}
+  const scopes=typeof payload.scp==="string"?payload.scp.split(" "):[];
+  if(!scopes.includes(REQUIRED_SCOPE)){error(res,401,"Token lacks the required permission");return null}
+  if(TENANT_ID&&payload.tid!==TENANT_ID){error(res,401,"Token from another tenant");return null}
+  if(CLIENT_IDS.length&&!CLIENT_IDS.includes(payload.azp)){error(res,401,"Token issued to an unapproved app");return null}
   const id=payload.oid||payload.sub;
   if(!value(id,250)){error(res,401,"Invalid subject");return null}
   return {id,name:value(payload.name,120)};

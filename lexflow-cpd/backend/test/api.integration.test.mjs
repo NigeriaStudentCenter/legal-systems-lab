@@ -25,14 +25,15 @@ const adminUrl=process.env.TEST_ADMIN_URL||"postgresql://localhost:5432/postgres
 const DB="lexflow_cpd_test",ROLE="lexflow_cpd_test_runtime",PW="local-test-only";
 const ISSUER="https://issuer.test/v2.0",AUDIENCE="11111111-1111-4111-8111-111111111111";
 const ORIGIN="https://legal.bsoedu.org",API="http://127.0.0.1:8080";
+const TENANT="22222222-2222-4222-8222-222222222222",PORTAL_APP="33333333-3333-4333-8333-333333333333";
 const ids={learner:"learner-0001",other:"learner-0002",faculty:"faculty-0001",faculty2:"faculty-0002",admin:"admin-0001",
   running:randomUUID(),hidden:randomUUID(),approval:randomUUID()};
 const certRef="LF-"+randomUUID();
 let tmp,proxy,jwksServer,child,privateKey,otherKey,db,runtime,logs="";
 
 const listen=server=>new Promise(r=>server.listen(0,"127.0.0.1",()=>r(server.address().port)));
-const token=(sub,{key=privateKey,aud=AUDIENCE,iss=ISSUER,name="Test "+sub}={})=>
-  new SignJWT(name?{oid:sub,name}:{oid:sub}).setProtectedHeader({alg:"RS256",kid:"test"}).setIssuer(iss).setAudience(aud)
+const token=(sub,{key=privateKey,aud=AUDIENCE,iss=ISSUER,name="Test "+sub,scp="access_as_user",tid=TENANT,azp=PORTAL_APP}={})=>
+  new SignJWT({oid:sub,...(name?{name}:{}),...(scp?{scp}:{}),tid,azp}).setProtectedHeader({alg:"RS256",kid:"test"}).setIssuer(iss).setAudience(aud)
     .setIssuedAt().setExpirationTime("5m").sign(key);
 async function call(method,path,{as,body,headers={}}={}){
   const h={...headers};
@@ -102,7 +103,7 @@ before(async()=>{
   child=spawn(process.execPath,[join(here,"..","server.mjs")],{env:{...process.env,
     DATABASE_URL:runtimeUrl,DATABASE_SSL:"true",NODE_EXTRA_CA_CERTS:join(tmp,"cert.pem"),
     ENTRA_ISSUER:ISSUER,ENTRA_AUDIENCE:AUDIENCE,ENTRA_JWKS_URI:`http://127.0.0.1:${jwksPort}/keys`,
-    PUBLIC_WEB_ORIGIN:ORIGIN,ALLOW_SELF_REGISTRATION:"true",RATE_LIMIT_PER_MINUTE:"1000",AZURE_OPENAI_ENDPOINT:"",AZURE_OPENAI_DEPLOYMENT:""}});
+    PUBLIC_WEB_ORIGIN:ORIGIN,ALLOW_SELF_REGISTRATION:"true",RATE_LIMIT_PER_MINUTE:"1000",ENTRA_TENANT_ID:TENANT,ALLOWED_CLIENT_IDS:PORTAL_APP,AZURE_OPENAI_ENDPOINT:"",AZURE_OPENAI_DEPLOYMENT:""}});
   child.stdout.on("data",d=>logs+=d);child.stderr.on("data",d=>logs+=d);
   for(let i=0;i<50;i++){
     try{if((await fetch(API+"/healthz")).ok)break}catch{}
@@ -135,6 +136,11 @@ test("sign-in is enforced",async()=>{
   assert.equal((await call("GET","/api/me",{as:"raw:"+await token(ids.learner,{key:otherKey})})).status,401,"foreign signing key");
   assert.equal((await call("GET","/api/me",{as:"raw:"+await token(ids.learner,{aud:"another-api"})})).status,401,"wrong audience");
   assert.equal((await call("GET","/api/me",{as:"raw:"+await token(ids.learner,{iss:"https://evil.test/v2.0"})})).status,401,"wrong issuer");
+  assert.equal((await call("GET","/api/me",{as:"raw:"+await token(ids.learner,{scp:null})})).status,401,"app-only token with no delegated permission");
+  assert.equal((await call("GET","/api/me",{as:"raw:"+await token(ids.learner,{scp:"User.Read"})})).status,401,"other permission");
+  assert.equal((await call("GET","/api/me",{as:"raw:"+await token(ids.learner,{tid:"44444444-4444-4444-8444-444444444444"})})).status,401,"other tenant");
+  assert.equal((await call("GET","/api/me",{as:"raw:"+await token(ids.learner,{azp:"55555555-5555-4555-8555-555555555555"})})).status,401,"unapproved app");
+  assert.equal((await call("GET","/api/me",{as:"raw:"+await token(ids.learner,{scp:"openid access_as_user"})})).status,200,"permission among several");
 });
 
 test("only provisioned, active users get in, with the role from the database",async()=>{

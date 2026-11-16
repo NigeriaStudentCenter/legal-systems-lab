@@ -4,7 +4,7 @@
  * No client secret; Entra tokens stay in MSAL session cache and are not displayed or logged.
  * This page is NOT an authorisation boundary: the Azure API enforces all access.
  */
-import {PublicClientApplication,InteractionRequiredAuthError} from "https://cdn.jsdelivr.net/npm/@azure/msal-browser@4.25.1/+esm";
+import {PublicClientApplication,InteractionRequiredAuthError} from "./vendor/msal-browser-4.25.1.mjs";
 import {lexflowAuthConfig as cfg} from "./auth-config.js";
 const el=id=>document.getElementById(id);
 const status=msg=>{if(el("identityStatus"))el("identityStatus").textContent=msg};

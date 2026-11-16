@@ -15,6 +15,9 @@ param image string
 param entraIssuer string
 param entraAudience string
 param entraJwksUri string
+param entraTenantId string
+@description('Client IDs of apps allowed to call the API on behalf of a user')
+param allowedClientIds array
 @description('Exact browser origin of the Academy site, for CORS')
 param publicWebOrigin string = 'https://legal.bsoedu.org'
 @allowed(['true', 'false'])
@@ -101,6 +104,10 @@ resource api 'Microsoft.App/containerApps@2024-03-01' = {
             { name: 'ENTRA_ISSUER', value: entraIssuer }
             { name: 'ENTRA_AUDIENCE', value: entraAudience }
             { name: 'ENTRA_JWKS_URI', value: entraJwksUri }
+            { name: 'ENTRA_TENANT_ID', value: entraTenantId }
+            // Apps whose user tokens are accepted. Dev also allows the password-only test client
+            // used for automated checks; production must list the portal app only.
+            { name: 'ALLOWED_CLIENT_IDS', value: join(allowedClientIds, ',') }
             // Signed-in users may create their own LEARNER record. Acceptable here only because
             // the tenant has self-service sign-up off, so every account was made by an operator.
             { name: 'ALLOW_SELF_REGISTRATION', value: allowSelfRegistration }
