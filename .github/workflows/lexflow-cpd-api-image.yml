@@ -62,7 +62,9 @@ jobs:
           provenance: false
           tags: lexflow-cpd-api:scan
       - name: Refuse to publish an image with fixable high or critical vulnerabilities
-        uses: aquasecurity/trivy-action@0.28.0
+        # Pinned to the signed commit of release v0.36.0: this action's tags were re-created in
+        # March 2026, so a tag alone is not a trustworthy reference.
+        uses: aquasecurity/trivy-action@ed142fd0673e97e23eac54620cfb913e5ce36c25 # v0.36.0
         with:
           image-ref: lexflow-cpd-api:scan
           severity: CRITICAL,HIGH
