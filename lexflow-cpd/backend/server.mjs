@@ -18,6 +18,7 @@ import {DefaultAzureCredential,getBearerTokenProvider} from "@azure/identity";
 import {randomUUID,createHash} from "node:crypto";
 import {resolveLesson,makeTutorMessages,COURSE_VERSION} from "./tutor-curriculum.mjs";
 import {getCaseStage,makeCaseTutorMessages} from "./tutor-investigations.mjs";
+import {CAPSTONE_VERSION,validateCapstoneAnswers,validateCapstoneMarks,isProvisionalPass} from "./capstone-policy.mjs";
 
 const required=["DATABASE_URL","ENTRA_ISSUER","ENTRA_AUDIENCE","ENTRA_JWKS_URI"];
 for(const key of required){if(!process.env[key]){console.error("Missing "+key);process.exit(1)}}
@@ -222,6 +223,71 @@ app.post("/api/attendance/attest",auth,allow("faculty"),async(req,res)=>{
     await audit(req.user.id,"attestation-submitted",id,{sessionId,learnerId});
     return res.status(201).json({id,status:"pending-compliance-review",cpdCredits:0});
   }catch{return error(res,503,"Attestation unavailable")}
+});
+/* ---------- Separate human-marked 100-point capstone (NOT certificate eligibility) ---------- */
+app.get("/api/capstone/my",auth,allow("learner"),async(req,res)=>{
+  try{
+    const rows=await query(`SELECT c.id,c.session_id,c.course_version,c.status,c.submitted_at,
+      d.decision,d.marks,d.total,d.feedback,d.decided_at
+      FROM cpd_capstone_submissions c
+      LEFT JOIN cpd_capstone_decisions d ON d.submission_id=c.id
+      WHERE c.learner_id=$1 ORDER BY c.submitted_at DESC LIMIT 50`,[req.user.id]);
+    return res.json({submissions:rows.rows,certificateEligible:false});
+  }catch{return error(res,503,"Capstone records unavailable")}
+});
+app.post("/api/capstone/submissions",auth,allow("learner"),async(req,res)=>{
+  const sessionId=req.body?.sessionId,answers=validateCapstoneAnswers(req.body?.answers);
+  if(!isUUID(sessionId)||!answers)return error(res,400,"Valid session and six bounded capstone answers required");
+  if(Object.values(answers).some(x=>CONFIDENTIAL.test(x)))return error(res,400,"Do not submit client or confidential material");
+  try{
+    const e=await query("SELECT 1 FROM cpd_enrolments WHERE session_id=$1 AND learner_id=$2 AND status='enrolled'",[sessionId,req.user.id]);
+    if(!e.rowCount)return error(res,409,"Active enrolment required");
+    const id=randomUUID();
+    await query("INSERT INTO cpd_capstone_submissions(id,session_id,learner_id,course_version,answers) VALUES($1,$2,$3,$4,$5::jsonb)",
+      [id,sessionId,req.user.id,CAPSTONE_VERSION,JSON.stringify(answers)]);
+    await audit(req.user.id,"capstone-submitted",id,{sessionId,courseVersion:CAPSTONE_VERSION});
+    return res.status(201).json({id,status:"submitted",certificateEligible:false});
+  }catch(e){
+    if(e.code==="23505")return error(res,409,"A capstone is already awaiting faculty review");
+    return error(res,503,"Capstone submission unavailable");
+  }
+});
+app.get("/api/faculty/capstones",auth,allow("faculty"),async(req,res)=>{
+  try{
+    const rows=await query(`SELECT c.id,c.session_id,c.learner_id,c.course_version,c.answers,c.submitted_at,
+      s.course,u.display_name
+      FROM cpd_capstone_submissions c
+      JOIN cpd_session_faculty f ON f.session_id=c.session_id AND f.faculty_id=$1
+      JOIN cpd_course_sessions s ON s.id=c.session_id
+      JOIN cpd_users u ON u.id=c.learner_id
+      WHERE c.status='submitted' ORDER BY c.submitted_at LIMIT 100`,[req.user.id]);
+    return res.json({pending:rows.rows});
+  }catch{return error(res,503,"Faculty capstone queue unavailable")}
+});
+app.post("/api/faculty/capstones/:id/decision",auth,allow("faculty"),async(req,res)=>{
+  const id=req.params.id,decision=req.body?.decision,feedback=text(req.body?.feedback,10,3000),
+    computed=validateCapstoneMarks(req.body?.marks);
+  if(!isUUID(id)||!["pass","fail","return"].includes(decision)||!feedback||!computed)
+    return error(res,400,"Valid decision, six integer marks and detailed feedback required");
+  if(decision==="pass"&&!isProvisionalPass(computed.marks))
+    return error(res,400,"Proposed educational pass threshold not met");
+  try{
+    const result=await tx(async q=>{
+      const found=await q(`SELECT c.id FROM cpd_capstone_submissions c
+        JOIN cpd_session_faculty f ON f.session_id=c.session_id AND f.faculty_id=$2
+        WHERE c.id=$1 AND c.status='submitted' FOR UPDATE OF c`,[id,req.user.id]);
+      if(!found.rowCount)return false;
+      await q(`INSERT INTO cpd_capstone_decisions(submission_id,faculty_id,decision,marks,total,feedback)
+        VALUES($1,$2,$3,$4::jsonb,$5,$6)`,[id,req.user.id,decision,JSON.stringify(computed.marks),computed.total,feedback]);
+      await q("UPDATE cpd_capstone_submissions SET status=$2,decided_at=now() WHERE id=$1",
+        [id,decision==="return"?"returned":decision==="pass"?"passed":"failed"]);
+      await audit(req.user.id,"capstone-decision",id,{decision,total:computed.total},q);
+      return true;
+    });
+    if(!result)return error(res,404,"Pending assigned capstone not found");
+    return res.json({decision,total:computed.total,certificateEligible:false,
+      warning:"Human educational capstone decision is not connected to certificates or NBA-ICLE credit."});
+  }catch{return error(res,503,"Capstone marking unavailable")}
 });
 app.post("/api/assessments",auth,allow("learner"),async(req,res)=>{
   const sessionId=req.body?.sessionId,response=text(req.body?.response,20,6000);
