@@ -24,7 +24,7 @@ function render(){
  $("previousStep").disabled=stage===0;$("nextStep").disabled=stage===4;
  $("completeStep").textContent=record().studied?"Mark as not yet studied":"Mark stage studied";
  $("askTutor").href="portal.html?caseId="+encodeURIComponent(c.id)+"&stage="+stage+"#learner";
- note("");$("tutorPrompt").value="";renderMenu();
+ note("");renderMenu();
 }
 $("response").oninput=()=>{record().response=$("response").value;persist()};
 $("previousStep").onclick=()=>{stage=Math.max(0,stage-1);render()};
