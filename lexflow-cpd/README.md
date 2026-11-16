@@ -7,6 +7,7 @@ A distinct learning section of NigeriaStudentCenter/legal-systems-lab.
 - [Academy homepage](index.html)
 - [Expanded flagship: 20 guided lessons](academy.html)
 - [Five interactive professional simulations](academy-simulations.html)
+- [Five fictional evidence dossiers with document-level assignments](case-lab.html)
 - [Original five-module pilot and 8-question knowledge check](course.html)
 - [Original citation verification walkthrough](animation.html)
 - [Authenticated fictional learner development portal and Azure tutor](portal.html)
@@ -17,9 +18,9 @@ A distinct learning section of NigeriaStudentCenter/legal-systems-lab.
 
 Responsible AI for Nigerian Legal Practice comprises **five modules, four lessons in each, 20 lessons total**. Planned guided teaching activities sum to approximately 440 minutes, excluding independent reading and full capstone preparation; this estimate is *not* an approved NBA-ICLE credit calculation.
 
-Each lesson includes a structured concept explanation, fictional practice demonstration, written workbook task and an automatically checked knowledge question. Five interactive simulations each offer three linked professional decisions and formative feedback. Workbook answers/checkpoints are browser-local and exportable in JSON/text; they are **not** verified identity, attendance, assessment competence or NBA-ICLE evidence.
+Each lesson includes a structured concept explanation, fictional practice demonstration, written workbook task and an automatically checked knowledge question. Five interactive simulations each offer three linked professional decisions and formative feedback. Five case files provide invented evidence documents, cross-document inconsistencies, a workbook and a self-review rubric. Workbook answers/checkpoints are browser-local and exportable in JSON/text; they are **not** verified identity, attendance, assessment competence or NBA-ICLE evidence.
 
-The [animation preproduction pack](INSTRUCTOR-ANIMATIONS.md) includes five original instructor video storyboards. **They are scripts, not published videos.** A separate HeyGen clip was previously submitted but has no confirmed permanent media asset.
+The [animation preproduction pack](INSTRUCTOR-ANIMATIONS.md) includes five original teaching scripts. Five production sessions have now been accepted by HeyGen; their [video production tracker](VIDEO-PRODUCTION-TRACKER.md) lists the session links. Rendering and permanent media publication are not yet confirmed.
 
 ## Azure development integration (reported testing on 16 Nov 2026)
 
@@ -40,8 +41,8 @@ The version-controlled record [infra/DEV-DEPLOYMENT.md](infra/DEV-DEPLOYMENT.md)
 
 NBA-ICLE provider/course approval is **not established**. This Academy does **not** award NBA CPD credits. BSOE completion certificates in the fictional development environment must not be confused with accredited NBA awards.
 
-Outstanding tasks include editorial and faculty review of the 20-lesson material; filmed or rendered original media; lesson-aware Azure tutor grounding to approved content; accessible equivalent activities; secure verified production analytics; actual learner onboarding, identity policies and privacy review; robust certificate governance and NBA-ICLE application materials. Do not put real client matters, privileged papers, production learner information or Azure secrets in this public GitHub repository.
+Outstanding tasks include editorial and faculty review of the 20-lesson material; filmed or rendered original media; deployment and acceptance testing of server-owned lesson-aware Azure tutor context (20 lessons), and subsequent alignment to the final consolidated expert-reviewed materials; accessible equivalent activities; secure verified production analytics; actual learner onboarding, identity policies and privacy review; robust certificate governance and NBA-ICLE application materials. Do not put real client matters, privileged papers, production learner information or Azure secrets in this public GitHub repository.
 
 ### Release procedure
 
-Curriculum files are on `main`, and a GitHub Actions curriculum workflow has been added to check five modules, 20 lessons, five simulations, source references, syntax and page connections. Check its actual run status before calling the curriculum technically validated. Code commit alone does not prove GitHub Pages rendering or live Azure operation.
+Curriculum and server-side tutor changes are on `main`, and a GitHub Actions curriculum workflow has been added to check five modules, 20 lessons, five simulations, source references, syntax and page connections. Check its actual run status before calling the curriculum technically validated. The tutor code requires a fresh container image, GitHub CI evidence, approved digest and manual Azure deployment; no DDL, schema migration or changes to auth-config.js are required for this tutor-context release. Code commit alone does not prove GitHub Pages rendering or live Azure operation.
