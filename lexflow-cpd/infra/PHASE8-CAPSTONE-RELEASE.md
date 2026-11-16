@@ -74,3 +74,19 @@ Every row must say `PASS`; a `FAIL` blocks release. The database role must not o
 ## Request-size compatibility
 
 Capstone JSON may contain six substantial sections. The API now accepts requests up to **32 KB** rather than the old 12 KB limit, while checking the six bounded answer strings and total content size at the application layer. A new test verifies a valid request larger than 12 KB is handled by the capstone application rather than rejected by Express as HTTP 413. Do not interpret permissive request parsing as permission to upload real client files or personally identifying details.
+
+## Rehearsed operator deployment wrapper (Phase 8)
+`infra/release-phase8.sh` is designed to fail closed. By default it runs **Azure ARM what-if only**, confirms the Azure subscription and pinned GHCR SHA-256 digest, and never applies SQL or deploys a container. It displays a **full resource difference** because the Bicep template also references shared identity, AI and Key Vault resources. A responsible operator must read the proposed changes and stop if they affect unexpected resources.
+
+Example dry-run:
+```bash
+APPROVED_IMAGE='ghcr.io/nigeriastudentcenter/lexflow-cpd-api@sha256:<64_HEX_CHARACTERS>' \
+EXPECTED_SUBSCRIPTION_ID='<INTENDED_SUBSCRIPTION_UUID>' \
+bash lexflow-cpd/infra/release-phase8.sh
+```
+
+The release must not run in apply mode until migration 003 is applied, restricted-runtime access is audited, GitHub build/security tests have passed, and the full ARM difference is approved by the authorised operator. Explicit acknowledgments include `MIGRATION_003_CONFIRMED=YES`, `DB_RUNTIME_GRANTS_AUDITED=YES`, `GITHUB_TESTS_PASSED=YES`, `WHAT_IF_REVIEWED=YES`, `RELEASE_APPROVAL=YES`, and `APPLY_PHASE8=YES`.
+
+The wrapper never guesses an image digest or updates `dev.parameters.json`. After an approved deploy, an operator must verify the running image and the secured API's 401 response. The new script `infra/test-phase8-release.sh` rehearses no-deploy defaults, missing approval and wrong-subscription protection with an **offline fake Azure CLI**. The GitHub Actions image workflow includes this rehearsal; a committed test is not evidence it has passed until the workflow result is checked.
+
+`auth-config.js` remains untouched. The single consolidated academic/legal review stays deferred until all videos and course material are complete. No NBA-ICLE accreditation or official CPD credits are claimed.
