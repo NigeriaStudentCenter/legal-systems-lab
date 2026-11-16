@@ -17,6 +17,7 @@ import {createRemoteJWKSet,jwtVerify} from "jose";
 import {DefaultAzureCredential,getBearerTokenProvider} from "@azure/identity";
 import {randomUUID,createHash} from "node:crypto";
 import {resolveLesson,makeTutorMessages,COURSE_VERSION} from "./tutor-curriculum.mjs";
+import {getCaseStage,makeCaseTutorMessages} from "./tutor-investigations.mjs";
 
 const required=["DATABASE_URL","ENTRA_ISSUER","ENTRA_AUDIENCE","ENTRA_JWKS_URI"];
 for(const key of required){if(!process.env[key]){console.error("Missing "+key);process.exit(1)}}
@@ -393,6 +394,15 @@ app.post("/api/tutor",auth,async(req,res)=>{
     if(typeof lessonId!=="string"||!resolveLesson(lessonId))
       return error(res,400,"Unknown course lesson");
   }
+  const caseId=req.body?.caseId;
+  const investigationStage=req.body?.investigationStage;
+  const hasCase=caseId!==undefined||investigationStage!==undefined;
+  if(hasCase){
+    if(typeof caseId!=="string"||!getCaseStage(caseId,investigationStage))
+      return error(res,400,"Unknown case investigation or stage");
+    if(lessonId!==undefined&&lessonId!==null&&lessonId!=="")
+      return error(res,400,"Select either a course lesson or a case investigation");
+  }
   if(!question)return error(res,400,"Question required");
   if(CONFIDENTIAL.test(question))return error(res,400,"Do not submit confidential data");
   if(!process.env.AZURE_OPENAI_ENDPOINT||!process.env.AZURE_OPENAI_DEPLOYMENT)
@@ -424,7 +434,7 @@ app.post("/api/tutor",auth,async(req,res)=>{
       response=await fetch(url,{method:"POST",signal:controller.signal,headers:{
         Authorization:"Bearer "+token,"Content-Type":"application/json"
       },body:JSON.stringify({temperature:0.2,max_tokens:500,messages:[
-        ...makeTutorMessages(question,lessonId)
+        ...(hasCase?makeCaseTutorMessages(question,caseId,investigationStage):makeTutorMessages(question,lessonId))
       ]})});
     }finally{clearTimeout(timer)}
     if(!response.ok){await finish("failed");return error(res,502,"AI provider unavailable")}
@@ -432,6 +442,7 @@ app.post("/api/tutor",auth,async(req,res)=>{
     await finish("answered",data.usage);
     return res.json({answer:data.choices?.[0]?.message?.content||"No response",
       courseVersion:COURSE_VERSION,lessonId:lessonId||null,
+      investigation:hasCase?{caseId,stage:investigationStage}:null,
       warning:"Educational guidance only. Verify primary legal sources; no NBA-ICLE credits are conferred."});
   }catch{await finish("failed");return error(res,503,"Tutor unavailable")}
 });
