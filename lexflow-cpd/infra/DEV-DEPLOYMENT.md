@@ -44,9 +44,19 @@ To release new code: merge to `main`, take the digest from the workflow summary,
 
 The real tokens came from the fictional account `synthetic.applicant1` through the password-only test client `996d77d8-…`, which was granted the CPD scope for this purpose. That client must be deleted before the tenant holds any real account.
 
+## Browser sign-in, 16 Nov 2026
+`../auth-config.js` now points at this API, so **Sign in with Microsoft** is enabled on `https://legal.bsoedu.org/lexflow-cpd/portal.html`. Self-service sign-up is off in the tenant.
+
+| Step | Result |
+|---|---|
+| Click Sign in with Microsoft | Microsoft's hosted screen for the staging tenant, no error |
+| A person signs in as the fictional learner | Returned to the portal: "Signed in: Synthetic Applicant One (TEST)" |
+| Click Check protected API access | "Azure API authenticated. Assigned role: learner." |
+
+This needed one fix first: `portal.js` used to overwrite the address fragment that carries Microsoft's response. Cosmetic fault still open: the Sign in button stays visible after sign-in, because the page's button styling overrides the `hidden` attribute.
+
 ## Known limits
 - `lexflow_cpd_runtime` can open a connection to other products' databases on the shared server (their `CONNECT` is still granted to `PUBLIC`) but can read none of their tables.
-- No browser sign-in has been tested: `../auth-config.js` still has no API address, so the portal's sign-in button is disabled.
 - Users reach the API only after an operator inserts them into `cpd_users`; there is no enrolment or provisioning endpoint yet.
 - The AI tutor is off. Turning it on needs an Azure OpenAI deployment, a role for `lexflowcpd-api-id`, and a spending limit.
 - One fictional row exists in `cpd_users`.
