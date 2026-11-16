@@ -60,7 +60,7 @@ jobs:
         run: node lexflow-ng/ops/staging-client-portal-readonly.mjs
       - name: Upload nonsensitive acceptance report
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: lexflow-azure-portal-closed-gate-report
           path: ${{ runner.temp }}/lexflow-portal-closed-gate.json

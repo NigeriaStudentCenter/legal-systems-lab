@@ -42,7 +42,7 @@ jobs:
       - name: Audit production dependencies
         run: npm audit --omit=dev --audit-level=high
       - name: Upload disabled, non-production preview assets only
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: lexflow-genuine-entra-preview-disabled
           path: |
