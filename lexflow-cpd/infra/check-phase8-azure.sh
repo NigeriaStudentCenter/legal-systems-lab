@@ -37,6 +37,7 @@ if [[ -n "$EXPECTED_IMAGE" ]]; then
     echo "NOT YET DEPLOYED: Azure image differs from approved target; no changes made"
     echo "Current: $CURRENT_IMAGE"
     echo "Target : $EXPECTED_IMAGE"
+    FAIL=1
   fi
 else
   echo "NOTICE: EXPECTED_IMAGE not supplied; cannot establish if Azure runs the new source"
