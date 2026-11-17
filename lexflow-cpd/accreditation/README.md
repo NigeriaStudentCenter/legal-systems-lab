@@ -24,12 +24,17 @@
 | `05-COMPLIANCE-EVIDENCE-MATRIX.md` | Clause-by-clause Rule 12/13 commitments, owner and proof |
 | `06-ANNUAL-PROGRAMME-FACULTY-AND-FEES.md` | Draft year-one calendar, faculty schedule, pricing and reporting |
 | `07-DOCUMENT-CHECKLIST-AND-DECISIONS.md` | Attachments, red-flag questions and sign-off register |
+| `08-RULE13-COURSE-APPLICATION.md` | Alternative individual-course application letter, subject to NBA-ICLE guidance |
 
 ## Critical source texts (not a guarantee of current administrative practice)
 - [NBA-ICLE Mandatory CPD Rules 2025](https://www.nbaicle.org/_files/ugd/81a65d_03fc1c9b473a4c6c8ebb26d02debfcc2.pdf?index=true), especially Rules 11–13 and 21
 - [NBA Secretariat news including ICLE email](https://blog.nigerianbar.org.ng/2025/08/01/50-nba-branches-now-accredited-by-the-nba-icle-to-train-lawyers-decentralizing-learning-expanding-access/)
 - [NBA-ICLE portal accreditation information](https://icle.nigerianbar.org.ng/?page=accreditation)
+- [NBA General Secretary contact announcement (1 January 2026)](https://blog.nigerianbar.org.ng/2026/01/01/welcoming-2026-a-renewed-covenant-of-gratitude-reflection-and-purpose/)
 - [Phase 12 QA Review](../PHASE12-QA-REVIEW-DOSSIER.md)
 - [Azure Phase 8 development evidence](../infra/DEV-DEPLOYMENT.md)
 
 **Records policy:** This folder is in a PUBLIC GitHub repository. Never upload originals of CAC documents that contain sensitive personal details, director ID, banking records, lawyers' SCNs/licences, participant data, private faculty CVs, user access tokens, payment receipts or confidential letters. Transmit such records only over a verified authorised channel using appropriate security. Corporate identifiers here are public-facing claims subject to source verification.
+
+## Fee and route cautions
+The published Rule 12 text states ₦100,000 on prospective-provider application, ₦200,000 on final approval, and 10% of amounts paid by participants in approved CPD activities. These are **published rule figures**, not a current invoice, account instruction or authorisation to transfer funds; seek a current written quote. Rule 13 refers to providers not included under Rule 12, so direct simultaneous processing must be explicitly confirmed before sending both application letters. It also requires at least 60 days advance lead time for the scheduled course. Neither the course nor BSOE is accredited by preparing this file.
