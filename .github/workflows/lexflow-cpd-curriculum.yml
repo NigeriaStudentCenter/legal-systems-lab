@@ -4,6 +4,7 @@ on:
     branches: [main]
     paths:
       - lexflow-cpd/academy*.js
+      - lexflow-cpd/accreditation/**
       - lexflow-cpd/PHASE12-QA-REVIEW-DOSSIER.md
       - lexflow-cpd/VIDEO-PRODUCTION-TRACKER.md
       - lexflow-cpd/compliance.html
@@ -26,6 +27,7 @@ on:
   pull_request:
     paths:
       - lexflow-cpd/academy*.js
+      - lexflow-cpd/accreditation/**
       - lexflow-cpd/PHASE12-QA-REVIEW-DOSSIER.md
       - lexflow-cpd/VIDEO-PRODUCTION-TRACKER.md
       - lexflow-cpd/compliance.html
@@ -56,3 +58,5 @@ jobs:
           for file in lexflow-cpd/academy*.js lexflow-cpd/case-*.js lexflow-cpd/guided-investigations*.js lexflow-cpd/capstone*.js lexflow-cpd/instructor-guide.js lexflow-cpd/auth.js lexflow-cpd/staff.js lexflow-cpd/backend/tutor-*.mjs; do node --check "$file"; done
       - name: Curriculum and links
         run: node lexflow-cpd/academy-check.mjs
+      - name: Accreditation application pack accuracy and completeness
+        run: node lexflow-cpd/accreditation/check-pack.mjs
