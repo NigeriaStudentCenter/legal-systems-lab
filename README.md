@@ -4,7 +4,11 @@
 
 A companion prototype for graduates and future verified Nigerian legal practitioners:
 
-- [Public marketplace (demo)](lexflow-ng/index.html) — 36 states and FCT, fictional sample profiles, filters and guided legal issue pathways.
+- [Public marketplace (demo)](lexflow-ng/index.html)
+- [Police legal assistance network (demo)](lexflow-ng/police-assist.html) — custody, bail, court and legal aid matching, simulated referrals.
+- [Station registry lab](lexflow-ng/station-registry.html) — fictional geographic records with provenance and verification flags.
+- [Lawyer onboarding lab](lexflow-ng/lawyer-onboarding.html) — simulated professional eligibility checks.
+- [Backend schema and Azure API plan](lexflow-ng/backend/API-AND-AZURE-PLAN.md) — secure production infrastructure design; not deployed. — 36 states and FCT, fictional sample profiles, filters and guided legal issue pathways.
 - [Lawyer workspace (demo)](lexflow-ng/workspace.html) — custody-rights triage, matter tracking, draft-review studio, incubator and offline study coach.
 - [Product specification](lexflow-ng/PRODUCT-SPEC.md) — architecture, RBAC, entity model, user flows, milestones and launch plan.
 - [Nigerian research and launch safeguards](lexflow-ng/RESEARCH-AND-COMPLIANCE.md).
