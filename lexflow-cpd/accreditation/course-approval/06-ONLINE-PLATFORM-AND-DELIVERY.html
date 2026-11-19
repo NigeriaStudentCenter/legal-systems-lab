@@ -1,0 +1,43 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="referrer" content="no-referrer"><title>Online Learning Platform and Delivery | BSOE NBA-ICLE Course Approval</title><style>body{font:16px/1.65 system-ui,-apple-system,Segoe UI,sans-serif;background:#f8f8f3;color:#20352c;margin:0}.wrap{max-width:1050px;margin:auto;padding:20px 26px}header{background:#10352f;color:white}header a{color:#f1d68d;text-decoration:none;margin-right:20px}main{background:#fff;border:1px solid #dae4dc;border-radius:12px;margin-top:26px;margin-bottom:38px;padding:34px}h1,h2,h3{line-height:1.2;color:#164a3a}h1{font-size:1.8rem;border-bottom:3px solid #d1af5e;padding-bottom:14px}h2{font-size:1.35rem;margin-top:32px}h3{font-size:1.1rem}p,li{max-width:98ch}li{margin:5px 0}.tablewrap{overflow:auto}table{border-collapse:collapse;width:100%;font-size:.89rem}th,td{border:1px solid #cedbd1;padding:10px;text-align:left;vertical-align:top}th{background:#eaf2eb}tr:nth-child(even){background:#f9fbf8}.notice{background:#fff8e6;border-left:4px solid #c9a650;padding:14px}.tabs{display:flex;gap:8px;flex-wrap:wrap}.tabs a{background:#174838;color:#fff;padding:8px 11px;text-decoration:none;border-radius:5px}.tabs a[aria-current=true]{background:#d8b869;color:#102e24}footer{font-size:.8rem;color:#687a70;text-align:center;margin:20px}button{padding:9px 15px;background:#164b3c;color:#fff;border:0;border-radius:6px;cursor:pointer}@media print{header,button,.tabs,footer{display:none}main{border:0;margin:0;padding:0}.wrap{max-width:none;padding:0}body{background:white;color:black}table{page-break-inside:auto}tr{page-break-inside:avoid}}</style></head><body><header><div class="wrap"><a href="index.html">BSOE · NBA-ICLE Course Submission</a><span>Responsible AI for Nigerian Legal Practice</span></div></header><div class="wrap"><nav class="tabs" aria-label="Submission documents"><a  href="01-DETAILED-SYLLABUS.html">1. Detailed Course Syllabus</a><a  href="02-OBJECTIVES-AND-OUTCOMES.html">2. Course Objectives and Learning Outcomes</a><a  href="03-INSTRUCTIONAL-MATERIALS-AND-METHODOLOGY.html">3. Instructional Materials and Methodology</a><a  href="04-INSTITUTION-AND-FACILITATOR-PROFILES.html">4. Institution and Lead Facilitator Profile</a><a  href="05-ASSESSMENT-AND-EVALUATION.html">5. Assessment Framework and Evaluation</a><a aria-current="true" href="06-ONLINE-PLATFORM-AND-DELIVERY.html">6. Online Learning Platform and Delivery</a></nav><main><p class="notice"><strong>Proposed course documentation for NBA-ICLE review.</strong> Educational development edition; not yet accredited or approved. Faculty and technical requirements still being finalised.</p><h1>Document VI — Proposed Online Platform and Delivery Arrangements</h1>
+<h2>Platform architecture</h2>
+<p><strong>Public information/teaching pages:</strong> BSOE LexFlow Academy static HTML learning pages hosted from GitHub Pages under the educational domain. <strong>Learner/faculty identity:</strong> Microsoft Entra authentication for role-restricted learner and faculty operations. <strong>Protected application/API:</strong> Azure Container Apps with authenticated Node.js API, managed identity and Azure-hosted tutoring service. <strong>Records:</strong> PostgreSQL course sessions, enrolment, attendance attestations, assessment decisions and BSOE certification audit, restricted to authorised staff/service accounts. <strong>Secrets:</strong> Azure Key Vault or other approved managed secret store; no secrets are stored in public GitHub. <strong>Practice notes:</strong> Browser-local workbooks and case exercises. These are <strong>not</strong> treated as official regulator attendance or academic assessment records.</p>
+<h2>Learner journey</h2>
+<ol>
+<li>Learner receives public course information and a verified registration/approval route.</li>
+<li>Following approved production onboarding, learner authenticates through Entra and obtains a session enrolment.</li>
+<li>Learner studies 20 lessons, with formative questions and fictional-case activities.</li>
+<li>Learner views approved video demonstrations and completes digital workbooks.</li>
+<li>The AI tutor offers lesson/stage-specific educational questions; it does not process real client matters or issue legal advice.</li>
+<li>Learner completes the integrated capstone and explicitly submits it to the authenticated API.</li>
+<li>Assigned faculty grades the capstone, provides feedback and handles revision or resubmission.</li>
+<li>Independent approved attendance and assessment controls support any valid BSOE completion decision.</li>
+<li>If NBA-ICLE approves the course, specific participant reporting and recognised credit decisions follow the Institute's instructions, not automatic platform calculations.</li>
+</ol>
+<h2>Delivery settings for NBA-ICLE consideration</h2>
+<ul>
+<li><strong>Intended delivery mode:</strong> Online, with instructor-led components if required by Institute approval.</li>
+<li><strong>Proposed workshop structure:</strong> Five facilitated blocks of 120 minutes; timetables, exact dates and verified facilitators to be supplied.</li>
+<li><strong>Independent material:</strong> 20 authored lessons totalling 440 <em>planned</em>, not verified, minutes; five case dossiers, 25 guided stages and five simulations.</li>
+<li><strong>Online tutor:</strong> Azure model with server-owned bounded lesson/case prompts and daily usage caps. Responses are educational suggestions; claims to official law must be verified independently.</li>
+<li><strong>Course media:</strong> Five original videos commissioned; only one confirmed completed, four quota-failed and awaiting credit-authorised recovery.</li>
+<li><strong>Access / devices:</strong> Responsive HTML site intended for desktop and mobile; production browser and accessible-technology tests outstanding.</li>
+<li><strong>Learning support:</strong> Faculty-led responses, moderated assessments, accessibility alternatives and approved participant communications, subject to final staffing.</li>
+<li><strong>CPD credits:</strong> None allocated until written NBA-ICLE decision.</li>
+</ul>
+<h2>Existing development evidence (not production approval)</h2>
+<p>Repository deployment log <code>../../infra/DEV-DEPLOYMENT.md</code> reports Azure dev resource group <code>rg-lexflow-cpd-dev</code>, Container App <code>lexflowcpd-api</code>, separate SQL migrations, runtime database grants and 26/26 tested fictional Phase 8 API scenarios. It does not prove production segregation or regulator-accepted participant tracking. Actual participant accounts must not be created in this shared fictional environment.</p>
+<h2>Online platform demonstration for NBA-ICLE</h2>
+<p>Offer a scheduled <em>supervised</em> demonstration rather than public administrative access. Demonstration agenda:</p>
+<ul>
+<li>Public learner syllabus, lessons and mobile view;</li>
+<li>Fictional legal research and contract-control case;</li>
+<li>Authenticated fictional learner and bounded tutor consultation;</li>
+<li>Explicit capstone submission and assigned faculty grading;</li>
+<li>Demonstrated independent attendance approval and BSOE certificate safeguards;</li>
+<li>Proposed secure participant spreadsheet exports and reporting controls;</li>
+<li>Audit trails, role restriction, accessible alternatives and privacy design;</li>
+<li>Questions and technical acceptance criteria required by Institute.</li>
+</ul>
+<p>A dedicated institution viewer/demo role must not be invented as active. Provide approved, time-limited demonstration credentials to the NBA-ICLE officer through a private verified channel; revoke access afterward.</p>
+<h2>Production and operational gates</h2>
+<p>Current environment remains fictional-data-only. Before actual accredited delivery: isolated production identity and DB; secure enrolment/attendance reporting and retention; authorised data protection documents; instructor profiles; complete and approved videos; accessibility audit; full browser acceptance; clear payment/refund policy; final academic/legal sign-off. No official credit allocation is calculated from a quiz or video watching.</p><p><button onclick="window.print()">Print / save as PDF</button></p></main></div><footer>British School of Outdoor Education · Legal AI Academy — Nigeria · Preliminary course approval materials</footer></body></html>
