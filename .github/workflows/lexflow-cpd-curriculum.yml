@@ -4,6 +4,8 @@ on:
     branches: [main]
     paths:
       - lexflow-cpd/academy*.js
+      - lexflow-cpd/readiness*
+      - lexflow-cpd/monitoring.html
       - lexflow-cpd/accreditation/**
       - lexflow-cpd/PHASE12-QA-REVIEW-DOSSIER.md
       - lexflow-cpd/VIDEO-PRODUCTION-TRACKER.md
@@ -27,6 +29,8 @@ on:
   pull_request:
     paths:
       - lexflow-cpd/academy*.js
+      - lexflow-cpd/readiness*
+      - lexflow-cpd/monitoring.html
       - lexflow-cpd/accreditation/**
       - lexflow-cpd/PHASE12-QA-REVIEW-DOSSIER.md
       - lexflow-cpd/VIDEO-PRODUCTION-TRACKER.md
@@ -58,6 +62,8 @@ jobs:
           for file in lexflow-cpd/academy*.js lexflow-cpd/case-*.js lexflow-cpd/guided-investigations*.js lexflow-cpd/capstone*.js lexflow-cpd/instructor-guide.js lexflow-cpd/auth.js lexflow-cpd/staff.js lexflow-cpd/backend/tutor-*.mjs; do node --check "$file"; done
       - name: Curriculum and links
         run: node lexflow-cpd/academy-check.mjs
+      - name: Readiness assessment and NBA Secretariat HTML review
+        run: node lexflow-cpd/readiness-check.mjs
       - name: Accreditation application pack accuracy and completeness
         run: node lexflow-cpd/accreditation/check-pack.mjs
       - name: NBA-ICLE six-requested-annex response pack
