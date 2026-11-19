@@ -197,6 +197,29 @@ if(!valid()){
         live("Signed-in role: "+role+".");
       }catch{live("The API could not be reached.")}
     }
+    // Voluntary readiness monitoring: explicit submission after Entra sign-in.
+    const readinessPreview=el("readinessPreview"),readinessBtn=el("readinessSubmit"),readinessHistory=el("readinessHistory");
+    const readinessDraft=()=>{try{return JSON.parse(sessionStorage.getItem("lexflow-readiness-pending-v1")||"null")}catch{return null}};
+    function readinessPaint(){
+      const pending=readinessDraft();
+      if(readinessPreview)readinessPreview.textContent=pending?.answers?.length===12?"Completed diagnostic available. It has not been sent to BSOE.":"No completed diagnostic in this browser session. Start at readiness.html.";
+      if(readinessBtn)readinessBtn.disabled=!pending||!current();
+    }
+    readinessBtn?.addEventListener("click",async()=>{
+      const pending=readinessDraft();if(!pending||!Array.isArray(pending.answers))return;
+      if(!confirm("Submit these 12 answer choices to the protected BSOE development API for automatic scoring? The server stores only your score and domain totals, not your individual choices. This awards no CPD credits."))return;
+      readinessHistory.textContent="Submitting your diagnostic...";
+      try{
+        const response=await api("POST","/api/readiness",{version:pending.version,answers:pending.answers});
+        if(!response)return;
+        const result=await response.json().catch(()=>({}));
+        if(!response.ok){readinessHistory.textContent="Not submitted: "+String(result.error||("HTTP "+response.status));return}
+        try{sessionStorage.removeItem("lexflow-readiness-pending-v1")}catch{}
+        readinessHistory.textContent="BSOE recorded this educational readiness diagnostic: "+result.score+"/"+result.max+" · "+result.band+". No NBA-ICLE credits awarded.";
+        readinessPaint();
+      }catch{readinessHistory.textContent="The readiness monitoring API is not deployed or unavailable. Your score was not submitted."}
+    });
+    readinessPaint();
     el("refreshAction")?.addEventListener("click",loadLive);
     // An Entra redirect returns to the fixed registered portal URL and drops the
     // incoming case/lesson query. Preserve only a bounded selector, never workbook data.
