@@ -30,7 +30,7 @@
 - **CPD credits:** None allocated until written NBA-ICLE decision.
 
 ## Existing development evidence (not production approval)
-Repository deployment log `../infra/DEV-DEPLOYMENT.md` reports Azure dev resource group `rg-lexflow-cpd-dev`, Container App `lexflowcpd-api`, separate SQL migrations, runtime database grants and 26/26 tested fictional Phase 8 API scenarios. It does not prove production segregation or regulator-accepted participant tracking. Actual participant accounts must not be created in this shared fictional environment.
+Repository deployment log `../../infra/DEV-DEPLOYMENT.md` reports Azure dev resource group `rg-lexflow-cpd-dev`, Container App `lexflowcpd-api`, separate SQL migrations, runtime database grants and 26/26 tested fictional Phase 8 API scenarios. It does not prove production segregation or regulator-accepted participant tracking. Actual participant accounts must not be created in this shared fictional environment.
 
 ## Online platform demonstration for NBA-ICLE
 Offer a scheduled *supervised* demonstration rather than public administrative access. Demonstration agenda:
