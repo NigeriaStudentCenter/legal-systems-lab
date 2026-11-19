@@ -1,4 +1,5 @@
 import {READINESS_QUESTIONS,READINESS_VERSION,scoreReadiness} from "./readiness-policy.js";
+import {MODULES} from "./academy-content.js";
 const $=id=>document.getElementById(id),make=(t,text)=>{const e=document.createElement(t);if(text!==undefined)e.textContent=text;return e};
 for(const [i,q] of READINESS_QUESTIONS.entries()){
  const field=make("fieldset"),legend=make("legend",(i+1)+". "+q.q);field.className="question";field.append(legend);
@@ -18,6 +19,16 @@ $("readinessForm").addEventListener("submit",event=>{
  $("resultDomains").textContent="Domain results: "+Object.entries(result.domains).map(([k,v])=>k+" "+v.correct+"/"+v.total).join(" · ");
  $("pathway").textContent=result.band==="advanced"?"Begin with Module 2 legal-source verification, then complete the drafting, ethics and governance modules. Module 1 remains available for revision.":result.band==="developing"?"Begin at Module 1, prioritise the lowest-scoring topic, then advance through the full guided course.":"Start with Module 1's AI foundations and human-review practice, then follow Module 2's source-verification sequence. All five modules remain accessible.";
  $("courseLink").href="academy.html"+(result.band==="advanced"?"?module=1":"");
+ $("moduleCards").replaceChildren();
+ MODULES.forEach((m,i)=>{
+  const card=make("article");card.className="question";
+  card.append(make("h4","Module "+(i+1)+" — "+m.name));
+  card.append(make("p",m.objective));
+  const link=make("a","Start module "+(i+1)+" →");
+  link.className="btn light";link.href="academy.html?module="+i;
+  card.append(link);$("moduleCards").append(card);
+ });
+
  $("feedback").replaceChildren();
  result.feedback.forEach((f,i)=>{const li=make("li",(f.correct?"Correct. ":"Review needed. ")+READINESS_QUESTIONS[i].q+" — "+f.why);$("feedback").append(li)});
  $("readinessForm").hidden=true;$("results").hidden=false;$("results").focus();
