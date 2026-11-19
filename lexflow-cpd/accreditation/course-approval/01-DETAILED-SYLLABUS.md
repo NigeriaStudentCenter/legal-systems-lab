@@ -53,4 +53,4 @@ Official Nigeria Data Protection Act 2023 and NDPC GAID 2025; Rules of Professio
 ## Deliverables for an approved course
 Instructor-approved legal slides/demonstrations and transcripts, interactive workbooks, an authenticated legal AI tutor used only for educational coaching, a verified attendance and assessment record, recorded faculty decisions and an approved course completion certificate format. **No NBA-ICLE credits until Institute approval.**
 
-**Evidence:** `../academy-content.js`, `../academy.html`, `../academy-scenarios.js`, `../case-dossiers.js`, `../INSTRUCTOR-DELIVERY-PACK.md`.
+**Evidence:** `../../academy-content.js`, `../../academy.html`, `../../academy-scenarios.js`, `../../case-dossiers.js`, `../../INSTRUCTOR-DELIVERY-PACK.md`.
