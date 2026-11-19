@@ -81,4 +81,7 @@ $("resetRecord").addEventListener("click",()=>{
  }
 });
 const reading=$("reading");for(const item of SOURCES){const li=document.createElement("li"),a=document.createElement("a");a.href=item.url;a.textContent=item.name;a.target="_blank";a.rel="noopener noreferrer";li.append(a);reading.append(li)}
-const match=location.hash.match(/^#lesson-(\d+)$/);show(match?Number(match[1])-1:0);
+const match=location.hash.match(/^#lesson-(\d+)$/);
+const moduleChoice=new URLSearchParams(location.search).get("module");
+const moduleIndex=/^[0-4]$/.test(moduleChoice||"")?Number(moduleChoice):0;
+show(match?Number(match[1])-1:moduleIndex*4);
