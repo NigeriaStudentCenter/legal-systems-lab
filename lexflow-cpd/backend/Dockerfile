@@ -13,7 +13,7 @@ RUN rm -rf /usr/local/lib/node_modules /usr/local/bin/npm /usr/local/bin/npx /us
       /usr/local/bin/yarn /usr/local/bin/yarnpkg /opt/yarn-*
 WORKDIR /app
 COPY --from=deps /app/node_modules ./node_modules
-COPY package.json server.mjs tutor-curriculum.mjs tutor-investigations.mjs capstone-policy.mjs ./
+COPY package.json server.mjs tutor-curriculum.mjs tutor-investigations.mjs capstone-policy.mjs readiness-policy.mjs ./
 USER node
 EXPOSE 8080
 CMD ["node","server.mjs"]
