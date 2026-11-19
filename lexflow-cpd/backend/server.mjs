@@ -19,6 +19,7 @@ import {randomUUID,createHash} from "node:crypto";
 import {resolveLesson,makeTutorMessages,COURSE_VERSION} from "./tutor-curriculum.mjs";
 import {getCaseStage,makeCaseTutorMessages} from "./tutor-investigations.mjs";
 import {CAPSTONE_VERSION,validateCapstoneAnswers,validateCapstoneMarks,isProvisionalPass} from "./capstone-policy.mjs";
+import {READINESS_VERSION,READINESS_QUESTIONS,scoreReadiness} from "./readiness-policy.mjs";
 
 const required=["DATABASE_URL","ENTRA_ISSUER","ENTRA_AUDIENCE","ENTRA_JWKS_URI"];
 for(const key of required){if(!process.env[key]){console.error("Missing "+key);process.exit(1)}}
@@ -120,12 +121,59 @@ app.get("/readyz",async(req,res)=>{
     await Promise.all([
       query("SELECT 1 FROM cpd_users LIMIT 1"),
       query("SELECT 1 FROM cpd_capstone_submissions LIMIT 1"),
-      query("SELECT 1 FROM cpd_capstone_decisions LIMIT 1")
+      query("SELECT 1 FROM cpd_capstone_decisions LIMIT 1"),
+      query("SELECT 1 FROM cpd_readiness_results LIMIT 1")
     ]);
     return res.status(200).json({status:"ready"});
   }catch{return res.status(503).json({status:"unavailable"})}
 });
 app.get("/api/me",auth,(req,res)=>res.json(req.user));
+/* ---------- Optional legal AI entry diagnostic, separate from accredited assessments ---------- */
+// The browser shows its own result instantly. The server recalculates answers from
+// the versioned immutable question bank, stores aggregate scores only, and never
+// sends individual response choices, client data or personal reports to the regulator.
+app.post("/api/readiness",auth,allow("learner"),async(req,res)=>{
+  const result=scoreReadiness(req.body?.answers);
+  if(!result||req.body?.version!==READINESS_VERSION)return error(res,400,"A complete current assessment version and 12 answers are required");
+  try{
+    const id=randomUUID();
+    const domains=Object.fromEntries(Object.entries(result.domains).map(([key,d])=>[key,d.correct]));
+    await tx(async q=>{
+      await q("INSERT INTO cpd_readiness_results(id,learner_id,version,score,band,domain_scores) VALUES($1,$2,$3,$4,$5,$6::jsonb)",
+        [id,req.user.id,READINESS_VERSION,result.score,result.band,JSON.stringify(domains)]);
+      await audit(req.user.id,"readiness-assessed",id,{version:READINESS_VERSION,score:result.score,max:12},q);
+    });
+    return res.status(201).json({id,version:READINESS_VERSION,score:result.score,max:12,band:result.band,domains});
+  }catch{return error(res,503,"Readiness monitoring is not deployed or currently unavailable")}
+});
+app.get("/api/readiness/my",auth,allow("learner"),async(req,res)=>{
+  try{
+    const found=await query("SELECT id,version,score,band,domain_scores,completed_at FROM cpd_readiness_results WHERE learner_id=$1 ORDER BY completed_at DESC LIMIT 20",[req.user.id]);
+    return res.json({records:found.rows,cpdCredits:0,notice:"Educational entry diagnostic only, not evidence of attendance or competence"});
+  }catch{return error(res,503,"Readiness results unavailable")}
+});
+// Internal, aggregate-only. NBA-ICLE reviewer access requires a formally approved
+// separate reader role, reporting agreement, privacy review, and production deployment.
+app.get("/api/admin/readiness/summary",auth,allow("admin"),async(req,res)=>{
+  try{
+    const stats=await query(`SELECT count(*)::int AS attempts,
+      count(DISTINCT learner_id)::int AS learners,
+      round(avg(score)::numeric,2) AS mean_score,
+      count(*) FILTER (WHERE band='foundation')::int AS foundation,
+      count(*) FILTER (WHERE band='developing')::int AS developing,
+      count(*) FILTER (WHERE band='advanced')::int AS advanced
+      FROM cpd_readiness_results WHERE version=$1`,[READINESS_VERSION]);
+    const recent=await query(`SELECT date_trunc('day',completed_at)::date AS date,
+      count(*)::int AS attempts,round(avg(score)::numeric,2) AS mean_score
+      FROM cpd_readiness_results WHERE version=$1
+      GROUP BY 1 ORDER BY 1 DESC LIMIT 30`,[READINESS_VERSION]);
+    await audit(req.user.id,"readiness-aggregate-view",READINESS_VERSION,{});
+    return res.json({version:READINESS_VERSION,totals:stats.rows[0],daily:recent.rows,
+      includesNames:false,includesAnswerChoices:false,cpdCredits:0,regulatorConnected:false,
+      warning:"BSOE internal educational monitoring only. Not NBA-ICLE reporting, attendance or CPD approval."});
+  }catch{return error(res,503,"Readiness monitoring is not deployed or currently unavailable")}
+});
+
 // Self-registration creates a LEARNER record only, for someone Microsoft Entra has already
 // authenticated. Off unless ALLOW_SELF_REGISTRATION=true. Faculty and admin roles are never
 // granted here: an operator sets those in the database.
