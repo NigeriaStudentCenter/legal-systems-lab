@@ -43,7 +43,7 @@ jobs:
         run: node lexflow-ng/ops/staging-readonly.mjs
       - name: Upload non-sensitive acceptance report
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: lexflow-staging-readonly-report
           path: ${{ runner.temp }}/lexflow-staging-readonly.json
