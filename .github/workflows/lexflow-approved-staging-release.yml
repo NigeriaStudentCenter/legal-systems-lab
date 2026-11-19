@@ -21,7 +21,7 @@ jobs:
     outputs:
       source_sha: ${{ steps.source.outputs.sha }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
         with:
           ref: main
       - uses: actions/setup-node@v7
@@ -56,7 +56,7 @@ jobs:
     outputs:
       image: ${{ steps.digest.outputs.image }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
         with:
           ref: ${{ needs.validate.outputs.source_sha }}
       - uses: docker/login-action@v4
@@ -90,7 +90,7 @@ jobs:
     environment: lexflow-staging
     timeout-minutes: 20
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
         with:
           ref: main
       - uses: actions/setup-node@v7
