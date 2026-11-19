@@ -38,3 +38,8 @@
 
 ## Fee and route cautions
 The published Rule 12 text states ₦100,000 on prospective-provider application, ₦200,000 on final approval, and 10% of amounts paid by participants in approved CPD activities. These are **published rule figures**, not a current invoice, account instruction or authorisation to transfer funds; seek a current written quote. Rule 13 refers to providers not included under Rule 12, so direct simultaneous processing must be explicitly confirmed before sending both application letters. It also requires at least 60 days advance lead time for the scheduled course. Neither the course nor BSOE is accredited by preparing this file.
+
+## NBA-ICLE acknowledged course approval request — 17 November 2026
+The Institute's response to BSOE's correspondence **requests six documents** and gives a direct procedure to submit to `icle@nigerianbar.org.ng` and copy `sarah.ajijola@nigerianbar.org.ng`. The Institute has not approved the course or allocated CPD credit hours. The fees stated in the response are **₦100,000 course approval** and **₦10,000 online monitoring**, with official payment instructions **still to follow**. Provider accreditation is under separate policy review.
+
+**Use [the six-document response pack](course-approval/README.md) as the active submission preparation folder.** The earlier direct provider-accreditation and Rule 13 drafts in this directory are historical contingency documents, not the currently requested package. Do not send them instead of the six materials.
