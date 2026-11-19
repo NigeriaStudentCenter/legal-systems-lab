@@ -63,12 +63,14 @@ before(async()=>{
   await db.query(readFileSync(join(here,"..","sql","001_initial.sql"),"utf8"));
   await db.query(readFileSync(join(here,"..","sql","002_review_assessment_certificates.sql"),"utf8"));
   await db.query(readFileSync(join(here,"..","sql","003_capstone_assessment.sql"),"utf8"));
+  await db.query(readFileSync(join(here,"..","sql","004_readiness_diagnostic.sql"),"utf8"));
   // The grants an operator applies, exactly as listed in sql/README.md.
   await db.query(`REVOKE CREATE ON SCHEMA public FROM PUBLIC; GRANT USAGE ON SCHEMA public TO ${ROLE};
     GRANT SELECT, INSERT, UPDATE ON TABLE cpd_users, cpd_course_sessions, cpd_session_faculty, cpd_enrolments,
       cpd_attendance_events, cpd_course_approvals, cpd_certificates, cpd_audit_events,
       cpd_attendance_reviews, cpd_assessment_submissions, cpd_assessment_decisions, cpd_tutor_usage,
       cpd_capstone_submissions, cpd_capstone_decisions TO ${ROLE}`);
+  await db.query(`GRANT SELECT, INSERT ON TABLE cpd_readiness_results TO ${ROLE}`);
   await db.query(`INSERT INTO cpd_users(id,role,active) VALUES
     ($1,'learner',true),($2,'learner',false),($3,'faculty',true),($4,'faculty',true),($5,'admin',true)`,
     [ids.learner,ids.other,ids.faculty,ids.faculty2,ids.admin]);
@@ -438,4 +440,28 @@ test("secure capstone: restricted learner submission, six-part faculty marking a
  assert.equal(legacy.certificates.length,beforeCertificates,"capstone does not issue or alter certificates");
  await assert.rejects(runtime.query("DELETE FROM cpd_capstone_submissions"),/permission denied/);
  await assert.rejects(runtime.query("CREATE TABLE runtime_capstone_ddl_test (id integer)"),/permission denied/);
+});
+
+test("legal AI entry diagnostic is regraded, consented, role-restricted and aggregated privately",async()=>{
+  const answers=[1,0,2,0,1,2,0,1,2,0,1,2];
+  assert.equal((await call("POST","/api/readiness",{body:{version:"legal-ai-readiness-v1",answers}})).status,401);
+  assert.equal((await call("GET","/api/admin/readiness/summary",{as:ids.learner})).status,403);
+  assert.equal((await call("POST","/api/readiness",{as:ids.admin,body:{version:"legal-ai-readiness-v1",answers}})).status,403);
+  assert.equal((await call("POST","/api/readiness",{as:ids.learner,body:{version:"legal-ai-readiness-v1",answers:[1]}})).status,400);
+  assert.equal((await call("POST","/api/readiness",{as:ids.learner,body:{version:"future",answers}})).status,400);
+  const p=await call("POST","/api/readiness",{as:ids.learner,body:{version:"legal-ai-readiness-v1",answers}});
+  assert.equal(p.status,201);assert.equal(p.json.score,12);
+  const own=await call("GET","/api/readiness/my",{as:ids.learner});
+  assert.equal(own.status,200);assert.equal(own.json.records.length,1);
+  assert.equal(own.json.records[0].score,12);assert.equal(own.json.cpdCredits,0);
+  const report=await call("GET","/api/admin/readiness/summary",{as:ids.admin});
+  assert.equal(report.status,200);assert.equal(report.json.totals.attempts,1);
+  assert.equal(report.json.totals.learners,1);assert.equal(report.json.totals.advanced,1);
+  assert.equal(report.json.regulatorConnected,false);assert.equal(report.json.includesNames,false);
+  assert.ok(!JSON.stringify(report.json).includes(ids.learner));
+  assert.ok(!JSON.stringify(own.json).includes("answers"));
+  const dbRows=await runtime.query("SELECT domain_scores FROM cpd_readiness_results");
+  assert.equal(dbRows.rows.length,1);
+  assert.equal(dbRows.rows[0].domain_scores.research,3);
+  await assert.rejects(runtime.query("DELETE FROM cpd_readiness_results"),/permission denied/i);
 });
