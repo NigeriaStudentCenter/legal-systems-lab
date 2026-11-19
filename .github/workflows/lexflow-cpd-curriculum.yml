@@ -60,3 +60,5 @@ jobs:
         run: node lexflow-cpd/academy-check.mjs
       - name: Accreditation application pack accuracy and completeness
         run: node lexflow-cpd/accreditation/check-pack.mjs
+      - name: NBA-ICLE six-requested-annex response pack
+        run: node lexflow-cpd/accreditation/course-approval/check-response.mjs
