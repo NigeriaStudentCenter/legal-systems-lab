@@ -21,18 +21,25 @@ The organisation profile and statutory documents are held outside this public re
 - AI tutor with bounded server-defined case/lesson guidance, subject to final model and privacy evaluation.
 - One completed narration-led teaching video, with four outstanding because generation credits were exhausted.
 
-## Required facilitator profiles — do not invent credentials
-| Position | Named person | Evidence requested | Assignment |
-|---|---|---|---|
-| Academic and Nigerian legal course director | **[NAME TO CONFIRM]** | Nigerian bar qualification, current professional standing, relevant teaching/practice experience, CV | Legal accuracy and final academic sign-off |
-| Lead legal practitioner-instructor | **[NAME TO CONFIRM]** | Current qualification, practice track record, CV, disclosure of conflicts | Research and drafting workshops |
-| Data protection / professional ethics instructor | **[NAME TO CONFIRM]** | Relevant NDPA/GAID and professional conduct expertise | Module 4 and privacy scenarios |
-| AI systems instructor or technical demonstrator | **[NAME TO CONFIRM]** | Relevant AI systems experience, training portfolio and CV | AI demonstrations and instructor support |
-| Capstone marker / moderation lead | **[NAME TO CONFIRM]** | Qualified subject knowledge, assessment experience and independence | Marking, moderation and appeals |
-| Institutional authorised signatory | **[NAME TO CONFIRM]** | Board authority or equivalent mandate | Accreditation communication |
+## Proposed lead facilitator — available profile
+
+**John Aikeremiokha**  
+**Proposed role:** Lead Facilitator — Legal Technology, Artificial Intelligence and Digital Transformation
+
+John Aikeremiokha is a Computing Lecturer, Legal Technology Educator and Digital Transformation Specialist with over ten years of experience delivering computing and technology-focused education and professional training. He holds a **Postgraduate Certificate in Education (PGCE)** and has undertaken **academic studies in Law**. His further and higher education work includes curriculum design and teaching in Computing, Information Technology, software development, cybersecurity, data management, digital skills and BTEC and vocational programmes.
+
+His LegalTech teaching interests include legal research technologies, case and document management, workflow automation, digital compliance, privacy and risk controls. His recent training focus is on the practical and responsible application of generative AI, AI-assisted legal research, contract analytics, document intelligence, responsible AI governance and human oversight in legal professional environments.
+
+For the proposed course, John would facilitate computing/AI foundations, AI-tool demonstrations, workflow design, digital transformation and AI-governance methods. His education and legal academic studies **do not establish that he is admitted to practise law in Nigeria**. A Nigeria-qualified legal subject specialist may be appointed for validation of substantive Nigerian law and professional conduct and for legal-assessment review.
+
+**Professional evidence to provide privately if requested:** PGCE institution and year; formal computing/law qualification details; employment/teaching history; representative courses and training delivered; professional certifications; consent to listing.
+
+## Additional legal faculty and assessors
+
+The Institute is respectfully invited to consider the materials with **John Aikeremiokha's available profile at this stage**. BSOE will provide the profile and credentials of an additional Nigerian-qualified legal subject-matter facilitator or reviewer **if requested** and before making any representation that legal-professional review is complete. No other faculty member is claimed as already appointed.
 
 ### Standard one-page facilitator CV fields
 Full name; professional credentials and year of call if relevant; current practising status; professional memberships; qualifications; substantive practice specialisms; legal education or CPD teaching history; recent publications or training; lessons allocated; conflicts of interest; contact details shared **privately**; signed consent to faculty listing; signed availability confirmation.
 
 ## Credentials and compliance gates
-Do not submit or imply named instructors have been appointed before acceptance and verification. Obtain signed CVs, bar credentials, current practice evidence and proof of authority as required by NBA-ICLE. The online institution profile may be sent now **only if clearly described as provisional**, while the required facilitator profiles must follow before evaluation is treated as complete.
+Do not submit or imply named instructors have been appointed before acceptance and verification. Obtain signed CVs, bar credentials, current practice evidence and proof of authority as required by NBA-ICLE. The institution profile and John's available facilitator biography may be submitted as the present faculty information. Any additional Nigerian legal faculty/reviewer credentials will be supplied upon the Institute's request and before regulated delivery, legal subject-matter certification or claims of complete independent legal review.
